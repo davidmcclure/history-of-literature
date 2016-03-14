@@ -5,6 +5,8 @@ import bz2
 
 from functools import reduce
 
+from .page import Page
+
 
 class Volume:
 
@@ -23,20 +25,6 @@ class Volume:
         self.json = json.loads(fh.read())
 
 
-    def get(self, *keys):
-
-        """
-        Get a nested path in the dict.
-
-        Args
-            *keys (str): A list of nested keys.
-
-        Returns: mixed|None
-        """
-
-        return reduce(dict.get, keys, self.json)
-
-
     @property
     def id(self):
 
@@ -46,7 +34,7 @@ class Volume:
         Returns: str
         """
 
-        return self.get('id')
+        return self.json['id']
 
 
     @property
@@ -58,4 +46,17 @@ class Volume:
         Returns: int
         """
 
-        return int(self.get('metadata', 'pubDate'))
+        return int(self.json['metadata']['pubDate'])
+
+
+    @property
+    def pages(self):
+
+        """
+        Generate page instances.
+
+        Yields: Page
+        """
+
+        for json in self.json['features']['pages']:
+            yield Page(json)

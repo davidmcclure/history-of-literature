@@ -25,11 +25,13 @@ class Corpus:
     def volumes(self):
 
         """
-        Generate volume instances from the corpus.
+        Generate volume instances.
 
         Yields: Volume
         """
 
         for root, dirs, files in scandir.walk(self.path):
             for name in files:
-                yield Volume(os.path.join(root, name))
+
+                path = os.path.join(root, name)
+                yield Volume(path)
