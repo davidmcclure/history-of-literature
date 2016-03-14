@@ -60,3 +60,29 @@ class Volume:
 
         for json in self.json['features']['pages']:
             yield Page(json)
+
+
+    @property
+    def edges(self):
+
+        """
+        Assemble combined edge weights for all pages.
+
+        Returns:
+            dict { (token1, token2): count }
+        """
+
+        edges = {}
+
+        for page in self.pages:
+            for pair, count in page.edges:
+
+                # Bump the count, if the pair has been seen.
+                if pair in edges:
+                    edges[pair] += count
+
+                # Or, initialize the value.
+                else:
+                    edges[pair] = count
+
+        return edges

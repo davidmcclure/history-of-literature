@@ -29,10 +29,14 @@ class Page:
         Yields: (token, count)
         """
 
-        # Just allow tokens with letters.
-        letters = re.compile('^[a-zA-Z]+$')
+        # Filter out non-letters.
+        letters = re.compile('^[a-z]+$')
 
         for token, pc in self.json['body']['tokenPosCount'].items():
+
+            # Downcase token.
+            token = token.lower()
+
             if letters.match(token):
                 yield (token, sum(pc.values()))
 
@@ -46,5 +50,19 @@ class Page:
         Yields: (token1, token2, count)
         """
 
+        edges = {}
+
         for (t1, c1), (t2, c2) in combinations(self.token_counts, 2):
-            yield ((t1, t2), c1+c2)
+
+            pair = (t1, t2)
+            count = c1 + c2
+
+            # Bump the count, if the pair has been seen.
+            if pair in edges:
+                edges[pair] += count
+
+            # Or, initialize the value.
+            else:
+                edges[pair] = count
+
+        return edges
