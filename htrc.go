@@ -2,21 +2,12 @@ package main
 
 import (
 	"compress/bzip2"
-	"encoding/json"
+	"github.com/Jeffail/gabs"
 	"github.com/davecgh/go-spew/spew"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
-
-type Volume struct {
-	Id       string   `json:"id"`
-	Metadata Metadata `json:"metadata"`
-}
-
-type Metadata struct {
-	Year  int    `json:"pubDate,string"`
-	Title string `json:"title"`
-}
 
 func walkVolume(path string, info os.FileInfo, err error) error {
 
@@ -35,7 +26,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 }
 
-func openVolume(path string) (v *Volume, err error) {
+func openVolume(path string) (g *gabs.Container, err error) {
 
 	// Open the file.
 	raw, err := os.Open(path)
@@ -46,16 +37,16 @@ func openVolume(path string) (v *Volume, err error) {
 	// Decompress the JSON.
 	file := bzip2.NewReader(raw)
 
-	// Decode into a Volume.
-	vol := new(Volume)
-	json.NewDecoder(file).Decode(vol)
+	// Read the bytes.
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
 
-	return vol, nil
+	return gabs.ParseJSON(bytes)
 
 }
 
 func main() {
 	filepath.Walk("data", walkVolume)
 }
-
-// combined openVolume function
