@@ -23,6 +23,31 @@ class Corpus:
         self.path = os.path.abspath(path)
 
 
+    def __len__(self):
+
+        """
+        How many volumes in the corpus?
+
+        Returns: int
+        """
+
+        return len(list(self.paths))
+
+
+    @property
+    def paths(self):
+
+        """
+        Generate asset paths.
+
+        Yields: str
+        """
+
+        for root, dirs, files in scandir.walk(self.path):
+            for name in files:
+                yield os.path.join(root, name)
+
+
     @property
     def volumes(self):
 
@@ -32,11 +57,8 @@ class Corpus:
         Yields: Volume
         """
 
-        for root, dirs, files in scandir.walk(self.path):
-            for name in files:
-
-                path = os.path.join(root, name)
-                yield Volume(path)
+        for path in self.paths:
+            yield Volume(path)
 
 
     @property
