@@ -50,19 +50,5 @@ class Page:
         Yields: (token1, token2, count)
         """
 
-        edges = {}
-
         for (t1, c1), (t2, c2) in combinations(self.token_counts, 2):
-
-            pair = (t1, t2)
-            count = c1 + c2
-
-            # Bump the count, if the pair has been seen.
-            if pair in edges:
-                edges[pair] += count
-
-            # Or, initialize the value.
-            else:
-                edges[pair] = count
-
-        return edges
+            yield ((t1, t2), c1+c2)
