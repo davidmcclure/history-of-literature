@@ -4,7 +4,6 @@ import (
 	"compress/bzip2"
 	"encoding/json"
 	"github.com/davecgh/go-spew/spew"
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -23,14 +22,10 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 	if !info.IsDir() {
 
-		file, err := loadBzip2JSON(path)
+		vol, err := openVolume(path)
 		if err != nil {
 			return err
 		}
-
-		// Decode into a Volume.
-		vol := new(Volume)
-		json.NewDecoder(file).Decode(vol)
 
 		spew.Dump(vol)
 
@@ -40,14 +35,22 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 }
 
-func loadBzip2JSON(path string) (f io.Reader, err error) {
+func openVolume(path string) (v *Volume, err error) {
 
+	// Open the file.
 	raw, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	return bzip2.NewReader(raw), nil
+	// Decompress the JSON.
+	file := bzip2.NewReader(raw)
+
+	// Decode into a Volume.
+	vol := new(Volume)
+	json.NewDecoder(file).Decode(vol)
+
+	return vol, nil
 
 }
 
