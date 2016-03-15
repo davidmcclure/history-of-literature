@@ -2,11 +2,12 @@ package main
 
 import (
 	"compress/bzip2"
+	"fmt"
 	"github.com/Jeffail/gabs"
-	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func walkVolume(path string, info os.FileInfo, err error) error {
@@ -18,7 +19,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		spew.Dump(vol)
+		fmt.Println(vol.Year(), vol.Id())
 
 	}
 
@@ -26,7 +27,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 }
 
-func openVolume(path string) (g *gabs.Container, err error) {
+func openVolume(path string) (v *Volume, err error) {
 
 	// Open the file.
 	raw, err := os.Open(path)
@@ -43,7 +44,30 @@ func openVolume(path string) (g *gabs.Container, err error) {
 		return nil, err
 	}
 
-	return gabs.ParseJSON(bytes)
+	// Parse the JSON.
+	parsed, err := gabs.ParseJSON(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Volume{json: parsed}, nil
+
+}
+
+type Volume struct {
+	json *gabs.Container
+}
+
+func (v *Volume) Id() string {
+	return v.json.Path("id").Data().(string)
+}
+
+func (v *Volume) Year() int {
+
+	raw := v.json.Path("metadata.pubDate").Data().(string)
+	year, _ := strconv.Atoi(raw)
+
+	return year
 
 }
 
