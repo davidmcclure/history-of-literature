@@ -74,8 +74,7 @@ class Volume:
 
         edges = Counter()
 
-        for i, page in enumerate(self.pages):
+        for page in self.pages:
             edges += page.edges
-            print(i)
 
         return edges
