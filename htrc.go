@@ -18,9 +18,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		for _, page := range vol.Pages() {
-			fmt.Println(page.TokenCount())
-		}
+		fmt.Println(vol.TokenCount())
 
 	}
 
@@ -81,14 +79,26 @@ func (v *Volume) Pages() []Page {
 
 }
 
+// Get the total token count for all pages.
+func (v *Volume) TokenCount() int {
+
+	count := 0
+	for _, page := range v.Pages() {
+		count += page.TokenCount()
+	}
+
+	return count
+
+}
+
 // An individual page in a volume.
 type Page struct {
 	json *gabs.Container
 }
 
-// Get the total token count on the page.
+// Get the token count for the page body.
 func (p *Page) TokenCount() int {
-	return int(p.json.Path("tokenCount").Data().(float64))
+	return int(p.json.Path("body.tokenCount").Data().(float64))
 }
 
 func main() {
