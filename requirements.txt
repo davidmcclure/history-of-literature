@@ -2,3 +2,4 @@
 ipython
 scandir
 clint
+scipy
