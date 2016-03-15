@@ -4,6 +4,7 @@ import (
 	"compress/bzip2"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -22,24 +23,31 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 	if !info.IsDir() {
 
-		// Open the .bz2 file.
-		raw, err := os.Open(path)
+		file, err := loadBzip2JSON(path)
 		if err != nil {
 			return err
 		}
 
-		// Decompress the .bz2.
-		decompressed := bzip2.NewReader(raw)
-
 		// Decode into a Volume.
 		vol := new(Volume)
-		json.NewDecoder(decompressed).Decode(vol)
+		json.NewDecoder(file).Decode(vol)
 
 		fmt.Println(vol.Metadata.Year)
 
 	}
 
 	return nil
+
+}
+
+func loadBzip2JSON(path string) (f io.Reader, err error) {
+
+	raw, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return bzip2.NewReader(raw), nil
 
 }
 
