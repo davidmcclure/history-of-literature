@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 func walkVolume(path string, info os.FileInfo, err error) error {
@@ -19,7 +18,9 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		fmt.Println(vol.Year(), vol.Id())
+		for _, page := range vol.Pages() {
+			fmt.Println(page.TokenCount())
+		}
 
 	}
 
@@ -62,15 +63,27 @@ func (v *Volume) Id() string {
 	return v.json.Path("id").Data().(string)
 }
 
-func (v *Volume) Year() int {
+func (v *Volume) Pages() []Page {
 
-	raw := v.json.Path("metadata.pubDate").Data().(string)
-	year, _ := strconv.Atoi(raw)
+	children, _ := v.json.Search("features", "pages").Children()
 
-	return year
+	var pages []Page
+	for _, child := range children {
+		pages = append(pages, Page{json: child})
+	}
+
+	return pages
 
 }
 
+type Page struct {
+	json *gabs.Container
+}
+
+func (p *Page) TokenCount() int {
+	return int(p.json.Path("tokenCount").Data().(float64))
+}
+
 func main() {
-	filepath.Walk("data", walkVolume)
+	filepath.Walk("data/basic", walkVolume)
 }
