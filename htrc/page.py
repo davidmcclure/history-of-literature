@@ -3,8 +3,7 @@
 import re
 
 from itertools import combinations
-
-from .edge_list import EdgeList
+from collections import Counter
 
 
 class Page:
@@ -52,9 +51,9 @@ class Page:
         Returns: EdgeList
         """
 
-        edges = EdgeList()
+        edges = Counter()
 
         for (t1, c1), (t2, c2) in combinations(self.token_counts, 2):
-            edges.add_weight(t1, t2, c1+c2)
+            edges[(t1, t2)] += min(c1, c2)
 
         return edges

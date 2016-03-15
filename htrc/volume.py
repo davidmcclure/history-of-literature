@@ -4,9 +4,9 @@ import json
 import bz2
 
 from functools import reduce
+from collections import Counter
 
 from .page import Page
-from .edge_list import EdgeList
 
 
 class Volume:
@@ -69,11 +69,10 @@ class Volume:
         """
         Assemble combined edge weights for all pages.
 
-        Returns:
-            dict { (token1, token2): count }
+        Returns: EdgeList
         """
 
-        edges = EdgeList()
+        edges = Counter()
 
         for page in self.pages:
             edges += page.edges
