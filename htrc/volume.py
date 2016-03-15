@@ -6,6 +6,7 @@ import bz2
 from functools import reduce
 
 from .page import Page
+from .edge_list import EdgeList
 
 
 class Volume:
@@ -72,17 +73,9 @@ class Volume:
             dict { (token1, token2): count }
         """
 
-        edges = {}
+        edges = EdgeList()
 
         for page in self.pages:
-            for pair, count in page.edges:
-
-                # Bump the count, if the pair has been seen.
-                if pair in edges:
-                    edges[pair] += count
-
-                # Or, initialize the value.
-                else:
-                    edges[pair] = count
+            edges += page.edges
 
         return edges

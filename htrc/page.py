@@ -4,6 +4,8 @@ import re
 
 from itertools import combinations
 
+from .edge_list import EdgeList
+
 
 class Page:
 
@@ -45,10 +47,14 @@ class Page:
     def edges(self):
 
         """
-        Generate a set of edge weight contributions.
+        Build a page-level edge list.
 
-        Yields: (token1, token2, count)
+        Returns: EdgeList
         """
 
+        edges = EdgeList()
+
         for (t1, c1), (t2, c2) in combinations(self.token_counts, 2):
-            yield ((t1, t2), c1+c2)
+            edges.add_weight(t1, t2, c1+c2)
+
+        return edges
