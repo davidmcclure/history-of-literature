@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 func walkVolume(path string, info os.FileInfo, err error) error {
@@ -18,7 +19,9 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		fmt.Println(vol.TokenCount())
+		for _, page := range vol.Pages() {
+			page.Edges()
+		}
 
 	}
 
@@ -52,6 +55,26 @@ func openVolume(path string) (v *Volume, err error) {
 	}
 
 	return &Volume{json: parsed}, nil
+
+}
+
+// Map (token1, token2) pairs to weights.
+type EdgeList struct {
+	weights map[[2]string]int
+}
+
+// Add N units of weight to the edge between two tokens.
+func (e *EdgeList) AddWeight(token1 string, token2 string, weight int) {
+
+	// Sort the tokens.
+	tokens := []string{token1, token2}
+	sort.Strings(tokens)
+
+	// Flatten the slice into an array.
+	var key [2]string
+	copy(key[:], tokens[:2])
+
+	e.weights[key] += weight
 
 }
 
@@ -99,6 +122,21 @@ type Page struct {
 // Get the token count for the page body.
 func (p *Page) TokenCount() int {
 	return int(p.json.Path("body.tokenCount").Data().(float64))
+}
+
+// Generate an edge list from the body tokens.
+func (p *Page) Edges() *EdgeList {
+
+	var edges EdgeList
+
+	children, _ := p.json.Search("body", "tokenPosCount").ChildrenMap()
+
+	for token, counts := range children {
+		fmt.Println(token, counts)
+	}
+
+	return &edges
+
 }
 
 func main() {
