@@ -28,6 +28,8 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 
 }
 
+// Given a path for a .bz2 JSON file in the HTRC corpus, decode the file and
+// parse the JSON into a Volume.
 func openVolume(path string) (v *Volume, err error) {
 
 	// Open the file.
@@ -55,14 +57,17 @@ func openVolume(path string) (v *Volume, err error) {
 
 }
 
+// An individual HTRC volume.
 type Volume struct {
 	json *gabs.Container
 }
 
+// Get the HTRC id.
 func (v *Volume) Id() string {
 	return v.json.Path("id").Data().(string)
 }
 
+// Gather a slice of Page instances.
 func (v *Volume) Pages() []Page {
 
 	children, _ := v.json.Search("features", "pages").Children()
@@ -76,10 +81,12 @@ func (v *Volume) Pages() []Page {
 
 }
 
+// An individual page in a volume.
 type Page struct {
 	json *gabs.Container
 }
 
+// Get the total token count on the page.
 func (p *Page) TokenCount() int {
 	return int(p.json.Path("tokenCount").Data().(float64))
 }
