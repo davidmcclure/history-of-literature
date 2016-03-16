@@ -7,3 +7,5 @@ sqlalchemy
 psycopg2
 wordfreq
 invoke
+anyconfig
+PyYAML

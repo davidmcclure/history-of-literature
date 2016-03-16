@@ -3,7 +3,8 @@
 from sqlalchemy import Column, Integer, String, sql
 from sqlalchemy.schema import Index
 
-from htrc.models import Base, Session
+from htrc import config
+from htrc.models import Base
 
 
 class Edge(Base):
@@ -35,7 +36,7 @@ class Edge(Base):
 
         graph = volume.graph(min_freq=min_freq)
 
-        session = Session()
+        session = config.Session()
 
         for t1, t2, data in graph.edges_iter(data=True):
 

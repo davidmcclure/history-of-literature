@@ -8,7 +8,6 @@ from collections import Counter
 
 from htrc.page import Page
 from htrc.term_graph import TermGraph
-from htrc.models import Session, Edge
 
 
 class Volume:
