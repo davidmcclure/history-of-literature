@@ -3,7 +3,10 @@
 import os
 import scandir
 
+from clint.textui import progress
+
 from htrc.volume import Volume
+from htrc.term_graph import TermGraph
 
 
 class Corpus:
@@ -55,3 +58,24 @@ class Corpus:
 
         for path in self.paths():
             yield Volume(path)
+
+
+    def graph(self, *args, **kwargs):
+
+        """
+        Assemble the co-occurrence graph for the entire corpus.
+
+        Returns: TermGraph
+        """
+
+        graph = TermGraph()
+
+        volumes = progress.bar(
+            self.volumes(),
+            expected_size=len(list(self.paths()))
+        )
+
+        for volume in volumes:
+            graph += volume.graph(*args, **kwargs)
+
+        return graph
