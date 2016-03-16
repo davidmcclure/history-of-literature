@@ -8,6 +8,7 @@ from htrc.models.base import Base
 
 class Edge(Base):
 
+
     __tablename__ = 'edge'
 
     id = Column(Integer, primary_key=True)
@@ -16,13 +17,16 @@ class Edge(Base):
 
     token2 = Column(String, nullable=False, index=True)
 
+    year = Column(Integer, nullable=False)
+
     weight = Column(Integer, nullable=False)
 
 
 # Unique index on the token pair.
 Index(
-    'ix_edge_token1_token2',
+    'ix_edge_token1_token2_year',
     Edge.token1,
     Edge.token2,
+    Edge.year,
     unique=True,
 )
