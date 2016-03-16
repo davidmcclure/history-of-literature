@@ -3,8 +3,6 @@
 import os
 import scandir
 
-from collections import Counter
-
 from .volume import Volume
 
 
@@ -59,20 +57,3 @@ class Corpus:
 
         for path in self.paths:
             yield Volume(path)
-
-
-    @property
-    def edges(self):
-
-        """
-        Assemble a complete edge list.
-
-        Returns: EdgeList
-        """
-
-        edges = Counter()
-
-        for volume in self.volumes:
-            edges += volume.edges
-
-        return edges

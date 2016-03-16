@@ -4,7 +4,6 @@ import json
 import bz2
 
 from functools import reduce
-from collections import Counter
 
 from .page import Page
 
@@ -61,20 +60,3 @@ class Volume:
 
         for json in self.json['features']['pages']:
             yield Page(json)
-
-
-    @property
-    def edges(self):
-
-        """
-        Assemble combined edge weights for all pages.
-
-        Returns: EdgeList
-        """
-
-        edges = Counter()
-
-        for page in self.pages:
-            edges += page.edges
-
-        return edges
