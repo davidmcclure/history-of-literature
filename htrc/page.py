@@ -7,6 +7,8 @@ from itertools import combinations
 from collections import Counter
 from wordfreq import word_frequency
 
+from .term_graph import TermGraph
+
 
 class Page:
 
@@ -57,7 +59,7 @@ class Page:
         Returns: nx.Graph
         """
 
-        graph = nx.Graph()
+        graph = TermGraph()
 
         counts = self.token_counts()
 

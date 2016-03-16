@@ -53,5 +53,5 @@ class Corpus:
         Yields: Volume
         """
 
-        for path in self.paths:
+        for path in self.paths():
             yield Volume(path)
