@@ -5,6 +5,7 @@ import networkx as nx
 
 from itertools import combinations
 from collections import Counter
+from stop_words import get_stop_words
 from wordfreq import word_frequency
 
 from htrc.term_graph import TermGraph
@@ -39,17 +40,27 @@ class Page:
         # Filter out non-letters.
         letters = re.compile('^[a-z]+$')
 
+        # Get a stopword list.
+        stop_words = get_stop_words('en')
+
         counts = Counter()
         for token, pc in self.json['body']['tokenPosCount'].items():
 
             token = token.lower()
 
-            # Get modern frequency.
-            freq = word_frequency(token, 'en')
+            # Ignore irregular tokens.
+            if not letters.match(token):
+                continue
 
-            # Ignore irregular / infrequent words.
-            if letters.match(token) and freq > min_freq:
-                counts[token] += sum(pc.values())
+            # Ignore stopwords.
+            if token in stop_words:
+                continue
+
+            # Ignore infrequent words.
+            if word_frequency(token, 'en') < min_freq:
+                continue
+
+            counts[token] += sum(pc.values())
 
         return counts
 

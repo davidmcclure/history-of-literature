@@ -9,3 +9,4 @@ wordfreq
 invoke
 anyconfig
 PyYAML
+stop-words
