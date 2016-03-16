@@ -6,3 +6,4 @@ clint
 sqlalchemy
 psycopg2
 wordfreq
+invoke
