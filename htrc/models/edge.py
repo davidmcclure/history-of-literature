@@ -1,6 +1,6 @@
 
 
-from sqlalchemy import Column, Integer, String, sql
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.schema import Index
 
 from htrc import config
@@ -42,30 +42,21 @@ class Edge(Base):
 
             weight = data.get('weight')
 
-            # Does the pair / year edge already exist?
+            # Try to update an existing edge.
 
-            exists = session.query(
-                sql.exists()
-                .where(cls.token1==t1)
-                .where(cls.token2==t2)
-                .where(cls.year==volume.year)
-            )
+            updated = session.query(cls).filter_by(
 
-            # If an edge exists, update the weight.
+                token1=t1,
+                token2=t2,
+                year=volume.year,
 
-            if exists.scalar():
+            ).update(dict(
+                weight = cls.weight + weight
+            ))
 
-                session.query(cls).filter_by(
-                    token1=t1,
-                    token2=t2,
-                    year=volume.year,
-                ).update(dict(
-                    weight = cls.weight + weight
-                ))
+            # If no rows updated, initialize the edge.
 
-            # Otherwise, insert a new edge.
-
-            else:
+            if updated == 0:
 
                 edge = cls(
                     token1=t1,
