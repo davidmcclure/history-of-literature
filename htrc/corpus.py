@@ -60,10 +60,13 @@ class Corpus:
             yield Volume(path)
 
 
-    def graph(self, *args, **kwargs):
+    def token_graph(self, token, *args, **kwargs):
 
         """
-        Assemble the co-occurrence graph for the entire corpus.
+        Assemble a co-occurrence graph for pages that contain a token.
+
+        Args:
+            token (str)
 
         Returns: TermGraph
         """
@@ -76,6 +79,6 @@ class Corpus:
         )
 
         for volume in volumes:
-            graph += volume.graph(*args, **kwargs)
+            graph += volume.token_graph(token, *args, **kwargs)
 
         return graph

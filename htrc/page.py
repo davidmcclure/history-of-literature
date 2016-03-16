@@ -81,3 +81,17 @@ class Page:
             graph.add_edge(t1, t2, weight=min(c1, c2))
 
         return graph
+
+
+    def has_token(self, token):
+
+        """
+        Does the page contain a given token?
+
+        Args:
+            token (str)
+
+        Returns: bool
+        """
+
+        return token in self.json['body']['tokenPosCount']

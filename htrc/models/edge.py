@@ -24,17 +24,18 @@ class Edge(Base):
 
 
     @classmethod
-    def index_volume(cls, volume, min_freq=1e-03):
+    def index_volume(cls, volume, token, min_freq=1e-03):
 
         """
         Index edges from a volume.
 
         Args:
             volume (Volume)
+            token (str)
             min_freq (float)
         """
 
-        graph = volume.graph(min_freq=min_freq)
+        graph = volume.token_graph(token, min_freq=min_freq)
 
         session = config.Session()
 

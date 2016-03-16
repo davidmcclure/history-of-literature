@@ -63,10 +63,13 @@ class Volume:
             yield Page(json)
 
 
-    def graph(self, *args, **kwargs):
+    def token_graph(self, token, *args, **kwargs):
 
         """
-        Assemble the co-occurrence graph for all pages.
+        Assemble a co-occurrence graph for pages that contain a token.
+
+        Args:
+            token (str)
 
         Returns: TermGraph
         """
@@ -74,6 +77,7 @@ class Volume:
         graph = TermGraph()
 
         for page in self.pages():
-            graph += page.graph(*args, **kwargs)
+            if page.has_token(token):
+                graph += page.graph(*args, **kwargs)
 
         return graph
