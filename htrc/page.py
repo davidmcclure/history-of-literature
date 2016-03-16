@@ -25,10 +25,13 @@ class Page:
         self.json = json
 
 
-    def token_counts(self):
+    def token_counts(self, min_freq=1e-05):
 
         """
         Count the total occurrences of each unique token.
+
+        Args:
+            min_freq (float): Ignore words below this frequency.
 
         Returns: Counter
         """
@@ -44,24 +47,24 @@ class Page:
             # Get modern frequency.
             freq = word_frequency(token, 'en')
 
-            # Ignore words that appear < 10 per 1M.
-            if letters.match(token) and freq > 1e-05:
+            # Ignore irregular / infrequent words.
+            if letters.match(token) and freq > min_freq:
                 counts[token] += sum(pc.values())
 
         return counts
 
 
-    def graph(self):
+    def graph(self, *args, **kwargs):
 
         """
         Assemble the page-level co-occurrence graph.
 
-        Returns: nx.Graph
+        Returns: TermGraph
         """
 
         graph = TermGraph()
 
-        counts = self.token_counts()
+        counts = self.token_counts(*args, **kwargs)
 
         for (t1, c1), (t2, c2) in combinations(counts.items(), 2):
             graph.add_edge(t1, t2, weight=min(c1, c2))

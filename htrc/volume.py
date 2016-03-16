@@ -7,6 +7,7 @@ from functools import reduce
 from collections import Counter
 
 from .page import Page
+from .term_graph import TermGraph
 
 
 class Volume:
@@ -60,3 +61,19 @@ class Volume:
 
         for json in self.json['features']['pages']:
             yield Page(json)
+
+
+    def graph(self, *args, **kwargs):
+
+        """
+        Assemble the co-occurrence graph for all pages.
+
+        Returns: TermGraph
+        """
+
+        graph = TermGraph()
+
+        for page in self.pages():
+            graph += page.graph(*args, **kwargs)
+
+        return graph
