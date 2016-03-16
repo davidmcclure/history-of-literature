@@ -58,27 +58,3 @@ class Corpus:
 
         for path in self.paths():
             yield Volume(path)
-
-
-    def token_graph(self, token, *args, **kwargs):
-
-        """
-        Assemble a co-occurrence graph for pages that contain a token.
-
-        Args:
-            token (str)
-
-        Returns: TermGraph
-        """
-
-        graph = TermGraph()
-
-        volumes = progress.bar(
-            self.volumes(),
-            expected_size=len(list(self.paths()))
-        )
-
-        for volume in volumes:
-            graph += volume.token_graph(token, *args, **kwargs)
-
-        return graph

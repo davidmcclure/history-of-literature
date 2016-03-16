@@ -68,7 +68,7 @@ class Page:
     def graph(self, *args, **kwargs):
 
         """
-        Assemble the page-level co-occurrence graph.
+        Assemble the page-level co-occurrence graph for all tokens.
 
         Returns: TermGraph
         """

@@ -25,14 +25,13 @@ class Edge(Base):
 
 
     @classmethod
-    def index_corpus(cls, corpus, token, *args, **kwargs):
+    def index_corpus(cls, corpus, *args, **kwargs):
 
         """
         Index edges from a corpus.
 
         Args:
             corpus (Corpus)
-            token (str)
         """
 
         volumes = progress.bar(
@@ -41,23 +40,20 @@ class Edge(Base):
         )
 
         for volume in volumes:
-            cls.index_volume(volume, token, *args, **kwargs)
-
-        return graph
+            cls.index_volume(volume, *args, **kwargs)
 
 
     @classmethod
-    def index_volume(cls, volume, token, *args, **kwargs):
+    def index_volume(cls, volume, *args, **kwargs):
 
         """
         Index edges from a volume.
 
         Args:
             volume (Volume)
-            token (str)
         """
 
-        graph = volume.token_graph(token, *args, **kwargs)
+        graph = volume.graph(*args, **kwargs)
 
         session = config.Session()
 
