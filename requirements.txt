@@ -1,4 +1,6 @@
 
 ipython
 scandir
+networkx
 clint
+wordfreq

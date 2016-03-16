@@ -50,7 +50,6 @@ class Volume:
         return int(self.json['metadata']['pubDate'])
 
 
-    @property
     def pages(self):
 
         """

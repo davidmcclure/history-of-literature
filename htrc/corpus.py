@@ -32,7 +32,6 @@ class Corpus:
         return len(list(self.paths))
 
 
-    @property
     def paths(self):
 
         """
@@ -46,7 +45,6 @@ class Corpus:
                 yield os.path.join(root, name)
 
 
-    @property
     def volumes(self):
 
         """
