@@ -19,9 +19,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		for _, page := range vol.Pages() {
-			page.Edges()
-		}
+		fmt.Println(vol.Language())
 
 	}
 
@@ -88,6 +86,11 @@ func (v *Volume) Id() string {
 	return v.json.Path("id").Data().(string)
 }
 
+// Get the language.
+func (v *Volume) Language() string {
+	return v.json.Path("metadata.language").Data().(string)
+}
+
 // Gather a slice of Page instances.
 func (v *Volume) Pages() []Page {
 
@@ -122,21 +125,6 @@ type Page struct {
 // Get the token count for the page body.
 func (p *Page) TokenCount() int {
 	return int(p.json.Path("body.tokenCount").Data().(float64))
-}
-
-// Generate an edge list from the body tokens.
-func (p *Page) Edges() *EdgeList {
-
-	var edges EdgeList
-
-	children, _ := p.json.Search("body", "tokenPosCount").ChildrenMap()
-
-	for token, counts := range children {
-		fmt.Println(token, counts)
-	}
-
-	return &edges
-
 }
 
 func main() {
