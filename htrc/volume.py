@@ -4,6 +4,7 @@ import json
 import bz2
 
 from functools import reduce
+from collections import Counter
 
 from .page import Page
 
