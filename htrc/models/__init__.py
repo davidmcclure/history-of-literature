@@ -4,11 +4,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-# TODO: Break this into a separate config manager.
+# TODO: Use a separate config manager.
 
 
 # TODO: Read from config.
-engine = create_engine('postgresql://localhost/htrc', echo=True)
+engine = create_engine('postgresql://localhost/htrc')
 Session = sessionmaker(bind=engine)
 
 
