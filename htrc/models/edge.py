@@ -1,5 +1,6 @@
 
 
+from clint.textui import progress
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.schema import Index
 
@@ -24,7 +25,29 @@ class Edge(Base):
 
 
     @classmethod
-    def index_volume(cls, volume, token, min_freq=1e-03):
+    def index_corpus(cls, corpus, token, *args, **kwargs):
+
+        """
+        Index edges from a corpus.
+
+        Args:
+            corpus (Corpus)
+            token (str)
+        """
+
+        volumes = progress.bar(
+            corpus.volumes(),
+            expected_size=len(list(corpus.paths()))
+        )
+
+        for volume in volumes:
+            cls.index_volume(volume, token, *args, **kwargs)
+
+        return graph
+
+
+    @classmethod
+    def index_volume(cls, volume, token, *args, **kwargs):
 
         """
         Index edges from a volume.
@@ -32,10 +55,9 @@ class Edge(Base):
         Args:
             volume (Volume)
             token (str)
-            min_freq (float)
         """
 
-        graph = volume.token_graph(token, min_freq=min_freq)
+        graph = volume.token_graph(token, *args, **kwargs)
 
         session = config.Session()
 
