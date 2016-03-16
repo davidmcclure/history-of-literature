@@ -1,4 +1,4 @@
 
-# htrc-network
+# htrc-dev
 
-Construct a page-level term co-occurrence network from the [HTRC feature dataset](https://sharc.hathitrust.org/features).
+(Experimental) Python bindings onto the HTRC extracted features corpus.
