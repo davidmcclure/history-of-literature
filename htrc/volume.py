@@ -6,8 +6,8 @@ import bz2
 from functools import reduce
 from collections import Counter
 
-from .page import Page
-from .term_graph import TermGraph
+from htrc.page import Page
+from htrc.term_graph import TermGraph
 
 
 class Volume:

@@ -7,7 +7,7 @@ from itertools import combinations
 from collections import Counter
 from wordfreq import word_frequency
 
-from .term_graph import TermGraph
+from htrc.term_graph import TermGraph
 
 
 class Page:

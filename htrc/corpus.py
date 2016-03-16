@@ -3,7 +3,7 @@
 import os
 import scandir
 
-from .volume import Volume
+from htrc.volume import Volume
 
 
 class Corpus:
