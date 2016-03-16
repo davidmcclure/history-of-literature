@@ -78,28 +78,3 @@ class Volume:
             graph += page.graph(*args, **kwargs)
 
         return graph
-
-
-    def index_edges(self):
-
-        """
-        Index edges into the database.
-        """
-
-        graph = self.graph()
-
-        session = Session()
-        for t1, t2, data in graph.edges_iter(data=True):
-
-            weight = data.get('weight')
-
-            edge = Edge(
-                token1=t1,
-                token2=t2,
-                year=self.year,
-                weight=weight,
-            )
-
-            session.add(edge)
-
-        session.commit()
