@@ -63,6 +63,23 @@ class Volume:
         return self.json['metadata']['language']
 
 
+    @property
+    def token_count(self):
+
+        """
+        Get the total number of tokens in the page "body" sections.
+
+        Returns: int
+        """
+
+        total = 0
+
+        for page in self.pages():
+            total += page.json['body']['tokenCount']
+
+        return total
+
+
     def pages(self):
 
         """
@@ -132,3 +149,14 @@ class Volume:
 
             else:
                 data[key] = count
+
+
+    def token_offsets(self):
+
+        """
+        For each token, get a set of 0-1 offset ratios in the text.
+
+        Returns: {token: [0.1, 0.2, ...], ...}
+        """
+
+        pass
