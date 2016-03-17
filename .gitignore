@@ -3,6 +3,7 @@
 *.egg-info
 *.tar.gz
 *.dat
+*.log
 
 /env
 /build
