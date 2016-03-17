@@ -26,7 +26,19 @@ class Page:
         self.json = json
 
 
-    def token_counts(self, min_freq=1e-05):
+    @property
+    def token_count(self):
+
+        """
+        Get the total number of "body" tokens.
+
+        Returns: int
+        """
+
+        return self.json['body']['tokenCount']
+
+
+    def total_counts(self, min_freq=1e-05):
 
         """
         Count the total occurrences of each unique token.
@@ -75,7 +87,7 @@ class Page:
 
         graph = TermGraph()
 
-        counts = self.token_counts(*args, **kwargs)
+        counts = self.total_counts(*args, **kwargs)
 
         for (t1, c1), (t2, c2) in combinations(counts.items(), 2):
             graph.add_edge(t1, t2, weight=min(c1, c2))

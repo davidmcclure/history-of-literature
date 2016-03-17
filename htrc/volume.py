@@ -3,8 +3,7 @@
 import json
 import bz2
 
-from functools import reduce
-from collections import Counter
+from collections import defaultdict
 
 from htrc.page import Page
 from htrc.term_graph import TermGraph
@@ -75,7 +74,7 @@ class Volume:
         total = 0
 
         for page in self.pages():
-            total += page.json['body']['tokenCount']
+            total += page.token_count
 
         return total
 
@@ -151,7 +150,7 @@ class Volume:
                 data[key] = count
 
 
-    def token_offsets(self):
+    def token_offsets(self, *args, **kwargs):
 
         """
         For each token, get a set of 0-1 offset ratios in the text.
@@ -159,4 +158,24 @@ class Volume:
         Returns: {token: [0.1, 0.2, ...], ...}
         """
 
-        pass
+        offsets = defaultdict(list)
+
+        seen = 0
+        for page in self.pages():
+
+            # Get the 0-1 ratio of page "center".
+            center = (
+                (seen + (page.token_count / 2)) /
+                self.token_count
+            )
+
+            counts = page.total_counts(*args, **kwargs)
+
+            # Register flattened offsets.
+            for token, count in counts.items():
+                offsets[token] += [center] * count
+
+            # Track the cumulative token count.
+            seen += page.token_count
+
+        return offsets
