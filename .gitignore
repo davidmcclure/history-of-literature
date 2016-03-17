@@ -2,6 +2,7 @@
 *.pyc
 *.egg-info
 *.tar.gz
+*.dat
 
 /env
 /build

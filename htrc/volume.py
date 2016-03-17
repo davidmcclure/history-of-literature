@@ -2,7 +2,6 @@
 
 import json
 import bz2
-import shelve
 
 from functools import reduce
 from collections import Counter
@@ -80,19 +79,23 @@ class Volume:
         return graph
 
 
-    def shelve_edges(self, *args, **kwargs):
+    def shelve_edges(self, data, *args, **kwargs):
 
         """
         Index edges via shelve.
+
+        Args:
+            data (shelve.DbfilenameShelf)
         """
 
-        with shelve.open('test') as s:
-            for t1, t2, data in self.graph().edges_iter(data=True):
+        graph = self.graph(*args, **kwargs)
 
-                key = '{0}_{1}_{2}'.format(t1, t2, self.year)
+        for t1, t2, count in graph.edge_index_iter():
 
-                if key in s:
-                    s[key] += data['weight']
+            key = '{0}:{1}:{2}'.format(t1, t2, self.year)
 
-                else:
-                    s[key] = data['weight']
+            if key in data:
+                data[key] += count
+
+            else:
+                data[key] = count

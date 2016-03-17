@@ -2,6 +2,7 @@
 
 import os
 import scandir
+import shelve
 
 from clint.textui import progress
 
@@ -58,3 +59,22 @@ class Corpus:
 
         for path in self.paths():
             yield Volume(path)
+
+
+    def shelve_edges(self, path, *args, **kwargs):
+
+        """
+        Index edges via shelve.
+
+        Args:
+            path (str): The data file path.
+        """
+
+        volumes = progress.bar(
+            self.volumes(),
+            expected_size=len(list(self.paths()))
+        )
+
+        with shelve.open(path) as data:
+            for volume in volumes:
+                volume.shelve_edges(data, *args, **kwargs)

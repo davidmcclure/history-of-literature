@@ -32,3 +32,19 @@ class TermGraph(nx.Graph):
                 self.add_edge(t1, t2, weight=weight)
 
         return self
+
+
+    def edge_index_iter(self):
+
+        """
+        Generate normalized pair/count pairs for the edge index.
+
+        Yields: (t1, t2, count)
+        """
+
+        for t1, t2, data in self.edges_iter(data=True):
+
+            # Ensure consistent ordering.
+            t1, t2 = sorted([t1, t2])
+
+            yield (t1, t2, data['weight'])
