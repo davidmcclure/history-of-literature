@@ -61,12 +61,13 @@ class Corpus:
             yield Volume(path)
 
 
-    def shelve_edges(self, path, *args, **kwargs):
+    def shelve_edges(self, path, token, *args, **kwargs):
 
         """
         Index edges via shelve.
 
         Args:
+            token (str): The anchor token.
             path (str): The data file path.
         """
 
@@ -77,4 +78,4 @@ class Corpus:
 
         with shelve.open(path) as data:
             for volume in volumes:
-                volume.shelve_edges(data, *args, **kwargs)
+                volume.shelve_edges(data, token, *args, **kwargs)

@@ -79,16 +79,37 @@ class Volume:
         return graph
 
 
-    def shelve_edges(self, data, *args, **kwargs):
+    def token_graph(self, token, *args, **kwargs):
+
+        """
+        Assemble a graph for all pages that contain a given term.
+
+        Args:
+            token (str)
+
+        Returns: TermGraph
+        """
+
+        graph = TermGraph()
+
+        for page in self.pages():
+            if page.has_token(token):
+                graph += page.graph(*args, **kwargs)
+
+        return graph
+
+
+    def shelve_edges(self, data, token, *args, **kwargs):
 
         """
         Index edges via shelve.
 
         Args:
             data (shelve.DbfilenameShelf)
+            token (str)
         """
 
-        graph = self.graph(*args, **kwargs)
+        graph = self.token_graph(token, *args, **kwargs)
 
         for t1, t2, count in graph.edge_index_iter():
 
