@@ -51,6 +51,18 @@ class Volume:
         return int(self.json['metadata']['pubDate'])
 
 
+    @property
+    def language(self):
+
+        """
+        Get the language.
+
+        Returns: str
+        """
+
+        return self.json['metadata']['language']
+
+
     def pages(self):
 
         """
