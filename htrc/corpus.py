@@ -59,23 +59,3 @@ class Corpus:
 
         for path in self.paths():
             yield Volume(path)
-
-
-    def shelve_edges(self, path, token, *args, **kwargs):
-
-        """
-        Index edges via shelve.
-
-        Args:
-            token (str): The anchor token.
-            path (str): The data file path.
-        """
-
-        volumes = progress.bar(
-            self.volumes(),
-            expected_size=len(list(self.paths()))
-        )
-
-        with shelve.open(path) as data:
-            for volume in volumes:
-                volume.shelve_edges(data, token, *args, **kwargs)

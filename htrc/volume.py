@@ -126,29 +126,6 @@ class Volume:
         return graph
 
 
-    def shelve_edges(self, data, token, *args, **kwargs):
-
-        """
-        Index edges via shelve.
-
-        Args:
-            data (shelve.DbfilenameShelf)
-            token (str)
-        """
-
-        graph = self.token_graph(token, *args, **kwargs)
-
-        for t1, t2, count in graph.edge_index_iter():
-
-            key = '{0}:{1}:{2}'.format(t1, t2, self.year)
-
-            if key in data:
-                data[key] += count
-
-            else:
-                data[key] = count
-
-
     def token_offsets(self, *args, **kwargs):
 
         """
