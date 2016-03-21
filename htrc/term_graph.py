@@ -1,6 +1,7 @@
 
 
 import networkx as nx
+import shelve
 
 
 class TermGraph(nx.Graph):
@@ -48,3 +49,21 @@ class TermGraph(nx.Graph):
             t1, t2 = sorted([t1, t2])
 
             yield (t1, t2, data['weight'])
+
+
+    def shelve(self, path):
+
+        """
+        Index edges into a shelf file.
+        """
+
+        with shelve.open(path) as data:
+            for t1, t2, count in self.edge_index_iter():
+
+                key = '{0}:{1}'.format(t1, t2)
+
+                if key in data:
+                    data[key] += count
+
+                else:
+                    data[key] = count
