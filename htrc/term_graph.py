@@ -7,6 +7,32 @@ import shelve
 class TermGraph(nx.Graph):
 
 
+    @classmethod
+    def from_shelf(cls, path):
+
+        """
+        Hydrate an instance from a shelf file.
+
+        Args:
+            path (str)
+
+        Returns: cls
+        """
+
+        graph = cls()
+
+        with shelve.open(path) as data:
+            for key, count in data.items():
+
+                # Split the tokens.
+                t1, t2 = key.split(':')
+
+                # Register the edge.
+                graph.add_edge(t1, t2, weight=count)
+
+        return graph
+
+
     def __iadd__(self, other):
 
         """
