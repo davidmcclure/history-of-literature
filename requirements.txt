@@ -10,3 +10,4 @@ invoke
 anyconfig
 PyYAML
 stop-words
+numpy
