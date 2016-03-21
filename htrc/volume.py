@@ -121,8 +121,7 @@ class Volume:
         graph = TermGraph()
 
         for page in self.pages():
-            if page.has_token(token):
-                graph += page.graph(*args, **kwargs)
+            graph += page.token_graph(token, *args, **kwargs)
 
         return graph
 

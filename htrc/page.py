@@ -95,6 +95,32 @@ class Page:
         return graph
 
 
+    def token_graph(self, source, *args, **kwargs):
+
+        """
+        Assemble a "community" graph around a source token.
+
+        Args:
+            source (str)
+
+        Returns: TermGraph
+        """
+
+        graph = TermGraph()
+
+        counts = self.total_counts(*args, **kwargs)
+
+        # Return an empty graph if the source isn't present.
+        if source in counts:
+
+            c1 = counts.pop(source)
+
+            for target, c2 in counts.items():
+                graph.add_edge(source, target, weight=min(c1, c2))
+
+        return graph
+
+
     def has_token(self, token):
 
         """
