@@ -48,3 +48,18 @@ class TermGraph(nx.Graph):
             t1, t2 = sorted([t1, t2])
 
             yield (t1, t2, data['weight'])
+
+
+    def invert_weights(self):
+
+        """
+        Make edge weights reflect "cost" or "distance" - the more frequently
+        two words co-occur, the lower the weight.
+        """
+
+        weights = [
+            d['weight'] for t1, t2, d in
+            self.edges_iter(data=True)
+        ]
+
+        return weights

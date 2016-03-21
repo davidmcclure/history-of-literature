@@ -11,3 +11,5 @@ anyconfig
 PyYAML
 stop-words
 numpy
+scipy
+scikit-learn
