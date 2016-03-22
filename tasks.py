@@ -20,18 +20,12 @@ def test_pool():
 
     corpus = Corpus('data/basic')
 
-    t1 = dt.now()
-
     with Pool(processes=8) as pool:
 
         pool.starmap(
             write_graph,
             zip(corpus.paths(), repeat('literature'))
         )
-
-    t2 = dt.now()
-
-    print(t2-t1)
 
 
 def write_graph(vol_path, token):
