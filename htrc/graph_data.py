@@ -10,26 +10,40 @@ from htrc.volume import Volume
 from htrc.token_graph import TokenGraph
 
 
-def pool_write_volume_graph(data_path, token, procs=8):
+class GraphData:
 
-    """
-    Spawn graph writer procs.
 
-    Args:
-        data_path (str)
-        token (str)
-        procs (int)
-    """
+    def __init__(self, path):
 
-    corpus = Corpus.from_env()
+        """
+        Canonicalize the graph data path.
 
-    with Pool(procs) as pool:
+        Args:
+            path (str)
+        """
 
-        pool.starmap(write_volume_graph, zip(
-            corpus.paths(),
-            repeat(data_path),
-            repeat(token),
-        ))
+        self.path = os.path.abspath(path)
+
+
+    def write_volume_graphs(self, token, procs=8):
+
+        """
+        Spawn graph writer procs.
+
+        Args:
+            token (str)
+            procs (int)
+        """
+
+        corpus = Corpus.from_env()
+
+        with Pool(procs) as pool:
+
+            pool.starmap(write_volume_graph, zip(
+                corpus.paths(),
+                repeat(self.path),
+                repeat(token),
+            ))
 
 
 def write_volume_graph(vol_path, data_path, token):
