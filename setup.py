@@ -13,6 +13,5 @@ setup(
     author='David McClure',
     author_email='dclure@stanford.edu',
     packages=find_packages(),
-    scripts=['bin/htrc'],
 
 )
