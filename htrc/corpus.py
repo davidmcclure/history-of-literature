@@ -6,11 +6,24 @@ import shelve
 
 from clint.textui import progress
 
-from htrc.volume import Volume
+from htrc import config
 from htrc.token_graph import TokenGraph
+from htrc.volume import Volume
 
 
 class Corpus:
+
+
+    @classmethod
+    def from_env(cls):
+
+        """
+        Wrap the ENV-defined corpus root
+
+        Returns: cls
+        """
+
+        return cls(config['corpus'])
 
 
     def __init__(self, path):
