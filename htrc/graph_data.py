@@ -27,12 +27,12 @@ class GraphData:
 
 
     @property
-    def years_path(self):
+    def years_root(self):
         return os.path.join(self.path, 'years')
 
 
     @property
-    def merged_path(self):
+    def merged_root(self):
         return os.path.join(self.path, 'merged')
 
 
@@ -54,7 +54,7 @@ class GraphData:
             func = partial(
                 write_volume_graph,
                 token,
-                self.years_path,
+                self.years_root,
             )
 
             worker = pool.imap(func, corpus.paths())
