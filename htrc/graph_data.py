@@ -7,8 +7,8 @@ from itertools import repeat
 from functools import partial
 
 from htrc.corpus import Corpus
-from htrc.volume import Volume
 from htrc.token_graph import TokenGraph
+from htrc import graph_jobs as jobs
 
 
 class GraphData:
@@ -36,6 +36,18 @@ class GraphData:
         return os.path.join(self.path, 'merged')
 
 
+    def year_paths(self):
+
+        """
+        Generate year bucket paths.
+
+        Yields: str
+        """
+
+        for entry in os.scandir(self.years_root):
+            yield entry.path
+
+
     def write_volume_graphs(self, token, procs=8, logn=100):
 
         """
@@ -52,7 +64,7 @@ class GraphData:
 
             # Apply the token and base path.
             func = partial(
-                write_volume_graph,
+                jobs.write_volume_graph,
                 token,
                 self.years_root,
             )
@@ -63,52 +75,3 @@ class GraphData:
             for i, _ in enumerate(worker):
                 if i % logn == 0:
                     print(i)
-
-
-    def year_paths(self):
-
-        """
-        Generate year bucket paths.
-
-        Yields: str
-        """
-
-        for entry in os.scandir(self.years_root):
-            yield entry.path
-
-
-def write_volume_graph(token, out_path, vol_path):
-
-    """
-    Compute and serialize a volume graph.
-
-    Args:
-        token (str)
-        out_path (str)
-        vol_path (str)
-    """
-
-    vol = Volume(vol_path)
-
-    # Form the serialization path.
-    path = os.path.join(out_path, str(vol.year), vol.slug)
-    ensure_dir(path)
-
-    # Serialize the graph.
-    graph = vol.token_graph(token)
-    graph.shelve(path)
-
-
-def ensure_dir(path):
-
-    """
-    Ensure that a file path's directory exists.
-
-    Args:
-        path (str)
-    """
-
-    os.makedirs(
-        os.path.dirname(path),
-        exist_ok=True,
-    )
