@@ -1,19 +1,60 @@
 
 
-from invoke import task
+import os
 
-from htrc.models import Base
-from htrc import config
+from invoke import task
+from multiprocessing import Pool
+from itertools import repeat
+from datetime import datetime as dt
+
+from htrc.corpus import Corpus
+from htrc.volume import Volume
 
 
 @task
-def reset_db():
+def test_pool():
 
     """
-    Recreate all database tables.
+    Test multiprocessing.
     """
 
-    engine = config.make_engine()
+    corpus = Corpus('data/basic')
 
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    t1 = dt.now()
+
+    with Pool(processes=8) as pool:
+
+        pool.starmap(
+            write_graph,
+            zip(corpus.paths(), repeat('literature'))
+        )
+
+    t2 = dt.now()
+
+    print(t2-t1)
+
+
+def write_graph(vol_path, token):
+
+    """
+    Compute and store a community graph.
+
+    Args:
+        vol_path (str)
+        token (str)
+    """
+
+    vol = Volume(vol_path)
+
+    path = 'graphs/{0}/{1}'.format(vol.year, vol.slug)
+    dirname = os.path.dirname(path)
+
+    # Ensure directory.
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+    # Serialize the graph.
+    graph = vol.token_graph(token)
+    graph.shelve(path)
+
+    print(path)

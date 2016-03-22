@@ -39,6 +39,18 @@ class Volume:
 
 
     @property
+    def slug(self):
+
+        """
+        Get a filesystem-friendly version of the id.
+
+        Returns: str
+        """
+
+        return self.id.replace('/', '-')
+
+
+    @property
     def year(self):
 
         """
