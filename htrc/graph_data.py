@@ -26,7 +26,17 @@ class GraphData:
         self.path = os.path.abspath(path)
 
 
-    def write_volume_graphs(self, token, procs=8, logn=10):
+    @property
+    def years_path(self):
+        return os.path.join(self.path, 'years')
+
+
+    @property
+    def merged_path(self):
+        return os.path.join(self.path, 'merged')
+
+
+    def write_volume_graphs(self, token, procs=8, logn=100):
 
         """
         Spawn graph writer procs.
@@ -43,32 +53,33 @@ class GraphData:
             # Apply the token and base path.
             func = partial(
                 write_volume_graph,
-                token=token,
-                data_path=self.path,
+                token,
+                self.years_path,
             )
 
             worker = pool.imap(func, corpus.paths())
 
             # Log progress.
             for i, _ in enumerate(worker):
-                if i % logn == 0: print(i)
+                if i % logn == 0:
+                    print(i)
 
 
-def write_volume_graph(vol_path, data_path, token):
+def write_volume_graph(token, out_path, vol_path):
 
     """
     Compute and serialize a volume graph.
 
     Args:
-        vol_path (str)
-        data_path (str)
         token (str)
+        out_path (str)
+        vol_path (str)
     """
 
     vol = Volume(vol_path)
 
     # Form the serialization path.
-    path = os.path.join(data_path, str(vol.year), vol.slug)
+    path = os.path.join(out_path, str(vol.year), vol.slug)
     ensure_dir(path)
 
     # Serialize the graph.
