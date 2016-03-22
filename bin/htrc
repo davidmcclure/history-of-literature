@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from itertools import repeat
 
 from htrc.corpus import Corpus
-from htrc.volume import Volume
+from htrc.graph_data import write_vol_graph
 
 
 @click.group()
@@ -17,7 +17,7 @@ def htrc():
 
 
 @htrc.command()
-@click.argument('data_path', type=click.Path(exists=True))
+@click.argument('data_path', type=click.Path())
 @click.argument('token', type=str)
 @click.option('--procs', type=int, default=8)
 def index_graphs(data_path, token, procs):
@@ -30,39 +30,11 @@ def index_graphs(data_path, token, procs):
 
     with Pool(procs) as pool:
 
-        pool.starmap(_index_graph, zip(
+        pool.starmap(write_vol_graph, zip(
             corpus.paths(),
             repeat(data_path),
             repeat(token),
         ))
-
-
-def _index_graph(vol_path, data_path, token):
-
-    """
-    Compute and store a community graph.
-
-    Args:
-        vol_path (str)
-        data_path (str)
-        token (str)
-    """
-
-    vol = Volume(vol_path)
-
-    # Form the graph path.
-    path = os.path.join(data_path, str(vol.year), vol.slug)
-    dirname = os.path.dirname(path)
-
-    # Ensure directory.
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    # Shelve the graph.
-    graph = vol.token_graph(token)
-    graph.shelve(path)
-
-    click.echo(path)
 
 
 if __name__ == '__main__':
