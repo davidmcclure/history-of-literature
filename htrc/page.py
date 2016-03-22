@@ -5,10 +5,14 @@ import networkx as nx
 
 from itertools import combinations
 from collections import Counter
+from wordfreq import get_frequency_dict
 from stop_words import get_stop_words
-from wordfreq import word_frequency
 
 from htrc.term_graph import TermGraph
+
+
+# Cache word frequencies.
+FREQS = get_frequency_dict('en')
 
 
 class Page:
@@ -69,7 +73,7 @@ class Page:
                 continue
 
             # Ignore infrequent words.
-            if word_frequency(token, 'en') < min_freq:
+            if FREQS.get(token, 0) < min_freq:
                 continue
 
             counts[token] += sum(pc.values())
