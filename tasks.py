@@ -5,30 +5,34 @@ import os
 from invoke import task
 from multiprocessing import Pool
 from itertools import repeat
-from datetime import datetime as dt
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
 
 
 @task
-def test_pool():
+def index_graphs(data_path, token, procs=8):
 
     """
-    Test multiprocessing.
+    Index graphs by year.
+
+    Args:
+        data_path (str)
+        token (str)
     """
 
-    corpus = Corpus('data/basic')
+    corpus = Corpus.from_env()
 
-    with Pool(processes=8) as pool:
+    with Pool(procs) as pool:
 
-        pool.starmap(
-            write_graph,
-            zip(corpus.paths(), repeat('literature'))
-        )
+        pool.starmap(write_graph, zip(
+            corpus.paths(),
+            repeat(data_path),
+            repeat(token),
+        ))
 
 
-def write_graph(vol_path, token):
+def write_graph(vol_path, data_path, token):
 
     """
     Compute and store a community graph.
@@ -40,7 +44,8 @@ def write_graph(vol_path, token):
 
     vol = Volume(vol_path)
 
-    path = 'graphs/{0}/{1}'.format(vol.year, vol.slug)
+    # Form the graph path.
+    path = os.path.join(data_path, str(vol.year), vol.slug)
     dirname = os.path.dirname(path)
 
     # Ensure directory.
