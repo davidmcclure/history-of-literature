@@ -10,7 +10,7 @@ from htrc.volume import Volume
 from htrc.token_graph import TokenGraph
 
 
-def write_vol_graphs(data_path, token, procs=8):
+def pool_write_volume_graph(data_path, token, procs=8):
 
     """
     Spawn graph writer procs.
@@ -25,14 +25,14 @@ def write_vol_graphs(data_path, token, procs=8):
 
     with Pool(procs) as pool:
 
-        pool.starmap(_write_vol_graph, zip(
+        pool.starmap(write_volume_graph, zip(
             corpus.paths(),
             repeat(data_path),
             repeat(token),
         ))
 
 
-def _write_vol_graph(vol_path, data_path, token):
+def write_volume_graph(vol_path, data_path, token):
 
     """
     Compute and serialize a volume graph.
@@ -47,14 +47,25 @@ def _write_vol_graph(vol_path, data_path, token):
 
     # Form the serialization path.
     path = os.path.join(data_path, str(vol.year), vol.slug)
-    dirname = os.path.dirname(path)
-
-    # Ensure the directory.
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+    ensure_dir(path)
 
     # Serialize the graph.
     graph = vol.token_graph(token)
     graph.shelve(path)
 
     print(path) # TODO|dev
+
+
+def ensure_dir(path):
+
+    """
+    Ensure that a file path's directory exists.
+
+    Args:
+        path (str)
+    """
+
+    os.makedirs(
+        os.path.dirname(path),
+        exist_ok=True,
+    )
