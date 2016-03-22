@@ -7,9 +7,10 @@ from itertools import repeat
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
+from htrc.token_graph import TokenGraph
 
 
-def pool_graphs(data_path, token, procs=8):
+def write_vol_graphs(data_path, token, procs=8):
 
     """
     Spawn graph writer procs.
@@ -24,14 +25,14 @@ def pool_graphs(data_path, token, procs=8):
 
     with Pool(procs) as pool:
 
-        pool.starmap(write_vol_graph, zip(
+        pool.starmap(_write_vol_graph, zip(
             corpus.paths(),
             repeat(data_path),
             repeat(token),
         ))
 
 
-def write_vol_graph(vol_path, data_path, token):
+def _write_vol_graph(vol_path, data_path, token):
 
     """
     Compute and serialize a volume graph.
@@ -59,7 +60,25 @@ def write_vol_graph(vol_path, data_path, token):
     print(path) # TODO|dev
 
 
-def merge_year_graph(year, data_path):
+def merge_year_graphs(data_path, procs=8):
+
+    """
+    Merge together year graphs.
+
+    Args:
+        data_path (str)
+        procs (int)
+    """
+
+    with Pool(procs) as pool:
+
+        pool.starmap(_merge_year_graph, zip(
+            repeat(data_path),
+            range(0, 2000),
+        ))
+
+
+def _merge_year_graph(data_path, year):
 
     """
     Merge together the volume graphs for a given year.
@@ -69,4 +88,23 @@ def merge_year_graph(year, data_path):
         data_path (str)
     """
 
-    pass
+    vol_path = os.path.join(data_path, str(year))
+
+    if not os.path.exists(vol_path):
+        return
+
+    graph = TokenGraph()
+
+    # Add up the volume graphs.
+    for d in os.scandir(vol_path):
+        graph += TokenGraph.from_shelf(d.path)
+
+    # Form the serialization path.
+    year_path = os.path.join(data_path, 'merged', str(year))
+    dirname = os.path.dirname(year_path)
+
+    # Ensure the directory.
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+    graph.shelve(year_path)
