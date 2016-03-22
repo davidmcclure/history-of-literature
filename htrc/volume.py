@@ -6,7 +6,7 @@ import bz2
 from collections import defaultdict
 
 from htrc.page import Page
-from htrc.term_graph import TermGraph
+from htrc.token_graph import TokenGraph
 
 
 class Volume:
@@ -108,10 +108,10 @@ class Volume:
         """
         Assemble a co-occurrence graph for all pages.
 
-        Returns: TermGraph
+        Returns: TokenGraph
         """
 
-        graph = TermGraph()
+        graph = TokenGraph()
 
         for page in self.pages():
             graph += page.graph(*args, **kwargs)
@@ -127,10 +127,10 @@ class Volume:
         Args:
             token (str)
 
-        Returns: TermGraph
+        Returns: TokenGraph
         """
 
-        graph = TermGraph()
+        graph = TokenGraph()
 
         for page in self.pages():
             graph += page.token_graph(token, *args, **kwargs)

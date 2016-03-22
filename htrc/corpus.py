@@ -7,7 +7,7 @@ import shelve
 from clint.textui import progress
 
 from htrc.volume import Volume
-from htrc.term_graph import TermGraph
+from htrc.token_graph import TokenGraph
 
 
 class Corpus:

@@ -4,7 +4,7 @@ import networkx as nx
 import shelve
 
 
-class TermGraph(nx.Graph):
+class TokenGraph(nx.Graph):
 
 
     @classmethod

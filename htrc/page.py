@@ -8,7 +8,7 @@ from collections import Counter
 from wordfreq import get_frequency_dict
 from stop_words import get_stop_words
 
-from htrc.term_graph import TermGraph
+from htrc.token_graph import TokenGraph
 
 
 # Cache word frequencies.
@@ -86,10 +86,10 @@ class Page:
         """
         Assemble the page-level co-occurrence graph for all tokens.
 
-        Returns: TermGraph
+        Returns: TokenGraph
         """
 
-        graph = TermGraph()
+        graph = TokenGraph()
 
         counts = self.total_counts(*args, **kwargs)
 
@@ -107,10 +107,10 @@ class Page:
         Args:
             source (str)
 
-        Returns: TermGraph
+        Returns: TokenGraph
         """
 
-        graph = TermGraph()
+        graph = TokenGraph()
 
         counts = self.total_counts(*args, **kwargs)
 
