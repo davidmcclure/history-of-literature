@@ -65,6 +65,18 @@ class GraphData:
                     print(i)
 
 
+    def year_paths(self):
+
+        """
+        Generate year bucket paths.
+
+        Yields: str
+        """
+
+        for entry in os.scandir(self.years_root):
+            yield entry.path
+
+
 def write_volume_graph(token, out_path, vol_path):
 
     """
