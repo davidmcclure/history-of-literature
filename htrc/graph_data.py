@@ -14,7 +14,7 @@ from htrc import graph_jobs as jobs
 class GraphData:
 
 
-    def __init__(self, path):
+    def __init__(self, path, procs=8):
 
         """
         Canonicalize the graph data path.
@@ -24,6 +24,8 @@ class GraphData:
         """
 
         self.path = os.path.abspath(path)
+
+        self.procs = procs
 
 
     @property
@@ -48,7 +50,7 @@ class GraphData:
             yield entry.path
 
 
-    def write_volume_graphs(self, token, procs=8, logn=100):
+    def write_volume_graphs(self, token, logn=100):
 
         """
         Spawn graph writer procs.
@@ -60,7 +62,7 @@ class GraphData:
 
         corpus = Corpus.from_env()
 
-        with Pool(procs) as pool:
+        with Pool(self.procs) as pool:
 
             # Apply the token and base path.
             func = partial(
@@ -75,3 +77,20 @@ class GraphData:
             for i, _ in enumerate(worker):
                 if i % logn == 0:
                     print(i)
+
+
+    def merge_year_graphs(self):
+
+        """
+        Spawn year merge procs.
+        """
+
+        with Pool(self.procs) as pool:
+
+            # Apply the base path.
+            func = partial(
+                jobs.merge_year_graph,
+                self.merged_root,
+            )
+
+            pool.map(func, self.year_paths())
