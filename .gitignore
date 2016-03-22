@@ -13,4 +13,5 @@
 /.cache
 /.env
 
+/corpus
 /data

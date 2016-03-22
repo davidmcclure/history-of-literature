@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 
 
 import os
+import click
 
-from invoke import task
 from multiprocessing import Pool
 from itertools import repeat
 
@@ -10,35 +11,40 @@ from htrc.corpus import Corpus
 from htrc.volume import Volume
 
 
-@task
-def index_graphs(data_path, token, procs=8):
+@click.group()
+def htrc():
+    pass
+
+
+@htrc.command()
+@click.argument('data_path', type=click.Path(exists=True))
+@click.argument('token', type=str)
+@click.option('--procs', type=int, default=8)
+def index_graphs(data_path, token, procs):
 
     """
     Index graphs by year.
-
-    Args:
-        data_path (str)
-        token (str)
     """
 
     corpus = Corpus.from_env()
 
     with Pool(procs) as pool:
 
-        pool.starmap(write_graph, zip(
+        pool.starmap(_index_graph, zip(
             corpus.paths(),
             repeat(data_path),
             repeat(token),
         ))
 
 
-def write_graph(vol_path, data_path, token):
+def _index_graph(vol_path, data_path, token):
 
     """
     Compute and store a community graph.
 
     Args:
         vol_path (str)
+        data_path (str)
         token (str)
     """
 
@@ -52,8 +58,12 @@ def write_graph(vol_path, data_path, token):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    # Serialize the graph.
+    # Shelve the graph.
     graph = vol.token_graph(token)
     graph.shelve(path)
 
-    print(path)
+    click.echo(path)
+
+
+if __name__ == '__main__':
+    htrc()
