@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 from collections import OrderedDict
-from cached_property import cached_property
+from functools import lru_cache
 
 from htrc.token_graph import TokenGraph
 from htrc.utils import sort_dict_by_key
@@ -25,6 +25,7 @@ class YearGraphs:
         self.path = os.path.abspath(path)
 
 
+    @lru_cache()
     def years(self):
 
         """
@@ -58,6 +59,7 @@ class YearGraphs:
         return TokenGraph.from_shelf(path)
 
 
+    @lru_cache()
     def all_tokens(self):
 
         """
@@ -76,6 +78,7 @@ class YearGraphs:
         return tokens
 
 
+    @lru_cache()
     def baseline_time_series(self):
 
         """
