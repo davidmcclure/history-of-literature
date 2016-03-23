@@ -20,10 +20,10 @@ def ensure_dir(path):
     )
 
 
-def sort_dict(d, desc=True):
+def sort_dict_by_key(d, desc=False):
 
     """
-    Sort an ordered dictionary by value, descending.
+    Sort an ordered dictionary by key.
 
     Args:
         d (OrderedDict): An ordered dictionary.
@@ -33,5 +33,5 @@ def sort_dict(d, desc=True):
         OrderedDict: The sorted dictionary.
     """
 
-    sort = sorted(d.items(), key=lambda x: x[1], reverse=desc)
+    sort = sorted(d.items(), key=lambda x: x[0], reverse=desc)
     return OrderedDict(sort)

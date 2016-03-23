@@ -6,7 +6,7 @@ from collections import OrderedDict
 from cached_property import cached_property
 
 from htrc.token_graph import TokenGraph
-from htrc.utils import sort_dict
+from htrc.utils import sort_dict_by_key
 
 
 class YearGraphs:
@@ -22,6 +22,23 @@ class YearGraphs:
         """
 
         self.path = os.path.abspath(path)
+
+
+    def year_paths(self):
+
+        """
+        Generate tuples that link a year with a graph path.
+
+        Yields: (year<int>, path<str>)
+        """
+
+        paths = OrderedDict()
+
+        for entry in os.scandir(self.path):
+            year = os.path.basename(entry.path)
+            paths[int(year)] = entry.path
+
+        return sort_dict_by_key(paths)
 
 
     def graph_by_year(self, year):
