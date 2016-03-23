@@ -171,3 +171,27 @@ class YearGraphs:
 
         plt.plot(*zip(*data))
         plt.show()
+
+
+    def plot_scaled_correlation(self, token):
+
+        """
+        Plot a scaled token series against the baseline.
+        """
+
+        baseline = self.baseline_time_series()
+        token = self.token_time_series(token)
+
+        factor = (
+            np.sum(baseline[:,1]) /
+            np.sum(token[:,1])
+        )
+
+        bx = baseline[:,0]
+        by = baseline[:,1]
+
+        tx = token[:,0]
+        ty = token[:,1] * factor
+
+        plt.plot(bx, by, tx, ty)
+        plt.show()
