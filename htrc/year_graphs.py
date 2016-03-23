@@ -13,7 +13,7 @@ from htrc.utils import sort_dict_by_key
 class YearGraphs:
 
 
-    def __init__(self, path):
+    def __init__(self, path, source):
 
         """
         Canonicalize the root path.
@@ -23,6 +23,8 @@ class YearGraphs:
         """
 
         self.path = os.path.abspath(path)
+
+        self.source = source
 
 
     @lru_cache()
@@ -102,6 +104,30 @@ class YearGraphs:
         return data
 
 
+    @lru_cache()
+    def token_time_series(self, token):
+
+        """
+        Get the total per-year time series for an individual token.
+
+        Returns: list of (year, value)
+        """
+
+        data = []
+
+        for year in self.years():
+
+            graph = self.graph_by_year(year)
+
+            value = 0
+            if graph.has_edge(self.source, token):
+                value = graph[self.source][token]['weight']
+
+            data.append((year, value))
+
+        return data
+
+
     def plot_baseline_time_series(self):
 
         """
@@ -109,6 +135,18 @@ class YearGraphs:
         """
 
         data = self.baseline_time_series()
+
+        plt.plot(*zip(*data))
+        plt.show()
+
+
+    def plot_token_time_series(self, token):
+
+        """
+        Plot the time series for a token.
+        """
+
+        data = self.token_time_series(token)
 
         plt.plot(*zip(*data))
         plt.show()
