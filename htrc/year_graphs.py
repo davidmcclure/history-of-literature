@@ -39,7 +39,7 @@ class YearGraphs:
         return TokenGraph.from_shelf(path)
 
 
-    def top_neighbors_by_year(self, year, source):
+    def neighbors_by_year(self, year, source):
 
         """
         For a given year, get an ordered dict of siblings.
