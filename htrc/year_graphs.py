@@ -40,7 +40,6 @@ class YearGraphs:
         return TokenGraph.from_shelf(path)
 
 
-    @cached_property
     def all_tokens(self):
 
         """
