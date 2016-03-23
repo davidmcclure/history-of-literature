@@ -14,4 +14,5 @@ cached_property
 numpy
 scipy
 scikit-learn
+matplotlib
 click

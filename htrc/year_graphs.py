@@ -1,7 +1,7 @@
 
 
 import os
-import numpy as np
+import matplotlib.pyplot as plt
 
 from collections import OrderedDict
 from functools import lru_cache
@@ -97,6 +97,18 @@ class YearGraphs:
             for t1, t2, d in graph.edges(data=True):
                 total += d['weight']
 
-            data.append(total)
+            data.append((year, total))
 
         return data
+
+
+    def plot_baseline_time_series(self):
+
+        """
+        Plot the baseline time series.
+        """
+
+        data = self.baseline_time_series()
+
+        plt.plot(*zip(*data))
+        plt.show()
