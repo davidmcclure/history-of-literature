@@ -2,9 +2,10 @@
 
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
-from collections import OrderedDict
 from functools import lru_cache
+from scipy import stats
 
 from htrc.token_graph import TokenGraph
 from htrc.utils import sort_dict_by_key
@@ -45,6 +46,7 @@ class YearGraphs:
         return sorted(years)
 
 
+    @lru_cache()
     def graph_by_year(self, year):
 
         """
@@ -101,7 +103,7 @@ class YearGraphs:
 
             data.append((year, total))
 
-        return data
+        return np.array(data)
 
 
     @lru_cache()
@@ -125,7 +127,26 @@ class YearGraphs:
 
             data.append((year, value))
 
-        return data
+        return np.array(data)
+
+
+    @lru_cache()
+    def pearson_correlation(self, token):
+
+        """
+        Compute the Pearson correlation coefficient between the time series
+        data for an individual token and the all-tokens baseline.
+
+        Args:
+            token (str)
+
+        Returns: float
+        """
+
+        ts1 = self.baseline_time_series()
+        ts2 = self.token_time_series(token)
+
+        return stats.pearsonr(ts1[:,1], ts2[:,1])
 
 
     def plot_baseline_time_series(self):
