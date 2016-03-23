@@ -99,10 +99,10 @@ class Page:
         return graph
 
 
-    def token_graph(self, source, *args, **kwargs):
+    def spoke_graph(self, source, *args, **kwargs):
 
         """
-        Assemble a "community" graph around a source token.
+        Assemble a "spoke" graph around a source token.
 
         Args:
             source (str)

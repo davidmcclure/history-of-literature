@@ -119,7 +119,7 @@ class Volume:
         return graph
 
 
-    def token_graph(self, token, *args, **kwargs):
+    def spoke_graph(self, token, *args, **kwargs):
 
         """
         Assemble a graph for all pages that contain a given term.
@@ -133,7 +133,7 @@ class Volume:
         graph = TokenGraph()
 
         for page in self.pages():
-            graph += page.token_graph(token, *args, **kwargs)
+            graph += page.spoke_graph(token, *args, **kwargs)
 
         return graph
 

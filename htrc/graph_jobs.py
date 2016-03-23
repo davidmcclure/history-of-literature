@@ -25,7 +25,7 @@ def write_volume_graph(token, out_path, vol_path):
     ensure_dir(path)
 
     # Serialize the graph.
-    graph = vol.token_graph(token)
+    graph = vol.spoke_graph(token)
     graph.shelve(path)
 
 
