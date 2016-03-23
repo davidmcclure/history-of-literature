@@ -1,6 +1,7 @@
 
 
 import os
+import numpy as np
 
 from collections import OrderedDict
 from cached_property import cached_property
@@ -24,21 +25,21 @@ class YearGraphs:
         self.path = os.path.abspath(path)
 
 
-    def year_paths(self):
+    def years(self):
 
         """
-        Generate tuples that link a year with a graph path.
+        Generate years in the corpus
 
-        Yields: (year<int>, path<str>)
+        Yields: int
         """
 
-        paths = OrderedDict()
+        years = []
 
         for entry in os.scandir(self.path):
             year = os.path.basename(entry.path)
-            paths[int(year)] = entry.path
+            years.append(int(year))
 
-        return sort_dict_by_key(paths)
+        return sorted(years)
 
 
     def graph_by_year(self, year):
@@ -73,3 +74,26 @@ class YearGraphs:
             tokens.update(graph.nodes())
 
         return tokens
+
+
+    def baseline_time_series(self):
+
+        """
+        Get the total per-year time series for all token weights.
+
+        Returns: list of (year, value)
+        """
+
+        data = []
+
+        for year in self.years():
+
+            graph = self.graph_by_year(year)
+
+            total = 0
+            for t1, t2, d in graph.edges(data=True):
+                total += d['weight']
+
+            data.append(total)
+
+        return data
