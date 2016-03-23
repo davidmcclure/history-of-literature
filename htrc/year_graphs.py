@@ -195,3 +195,26 @@ class YearGraphs:
 
         plt.plot(bx, by, tx, ty)
         plt.show()
+
+
+    def plot_token_baseline_ratio(self, token):
+
+        """
+        Plot the ratio of a token series against the baseline.
+        """
+
+        baseline = self.baseline_time_series()
+        token = self.token_time_series(token)
+
+        factor = (
+            np.sum(baseline[:,1]) /
+            np.sum(token[:,1])
+        )
+
+        ratios = []
+        for t, b in zip(token[:,1], baseline[:,1]):
+            value = ((t*factor) / b) if b > 0 else 0
+            ratios.append(value)
+
+        plt.plot(self.years(), ratios)
+        plt.show()
