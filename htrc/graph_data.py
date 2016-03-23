@@ -3,7 +3,6 @@
 import os
 
 from multiprocessing import Pool
-from itertools import repeat
 from functools import partial
 
 from htrc.corpus import Corpus
