@@ -59,3 +59,21 @@ class YearGraphs:
             counts[target] = graph[source][target]['weight']
 
         return sort_dict(counts)
+
+
+    def all_tokens(self):
+
+        """
+        Get a set of all tokens in the graphs.
+
+        Returns: set
+        """
+
+        tokens = set()
+
+        for entry in os.scandir(self.path):
+
+            graph = TokenGraph.from_shelf(entry.path)
+            tokens.update(graph.nodes())
+
+        return tokens
