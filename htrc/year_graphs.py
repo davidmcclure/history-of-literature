@@ -3,6 +3,7 @@
 import os
 
 from collections import OrderedDict
+from cached_property import cached_property
 
 from htrc.token_graph import TokenGraph
 from htrc.utils import sort_dict
@@ -39,28 +40,7 @@ class YearGraphs:
         return TokenGraph.from_shelf(path)
 
 
-    def neighbors_by_year(self, year, source):
-
-        """
-        For a given year, get an ordered dict of siblings.
-
-        Args:
-            year (int)
-            source (str)
-
-        Returns: OrderedDict
-        """
-
-        graph = self.graph_by_year(year)
-
-        counts = OrderedDict()
-
-        for target in graph.neighbors(source):
-            counts[target] = graph[source][target]['weight']
-
-        return sort_dict(counts)
-
-
+    @cached_property
     def all_tokens(self):
 
         """
