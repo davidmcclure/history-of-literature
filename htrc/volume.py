@@ -122,7 +122,7 @@ class Volume:
     def spoke_graph(self, token, *args, **kwargs):
 
         """
-        Assemble a graph for all pages that contain a given term.
+        Assemble a spoke graph around a given term.
 
         Args:
             token (str)
