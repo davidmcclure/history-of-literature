@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 func walkVolume(path string, info os.FileInfo, err error) error {
@@ -19,7 +18,7 @@ func walkVolume(path string, info os.FileInfo, err error) error {
 			return err
 		}
 
-		fmt.Println(vol.Language())
+		fmt.Println(vol.TokenCount())
 
 	}
 
@@ -53,26 +52,6 @@ func openVolume(path string) (v *Volume, err error) {
 	}
 
 	return &Volume{json: parsed}, nil
-
-}
-
-// Map (token1, token2) pairs to weights.
-type EdgeList struct {
-	weights map[[2]string]int
-}
-
-// Add N units of weight to the edge between two tokens.
-func (e *EdgeList) AddWeight(token1 string, token2 string, weight int) {
-
-	// Sort the tokens.
-	tokens := []string{token1, token2}
-	sort.Strings(tokens)
-
-	// Flatten the slice into an array.
-	var key [2]string
-	copy(key[:], tokens[:2])
-
-	e.weights[key] += weight
 
 }
 
