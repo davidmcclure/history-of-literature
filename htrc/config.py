@@ -3,9 +3,6 @@
 import os
 import anyconfig
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 
 class Config:
 
@@ -59,27 +56,3 @@ class Config:
         """
 
         self.config = anyconfig.load(self.paths, ignore_missing=True)
-
-        self.Session = self.make_session()
-
-
-    def make_engine(self):
-
-        """
-        Build a SQLAlchemy engine.
-
-        Returns: Engine
-        """
-
-        return create_engine(self['database'])
-
-
-    def make_session(self):
-
-        """
-        Build a SQLAlchemy session class.
-
-        Returns: Session
-        """
-
-        return sessionmaker(bind=self.make_engine())

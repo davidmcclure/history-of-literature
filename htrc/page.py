@@ -8,8 +8,6 @@ from collections import Counter
 from wordfreq import get_frequency_dict
 from stop_words import get_stop_words
 
-from htrc.token_graph import TokenGraph
-
 
 # Cache word frequencies.
 FREQS = get_frequency_dict('en')
@@ -79,47 +77,3 @@ class Page:
             counts[token] += sum(pc.values())
 
         return counts
-
-
-    def graph(self, *args, **kwargs):
-
-        """
-        Assemble the page-level co-occurrence graph for all tokens.
-
-        Returns: TokenGraph
-        """
-
-        graph = TokenGraph()
-
-        counts = self.total_counts(*args, **kwargs)
-
-        for (t1, c1), (t2, c2) in combinations(counts.items(), 2):
-            graph.add_edge(t1, t2, weight=min(c1, c2))
-
-        return graph
-
-
-    def spoke_graph(self, source, *args, **kwargs):
-
-        """
-        Assemble a "spoke" graph around a source token.
-
-        Args:
-            source (str)
-
-        Returns: TokenGraph
-        """
-
-        graph = TokenGraph()
-
-        counts = self.total_counts(*args, **kwargs)
-
-        # Return an empty graph if the source isn't present.
-        if source in counts:
-
-            c1 = counts.pop(source)
-
-            for target, c2 in counts.items():
-                graph.add_edge(source, target, weight=min(c1, c2))
-
-        return graph

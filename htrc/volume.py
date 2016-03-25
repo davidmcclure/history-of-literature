@@ -6,7 +6,6 @@ import bz2
 from collections import defaultdict
 
 from htrc.page import Page
-from htrc.token_graph import TokenGraph
 
 
 class Volume:
@@ -101,41 +100,6 @@ class Volume:
 
         for json in self.json['features']['pages']:
             yield Page(json)
-
-
-    def graph(self, *args, **kwargs):
-
-        """
-        Assemble a co-occurrence graph for all pages.
-
-        Returns: TokenGraph
-        """
-
-        graph = TokenGraph()
-
-        for page in self.pages():
-            graph += page.graph(*args, **kwargs)
-
-        return graph
-
-
-    def spoke_graph(self, token, *args, **kwargs):
-
-        """
-        Assemble a spoke graph around a given term.
-
-        Args:
-            token (str)
-
-        Returns: TokenGraph
-        """
-
-        graph = TokenGraph()
-
-        for page in self.pages():
-            graph += page.spoke_graph(token, *args, **kwargs)
-
-        return graph
 
 
     def token_offsets(self, *args, **kwargs):

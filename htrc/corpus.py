@@ -7,7 +7,6 @@ import shelve
 from clint.textui import progress
 
 from htrc import config
-from htrc.token_graph import TokenGraph
 from htrc.volume import Volume
 
 
