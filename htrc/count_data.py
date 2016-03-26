@@ -67,38 +67,14 @@ class CountData:
 
         corpus = Corpus.from_env()
 
-        with Pool(8) as pool:
+        for i, volume in enumerate(corpus.volumes()):
 
-            func = partial(index_volume, self.path)
+            for token, count in volume.total_counts().items():
 
-            worker = pool.imap(func, corpus.paths())
+                self.incr_token_count_for_year(
+                    token,
+                    volume.year,
+                    count,
+                )
 
-            for i, _ in enumerate(worker):
-                print(i)
-
-
-
-def index_volume(data_path, vol_path):
-
-    """
-    Index counts from a volume
-
-    Args:
-        data_path (str)
-        vol_path (str)
-    """
-
-    rlite = Rlite(data_path)
-
-    volume = Volume(vol_path)
-
-    for token, count in volume.total_counts().items():
-
-        rlite.command(
-            'hincrby',
-            str(volume.year),
-            token,
-            str(count),
-        )
-
-    print(volume.id)
+            print(i)
