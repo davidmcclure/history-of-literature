@@ -5,6 +5,7 @@
 *.dat
 *.log
 *.gml
+*.rld
 
 /env
 /build

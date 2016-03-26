@@ -1,9 +1,15 @@
 
 
+import os
+
 from hirlite import Rlite
+from multiprocessing import Pool
+from functools import partial
 from collections import Counter
 
 from htrc.corpus import Corpus
+from htrc.volume import Volume
+
 
 
 class CountData:
@@ -18,24 +24,26 @@ class CountData:
             path (str)
         """
 
-        self.rlite = Rlite(path)
+        self.path = os.path.abspath(path)
+
+        self.rlite = Rlite(self.path)
 
 
-    def incr_token_count_for_year(self, year, token, count):
+    def incr_token_count_for_year(self, token, year, count):
 
         """
         Increment the count for a token in a year by a given amount.
 
         Args:
-            year (int)
             token (str)
+            year (int)
             count (int)
         """
 
         self.rlite.command('hincrby', str(year), token, str(count))
 
 
-    def token_count_for_year(self, year, token):
+    def token_count_for_year(self, token, year):
 
         """
         Get the total count for a token in a year.
@@ -54,24 +62,43 @@ class CountData:
     def index(self):
 
         """
-        Index token counts.
+        Index per-year token counts.
         """
 
         corpus = Corpus.from_env()
 
-        for volume in corpus.volumes():
+        with Pool(8) as pool:
 
-            counts = Counter()
+            func = partial(index_volume, self.path)
 
-            for page in volume.pages():
-                counts += page.total_counts()
+            worker = pool.imap(func, corpus.paths())
 
-            for token, count in counts.items():
+            for i, _ in enumerate(worker):
+                print(i)
 
-                self.incr_token_count_for_year(
-                    volume.year,
-                    token,
-                    count,
-                )
 
-            print(volume.id)
+
+def index_volume(data_path, vol_path):
+
+    """
+    Index counts from a volume
+
+    Args:
+        data_path (str)
+        vol_path (str)
+    """
+
+    rlite = Rlite(data_path)
+
+    volume = Volume(vol_path)
+
+    for token, count in volume.total_counts().items():
+
+        rlite.command(
+            'hincrby',
+            str(volume.year),
+            token,
+            str(count),
+        )
+
+    print(volume.id)

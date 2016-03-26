@@ -3,7 +3,7 @@
 import json
 import bz2
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from htrc.page import Page
 
@@ -100,6 +100,25 @@ class Volume:
 
         for json in self.json['features']['pages']:
             yield Page(json)
+
+
+    def total_counts(self, *args, **kwargs):
+
+        """
+        Count the total count of each token in all pages.
+
+        Args:
+            min_freq (float): Ignore words below this frequency.
+
+        Returns: Counter
+        """
+
+        counts = Counter()
+
+        for page in self.pages():
+            counts += page.total_counts(*args, **kwargs)
+
+        return counts
 
 
     def token_offsets(self, *args, **kwargs):
