@@ -1,7 +1,6 @@
 
 
-import os
-
+from invoke import task
 from multiprocessing import Pool
 from functools import partial
 
@@ -25,10 +24,18 @@ def merge_volume_counts(path):
     return vol.total_counts()
 
 
+@task
 def index_counts():
 
     """
-    TODO|dev
+    Index counts.
     """
 
     corpus = Corpus.from_env()
+
+    with Pool(8) as pool:
+
+        jobs = pool.imap(merge_volume_counts, corpus.paths())
+
+        for i, counts in enumerate(jobs):
+            print(len(counts))
