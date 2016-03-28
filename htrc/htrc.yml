@@ -1,3 +1,5 @@
 ---
 
+database: postgresql://localhost/htrc
+
 corpus: XXX
