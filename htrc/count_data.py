@@ -88,20 +88,3 @@ class CountData:
             for i, (year, counts) in enumerate(jobs):
                 self.update_year(year, counts)
                 print(i)
-
-
-
-def get_vol_counts(path):
-
-    """
-    Extract filtered token counts from a volume.
-
-    Args:
-        path (str): A HTRC volume path.
-
-    Returns: dict
-    """
-
-    vol = Volume(path)
-
-    return (vol.year, vol.total_counts())
