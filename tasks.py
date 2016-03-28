@@ -1,5 +1,7 @@
 
 
+import shelve
+
 from invoke import task
 from multiprocessing import Pool
 from functools import partial
@@ -33,9 +35,21 @@ def index_counts():
 
     corpus = Corpus.from_env()
 
+    data = shelve.open('counts.db')
+
     with Pool(8) as pool:
 
         jobs = pool.imap(merge_volume_counts, corpus.paths())
 
         for i, counts in enumerate(jobs):
-            print(len(counts))
+
+            # Update the data file.
+            for token, count in counts.items():
+
+                if token in data:
+                    data[token] += count
+
+                else:
+                    data[token] = count
+
+            print(i)
