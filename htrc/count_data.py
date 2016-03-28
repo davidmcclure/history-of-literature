@@ -8,6 +8,7 @@ from contextlib import contextmanager
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
+from htrc.utils import ensure_dir
 
 
 
@@ -25,9 +26,7 @@ class CountData:
 
         self.path = os.path.abspath(path)
 
-        # Ensure the directory exists.
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        ensure_dir(self.path)
 
 
     @contextmanager
