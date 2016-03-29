@@ -3,10 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from redis import StrictRedis
 from multiprocessing import Pool
-from collections import Counter
-from cached_property import cached_property
+from collections import Counter, defaultdict
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -15,18 +13,6 @@ from htrc.volume import Volume
 
 
 class CountData:
-
-
-    @classmethod
-    def from_env(cls):
-
-        """
-        Use the ENV-defined Redis database.
-
-        Returns: cls
-        """
-
-        return cls(config['redis']['count_db'])
 
 
     def __init__(self, counts=None):
@@ -39,7 +25,7 @@ class CountData:
         """
 
         if not counts:
-            counts = Counter()
+            counts = defaultdict(Counter)
 
         self.counts = counts
 
@@ -65,12 +51,11 @@ class CountData:
 
             for i, (year, counts) in enumerate(jobs):
 
-                # Update the count.
+                # Update the counter.
                 for token, count in counts.items():
-                    self.counts[(token, year)] += count
+                    self.counts[year][token] += count
 
-                if i % 1000 == 0:
-                    print(i)
+                print(i)
 
 
     def years(self):
@@ -81,24 +66,7 @@ class CountData:
         Returns: list
         """
 
-        years = list(self.redis.scan_iter())
-
-        return sorted(map(int, years))
-
-
-    def token_count_for_year(self, token, year):
-
-        """
-        Get the total count for a token in a year.
-
-        Args:
-            year (int)
-            token (str)
-        """
-
-        count = self.redis.hmget(str(year), token)
-
-        return int(count[0]) if count[0] else 0
+        return sorted(self.counts.keys())
 
 
     def baseline_count_for_year(self, year):
@@ -110,9 +78,7 @@ class CountData:
             year (int)
         """
 
-        counts = self.redis.hvals(str(year))
-
-        return sum(map(int, counts))
+        return sum(self.counts[year].values())
 
 
     def token_time_series(self, token):
@@ -129,7 +95,7 @@ class CountData:
         counts = []
 
         for year in self.years():
-            count = self.token_count_for_year(token, year)
+            count = self.counts[year][token]
             counts.append((year, count))
 
         return counts
