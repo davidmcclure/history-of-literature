@@ -20,9 +20,9 @@ class Count(Base):
 
     id = Column(Integer, primary_key=True)
 
-    token = Column(String, nullable=False, index=True)
+    token = Column(String, nullable=False)
 
-    year = Column(Integer, nullable=False, index=True)
+    year = Column(Integer, nullable=False)
 
     count = Column(Integer, nullable=False)
 
@@ -74,33 +74,27 @@ class Count(Base):
 
         session = config.Session()
 
+        rows = []
         for (token, year), count in cache.items():
 
-            # Try to update an existing edge.
+            rows.append(cls(
+                token=token,
+                year=year,
+                count=count,
+            ))
 
-            updated = (
-                session.query(cls)
-                .filter_by(token=token, year=year)
-                .update(dict(count = cls.count + count))
-            )
-
-            # If no rows updated, initialize the edge.
-
-            if updated == 0:
-                row = cls(token=token, year=year, count=count)
-                session.add(row)
-
+        session.bulk_save_objects(rows)
         session.commit()
 
 
 
 # Unique index on the token-year pair.
-Index(
-    'ix_count_token_year',
-    Count.token,
-    Count.year,
-    unique=True,
-)
+# Index(
+    # 'ix_count_token_year',
+    # Count.token,
+    # Count.year,
+    # unique=True,
+# )
 
 
 
