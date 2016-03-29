@@ -4,11 +4,14 @@ import (
 	"compress/bzip2"
 	"github.com/bitly/go-simplejson"
 	"github.com/jawher/mow.cli"
+	"github.com/stretchr/powerwalk"
 	"os"
-	"path/filepath"
+	"runtime"
 )
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	app := cli.App("hol", "The history of literature.")
 
@@ -35,7 +38,7 @@ func main() {
 }
 
 func extractCounts(path string) {
-	filepath.Walk(path, walkVolume)
+	powerwalk.Walk(path, walkVolume)
 }
 
 func walkVolume(path string, info os.FileInfo, _ error) error {
