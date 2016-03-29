@@ -1,4 +1,4 @@
 
-# htrc-dev
+# History of "literature"
 
-(Experimental) Python bindings onto the HTRC extracted features corpus.
+What can be said about the history of the word "literature"?
