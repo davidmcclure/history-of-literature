@@ -1,5 +1,6 @@
 
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from redis import StrictRedis
@@ -172,22 +173,25 @@ class CountData:
         return counts
 
 
-    def plot_token_time_series(self, token):
+    def plot_token_time_series(self, token, y1=1700, y2=1920):
 
         """
         Plot a token time series.
 
         Args:
             token (str)
+            y1 (int)
+            y2 (int)
         """
 
         data = self.token_time_series(token)
 
+        plt.xlim(y1, y2)
         plt.plot(*zip(*data))
         plt.show()
 
 
-    def plot_baseline_time_series(self, y1=1700, y2=2000):
+    def plot_baseline_time_series(self, y1=1700, y2=1920):
 
         """
         Plot the baseline time series.
@@ -201,6 +205,27 @@ class CountData:
 
         plt.xlim(y1, y2)
         plt.plot(*zip(*data))
+        plt.show()
+
+
+    def plot_volume_scaled_token_time_series(self, token, y1=1700, y2=1920):
+
+        """
+        Plot a token time series, as a ratio of the baseline.
+
+        Args:
+            y1 (int)
+            y2 (int)
+        """
+
+        total = np.array(self.baseline_time_series())
+        token = np.array(self.token_time_series(token))
+
+        xs = token[:,0]
+        ys = token[:,1] / total[:,1]
+
+        plt.xlim(y1, y2)
+        plt.plot(xs, ys)
         plt.show()
 
 
