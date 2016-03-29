@@ -53,9 +53,14 @@ class CountData:
         with Pool(num_procs) as pool:
 
             # Spool a job for each volume.
-            jobs = pool.imap(get_vol_counts, corpus.paths())
+            jobs = pool.imap_unordered(
+                get_vol_counts,
+                corpus.paths(),
+            )
 
             for i, (year, counts) in enumerate(jobs):
+
+                print('update cache')
 
                 # Update the cache.
                 for token, count in counts.items():
@@ -99,6 +104,8 @@ def get_vol_counts(path):
 
     Returns: dict
     """
+
+    print('reading vol')
 
     vol = Volume(path)
 
