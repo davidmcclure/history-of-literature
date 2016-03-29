@@ -20,9 +20,8 @@ class Volume:
             path (str)
         """
 
-        fh = bz2.open(path, 'rt')
-
-        self.json = json.loads(fh.read())
+        with bz2.open(path, 'rt') as fh:
+            self.json = json.loads(fh.read())
 
 
     @property
