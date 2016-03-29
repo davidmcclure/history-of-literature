@@ -37,21 +37,6 @@ class CountData:
         self.redis = StrictRedis(db=db)
 
 
-    def token_count_for_year(self, token, year):
-
-        """
-        Get the total count for a token in a year.
-
-        Args:
-            year (int)
-            token (str)
-        """
-
-        count = self.redis.hmget(str(year), token)
-
-        return int(count[0])
-
-
     def index(self, num_procs=8, cache_len=5000):
 
         """
@@ -103,6 +88,35 @@ class CountData:
             pipe.hincrby(str(year), token, str(count))
 
         pipe.execute()
+
+
+    @property
+    def years(self):
+
+        """
+        Get a sorted list of all years represented in the index.
+
+        Returns: list
+        """
+
+        years = list(self.redis.scan_iter())
+
+        return sorted(map(int, years))
+
+
+    def token_count_for_year(self, token, year):
+
+        """
+        Get the total count for a token in a year.
+
+        Args:
+            year (int)
+            token (str)
+        """
+
+        count = self.redis.hmget(str(year), token)
+
+        return int(count[0])
 
 
 
