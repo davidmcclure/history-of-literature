@@ -1,11 +1,7 @@
 
 
-import os
-
-from hirlite import Rlite
 from redis import StrictRedis
 from multiprocessing import Pool
-from functools import partial
 from collections import Counter
 
 from htrc.corpus import Corpus
@@ -25,20 +21,6 @@ class CountData:
         self.redis = StrictRedis()
 
 
-    def incr_token_count_for_year(self, token, year, count):
-
-        """
-        Increment the count for a token in a year by a given amount.
-
-        Args:
-            token (str)
-            year (int)
-            count (int)
-        """
-
-        self.redis.hincrby(str(year), token, str(count))
-
-
     def token_count_for_year(self, token, year):
 
         """
@@ -54,7 +36,6 @@ class CountData:
         return int(count[0])
 
 
-    # TODO|dev
     def index(self, num_procs=8, cache_len=100):
 
         """
@@ -97,8 +78,14 @@ class CountData:
             cache (Counter)
         """
 
+        print(len(cache))
+
+        pipe = self.redis.pipeline()
+
         for (token, year), count in cache.items():
-            self.incr_token_count_for_year(token, year, count)
+            pipe.hincrby(str(year), token, str(count))
+
+        pipe.execute()
 
 
 
