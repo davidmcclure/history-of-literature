@@ -36,7 +36,7 @@ class CountData:
         return int(count[0])
 
 
-    def index(self, num_procs=8, cache_len=100):
+    def index(self, num_procs=12, cache_len=1000):
 
         """
         Index per-year counts for all tokens.
