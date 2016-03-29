@@ -10,21 +10,25 @@ import (
 
 func main() {
 
-	app := cli.App("hol", "History of 'literature'")
+	app := cli.App("hol", "The history of literature.")
 
-	app.Command("counts", "Extract token counts", func(cmd *cli.Cmd) {
+	app.Command(
+		"counts",
+		"Extract token counts",
+		func(cmd *cli.Cmd) {
 
-		var corpus = cmd.StringArg(
-			"CORPUS",
-			"path/to/htrc",
-			"HTRC root",
-		)
+			var corpus = cmd.StringArg(
+				"CORPUS",
+				"path/to/htrc",
+				"HTRC root",
+			)
 
-		cmd.Action = func() {
-			extractCounts(*corpus)
-		}
+			cmd.Action = func() {
+				extractCounts(*corpus)
+			}
 
-	})
+		},
+	)
 
 	app.Run(os.Args)
 
@@ -38,7 +42,7 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 
 	if !info.IsDir() {
 
-		vol, err := openVolume(path)
+		vol, err := NewVolumeFromPath(path)
 		if err != nil {
 			return err
 		}
@@ -53,7 +57,7 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 
 // Given a path for a .bz2 JSON file in the HTRC corpus, decode the file and
 // parse the JSON into a Volume.
-func openVolume(path string) (v *Volume, err error) {
+func NewVolumeFromPath(path string) (v *Volume, err error) {
 
 	compressed, err := os.Open(path)
 	if err != nil {
