@@ -4,6 +4,7 @@ from redis import StrictRedis
 from multiprocessing import Pool
 from collections import Counter
 
+from htrc import config
 from htrc.corpus import Corpus
 from htrc.volume import Volume
 
@@ -12,13 +13,28 @@ from htrc.volume import Volume
 class CountData:
 
 
-    def __init__(self):
+    @classmethod
+    def from_env(cls):
+
+        """
+        Use the ENV-defined Redis database.
+
+        Returns: cls
+        """
+
+        return cls(config['redis']['count_db'])
+
+
+    def __init__(self, db):
 
         """
         Initialize the Redis connection.
+
+        Args:
+            db (int)
         """
 
-        self.redis = StrictRedis()
+        self.redis = StrictRedis(db=db)
 
 
     def token_count_for_year(self, token, year):
