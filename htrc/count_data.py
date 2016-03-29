@@ -36,7 +36,7 @@ class CountData:
         return int(count[0])
 
 
-    def index(self, num_procs=12, cache_len=1000):
+    def index(self, num_procs=8, cache_len=5000):
 
         """
         Index per-year counts for all tokens.
@@ -59,8 +59,6 @@ class CountData:
             )
 
             for i, (year, counts) in enumerate(jobs):
-
-                print('update cache')
 
                 # Update the cache.
                 for token, count in counts.items():
@@ -104,8 +102,6 @@ def get_vol_counts(path):
 
     Returns: dict
     """
-
-    print('reading vol')
 
     vol = Volume(path)
 
