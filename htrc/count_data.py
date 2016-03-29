@@ -1,5 +1,7 @@
 
 
+import matplotlib.pyplot as plt
+
 from redis import StrictRedis
 from multiprocessing import Pool
 from collections import Counter
@@ -38,7 +40,7 @@ class CountData:
         self.redis = StrictRedis(db=db)
 
 
-    def index(self, num_procs=8, cache_len=5000):
+    def index(self, num_procs=8, cache_len=10000):
 
         """
         Index per-year counts for all tokens.
@@ -119,7 +121,21 @@ class CountData:
         return int(count[0]) if count[0] else 0
 
 
-    def time_series_for_token(self, token):
+    def baseline_count_for_year(self, year):
+
+        """
+        Get the total number of tokens for a year.
+
+        Args:
+            year (int)
+        """
+
+        counts = self.redis.hvals(str(year))
+
+        return sum(map(int, counts))
+
+
+    def token_time_series(self, token):
 
         """
         Get a list of per-year counts for a token.
@@ -137,6 +153,55 @@ class CountData:
             counts.append((year, count))
 
         return counts
+
+
+    def baseline_time_series(self):
+
+        """
+        Get a list of the total wordcounts per year.
+
+        Returns: list
+        """
+
+        counts = []
+
+        for year in self.years():
+            count = self.baseline_count_for_year(year)
+            counts.append((year, count))
+
+        return counts
+
+
+    def plot_token_time_series(self, token):
+
+        """
+        Plot a token time series.
+
+        Args:
+            token (str)
+        """
+
+        data = self.token_time_series(token)
+
+        plt.plot(*zip(*data))
+        plt.show()
+
+
+    def plot_baseline_time_series(self, y1=1700, y2=2000):
+
+        """
+        Plot the baseline time series.
+
+        Args:
+            y1 (int)
+            y2 (int)
+        """
+
+        data = self.baseline_time_series()
+
+        plt.xlim(y1, y2)
+        plt.plot(*zip(*data))
+        plt.show()
 
 
 
