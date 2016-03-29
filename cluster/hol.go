@@ -2,9 +2,8 @@ package main
 
 import (
 	"compress/bzip2"
-	"github.com/Jeffail/gabs"
+	"github.com/bitly/go-simplejson"
 	"github.com/jawher/mow.cli"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -63,12 +62,7 @@ func openVolume(path string) (v *Volume, err error) {
 
 	inflated := bzip2.NewReader(compressed)
 
-	content, err := ioutil.ReadAll(inflated)
-	if err != nil {
-		return nil, err
-	}
-
-	parsed, err := gabs.ParseJSON(content)
+	parsed, err := simplejson.NewFromReader(inflated)
 	if err != nil {
 		return nil, err
 	}
@@ -79,10 +73,10 @@ func openVolume(path string) (v *Volume, err error) {
 
 // An individual HTRC volume.
 type Volume struct {
-	json *gabs.Container
+	json *simplejson.Json
 }
 
 // Get the HTRC id.
 func (v *Volume) Id() string {
-	return v.json.Path("id").Data().(string)
+	return v.json.Get("id").MustString()
 }
