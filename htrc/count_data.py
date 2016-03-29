@@ -85,8 +85,6 @@ class CountData:
                     self.flush_cache(cache)
                     cache.clear()
 
-                print(i)
-
 
     def flush_cache(self, cache):
 
@@ -97,7 +95,7 @@ class CountData:
             cache (Counter)
         """
 
-        print(len(cache))
+        print('INCR {0}'.format(len(cache)))
 
         pipe = self.redis.pipeline()
 
