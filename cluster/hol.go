@@ -1,23 +1,31 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/jawher/mow.cli"
 	"os"
 )
 
 func main() {
 
-	app := cli.NewApp()
-	app.Name = "hol"
+	app := cli.App("hol", "History of 'literature'")
 
-	app.Commands = []cli.Command{
-		{
-			Name: "counts",
-			Action: func(c *cli.Context) {
-				println(c.Args().First())
-			},
+	app.Command(
+		"counts",
+		"Extract per-year token counts",
+		func(cmd *cli.Cmd) {
+
+			var corpus = cmd.StringArg(
+				"CORPUS",
+				"path/to/htrc",
+				"The HTRC corpus root",
+			)
+
+			cmd.Action = func() {
+				println(*corpus)
+			}
+
 		},
-	}
+	)
 
 	app.Run(os.Args)
 
