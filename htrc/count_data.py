@@ -29,31 +29,31 @@ class CountData:
         return cls(config['redis']['count_db'])
 
 
-    def __init__(self, db):
+    def __init__(self, counts=None):
 
         """
         Initialize the Redis connection.
 
         Args:
-            db (int)
+            counts (Counter)
         """
 
-        self.redis = StrictRedis(db=db)
+        if not counts:
+            counts = Counter()
+
+        self.counts = counts
 
 
-    def index(self, num_procs=8, cache_len=10000):
+    def index(self, num_procs=8):
 
         """
         Index per-year counts for all tokens.
 
         Args:
             num_procs (int)
-            cache_len (int)
         """
 
         corpus = Corpus.from_env()
-
-        cache = Counter()
 
         with Pool(num_procs) as pool:
 
@@ -65,33 +65,12 @@ class CountData:
 
             for i, (year, counts) in enumerate(jobs):
 
-                # Update the cache.
+                # Update the count.
                 for token, count in counts.items():
-                    cache[(token, year)] += count
+                    self.counts[(token, year)] += count
 
-                # Flush to Redis.
-                if i % cache_len == 0:
-                    self.flush_cache(cache)
-                    cache.clear()
-
-
-    def flush_cache(self, cache):
-
-        """
-        Flush a (token, year) -> count cache to the database.
-
-        Args:
-            cache (Counter)
-        """
-
-        print('INCR {0}'.format(len(cache)))
-
-        pipe = self.redis.pipeline()
-
-        for (token, year), count in cache.items():
-            pipe.hincrby(str(year), token, str(count))
-
-        pipe.execute()
+                if i % 1000 == 0:
+                    print(i)
 
 
     def years(self):
@@ -205,27 +184,6 @@ class CountData:
 
         plt.xlim(y1, y2)
         plt.plot(*zip(*data))
-        plt.show()
-
-
-    def plot_volume_scaled_token_time_series(self, token, y1=1700, y2=1920):
-
-        """
-        Plot a token time series, as a ratio of the baseline.
-
-        Args:
-            y1 (int)
-            y2 (int)
-        """
-
-        total = np.array(self.baseline_time_series())
-        token = np.array(self.token_time_series(token))
-
-        xs = token[:,0]
-        ys = token[:,1] / total[:,1]
-
-        plt.xlim(y1, y2)
-        plt.plot(xs, ys)
         plt.show()
 
 
