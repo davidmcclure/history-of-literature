@@ -3,6 +3,7 @@
 from redis import StrictRedis
 from multiprocessing import Pool
 from collections import Counter
+from cached_property import cached_property
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -90,7 +91,6 @@ class CountData:
         pipe.execute()
 
 
-    @property
     def years(self):
 
         """
@@ -116,7 +116,27 @@ class CountData:
 
         count = self.redis.hmget(str(year), token)
 
-        return int(count[0])
+        return int(count[0]) if count[0] else 0
+
+
+    def time_series_for_token(self, token):
+
+        """
+        Get a list of per-year counts for a token.
+
+        Args:
+            token (str)
+
+        Returns: list
+        """
+
+        counts = []
+
+        for year in self.years():
+            count = self.token_count_for_year(token, year)
+            counts.append((year, count))
+
+        return counts
 
 
 
