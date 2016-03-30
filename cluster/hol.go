@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/powerwalk"
 	"os"
 	"runtime"
+	"strconv"
 )
 
 func main() {
@@ -89,9 +90,18 @@ func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
 }
 
-// Get the year.
-func (v *Volume) Year() string {
-	return v.json.GetPath("metadata", "pubDate").MustString()
+// Get the year, 0 if parse fails.
+func (v *Volume) Year() int {
+
+	ystr := v.json.GetPath("metadata", "pubDate").MustString()
+
+	yint, err := strconv.Atoi(ystr)
+	if err != nil {
+		return 0
+	}
+
+	return yint
+
 }
 
 // Make page instances.
