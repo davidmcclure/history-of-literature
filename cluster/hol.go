@@ -51,9 +51,7 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 		}
 
 		// TODO|dev
-		for _, page := range vol.Pages() {
-			println(page.TokenCount())
-		}
+		println(vol.TokenCount())
 
 	}
 
@@ -104,6 +102,18 @@ func (v *Volume) Pages() []*Page {
 	}
 
 	return pages
+
+}
+
+// Get the total token count for all pages.
+func (v *Volume) TokenCount() int {
+
+	count := 0
+	for _, page := range v.Pages() {
+		count += page.TokenCount()
+	}
+
+	return count
 
 }
 
