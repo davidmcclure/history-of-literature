@@ -2,6 +2,7 @@ package main
 
 import (
 	"compress/bzip2"
+	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/jawher/mow.cli"
 	"github.com/stretchr/powerwalk"
@@ -17,8 +18,8 @@ func main() {
 	app := cli.App("hol", "The history of literature.")
 
 	app.Command(
-		"counts",
-		"Extract token counts",
+		"yearCounts",
+		"Extract per-year total counts",
 		func(cmd *cli.Cmd) {
 
 			var corpus = cmd.StringArg(
@@ -28,7 +29,7 @@ func main() {
 			)
 
 			cmd.Action = func() {
-				extractCounts(*corpus)
+				extractYearCounts(*corpus)
 			}
 
 		},
@@ -38,25 +39,28 @@ func main() {
 
 }
 
-func extractCounts(path string) {
-	powerwalk.Walk(path, walkVolume)
-}
+// Accumulate per-year token counts.
+func extractYearCounts(path string) {
 
-func walkVolume(path string, info os.FileInfo, _ error) error {
+	counts := make(map[int]int)
 
-	if !info.IsDir() {
+	powerwalk.Walk(path, func(path string, info os.FileInfo, _ error) error {
 
-		vol, err := NewVolumeFromPath(path)
-		if err != nil {
-			return err
+		if !info.IsDir() {
+
+			vol, err := NewVolumeFromPath(path)
+			if err != nil {
+				return err
+			}
+
+			counts[vol.Year()] = vol.TokenCount()
+			fmt.Println(vol.Id())
+
 		}
 
-		// TODO|dev
-		println(vol.Year())
+		return nil
 
-	}
-
-	return nil
+	})
 
 }
 
