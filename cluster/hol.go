@@ -51,9 +51,7 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 		}
 
 		// TODO|dev
-		for _, page := range vol.Pages() {
-			page.CleanedTokenCounts()
-		}
+		println(vol.Year())
 
 	}
 
@@ -89,6 +87,11 @@ type Volume struct {
 // Get the HTRC id.
 func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
+}
+
+// Get the year.
+func (v *Volume) Year() string {
+	return v.json.GetPath("metadata", "pubDate").MustString()
 }
 
 // Make page instances.
@@ -127,15 +130,4 @@ type Page struct {
 // Get the token count for the page body.
 func (p *Page) TokenCount() int {
 	return p.json.GetPath("body", "tokenCount").MustInt()
-}
-
-// Flatten out a token -> count map.
-func (p *Page) CleanedTokenCounts() {
-
-	key := p.json.GetPath("body", "tokenPosCount")
-
-	for token, _ := range key.MustMap() {
-		println(token)
-	}
-
 }
