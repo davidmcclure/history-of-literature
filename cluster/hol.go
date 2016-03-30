@@ -53,7 +53,8 @@ func extractYearCounts(path string) {
 				return err
 			}
 
-			counts[vol.Year()] = vol.TokenCount()
+			// Update the year count.
+			counts[vol.Year()] += vol.TokenCount()
 			fmt.Println(vol.Id())
 
 		}
@@ -62,6 +63,11 @@ func extractYearCounts(path string) {
 
 	})
 
+}
+
+// Dump year counts to disk.
+func dumpYearCounts(counts map[int]int) {
+	// TODO
 }
 
 // Given a path for a .bz2 JSON file in the HTRC corpus, decode the file and
