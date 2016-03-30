@@ -50,7 +50,10 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 			return err
 		}
 
-		println(vol.Id())
+		// TODO|dev
+		for _, page := range vol.Pages() {
+			println(page.TokenCount())
+		}
 
 	}
 
@@ -60,7 +63,7 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 
 // Given a path for a .bz2 JSON file in the HTRC corpus, decode the file and
 // parse the JSON into a Volume.
-func NewVolumeFromPath(path string) (v *Volume, err error) {
+func NewVolumeFromPath(path string) (*Volume, error) {
 
 	compressed, err := os.Open(path)
 	if err != nil {
@@ -88,7 +91,28 @@ func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
 }
 
+// Make page instances.
+func (v *Volume) Pages() []*Page {
+
+	key := v.json.GetPath("features", "pages")
+
+	var pages []*Page
+
+	for i, _ := range key.MustArray() {
+		json := key.GetIndex(i)
+		pages = append(pages, &Page{json: json})
+	}
+
+	return pages
+
+}
+
 // An individual page.
 type Page struct {
 	json *simplejson.Json
+}
+
+// Get the token count for the page body.
+func (p *Page) TokenCount() int {
+	return p.json.GetPath("body", "tokenCount").MustInt()
 }
