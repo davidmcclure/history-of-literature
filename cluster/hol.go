@@ -51,7 +51,9 @@ func walkVolume(path string, info os.FileInfo, _ error) error {
 		}
 
 		// TODO|dev
-		println(vol.TokenCount())
+		for _, page := range vol.Pages() {
+			page.CleanedTokenCounts()
+		}
 
 	}
 
@@ -125,4 +127,15 @@ type Page struct {
 // Get the token count for the page body.
 func (p *Page) TokenCount() int {
 	return p.json.GetPath("body", "tokenCount").MustInt()
+}
+
+// Flatten out a token -> count map.
+func (p *Page) CleanedTokenCounts() {
+
+	key := p.json.GetPath("body", "tokenPosCount")
+
+	for token, _ := range key.MustMap() {
+		println(token)
+	}
+
 }
