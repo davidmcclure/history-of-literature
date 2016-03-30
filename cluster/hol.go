@@ -87,3 +87,8 @@ type Volume struct {
 func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
 }
+
+// An individual page.
+type Page struct {
+	json *simplejson.Json
+}
