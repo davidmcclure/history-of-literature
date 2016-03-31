@@ -44,24 +44,24 @@ func extractYearCounts(path string) map[string]int {
 
 	powerwalk.Walk(path, func(path string, info os.FileInfo, _ error) error {
 
-		if !info.IsDir() {
+		if info.IsDir() {
+			return nil
+		}
 
-			vol, err := NewVolumeFromPath(path)
-			if err != nil {
-				return err
-			}
+		vol, err := NewVolumeFromPath(path)
+		if err != nil {
+			return err
+		}
 
-			// Increment the year count.
-			mutex.Lock()
-			counts[vol.YearString()] += vol.TotalTokenCount()
-			mutex.Unlock()
+		// Increment the year count.
+		mutex.Lock()
+		counts[vol.YearString()] += vol.TotalTokenCount()
+		mutex.Unlock()
 
-			// Log progress.
-			atomic.AddInt64(&ops, 1)
-			if ops%100 == 0 {
-				println(ops)
-			}
-
+		// Log progress.
+		atomic.AddInt64(&ops, 1)
+		if ops%100 == 0 {
+			println(ops)
 		}
 
 		return nil
