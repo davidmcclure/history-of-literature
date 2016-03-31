@@ -22,29 +22,32 @@ func main() {
 	app.Command(
 		"yearCounts",
 		"Extract per-year total counts",
-		func(cmd *cli.Cmd) {
-
-			var htrcPath = cmd.StringArg(
-				"HTRC_PATH",
-				"path/to/htrc",
-				"The HTRC basic features root",
-			)
-
-			var outPath = cmd.StringArg(
-				"OUT_PATH",
-				"path/to/json",
-				"The final JSON output path",
-			)
-
-			cmd.Action = func() {
-				counts := extractYearCounts(*htrcPath)
-				writeYearCounts(&counts, *outPath)
-			}
-
-		},
+		yearCountsCmd,
 	)
 
 	app.Run(os.Args)
+
+}
+
+// Get counts, dump JSON.
+func yearCountsCmd(cmd *cli.Cmd) {
+
+	var htrcPath = cmd.StringArg(
+		"HTRC_PATH",
+		"path/to/htrc",
+		"The HTRC basic features root",
+	)
+
+	var outPath = cmd.StringArg(
+		"OUT_PATH",
+		"path/to/json",
+		"The final JSON output path",
+	)
+
+	cmd.Action = func() {
+		counts := extractYearCounts(*htrcPath)
+		writeYearCounts(&counts, *outPath)
+	}
 
 }
 

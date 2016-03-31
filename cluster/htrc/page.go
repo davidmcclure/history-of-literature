@@ -1,6 +1,7 @@
 package htrc
 
 import (
+	"fmt"
 	"github.com/bitly/go-simplejson"
 )
 
@@ -18,6 +19,13 @@ func (p *Page) TotalTokenCount() int {
 func (p *Page) CleanedTokenCounts() map[string]int {
 
 	counts := make(map[string]int)
+
+	tpc := p.json.GetPath("body", "tokenPosCount")
+
+	for token, posCount := range tpc.MustMap() {
+		fmt.Println(token)
+		fmt.Println(posCount)
+	}
 
 	// iterate through token -> posCount pairs
 	// filter out non a-z's
