@@ -85,3 +85,18 @@ func (v *Volume) TotalTokenCount() int {
 	return count
 
 }
+
+// Get a map of (token -> count) for each a-z token.
+func (v *Volume) CleanedTokenCounts() map[string]int {
+
+	counts := make(map[string]int)
+
+	// iterate through token -> posCount pairs
+	// filter out non a-z's
+	// downcase the token
+	// sum up the pos counts
+	// update the count
+
+	return counts
+
+}
