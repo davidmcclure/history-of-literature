@@ -15,8 +15,14 @@ func main() {
 
 	app.Command(
 		"yearCounts",
-		"Extract per-year total counts",
+		"Get total token counts for each year",
 		htrc.YearCountsCmd,
+	)
+
+	app.Command(
+		"tokenCounts",
+		"Get individual token counts for each year",
+		htrc.TokenCountsCmd,
 	)
 
 	app.Run(os.Args)
