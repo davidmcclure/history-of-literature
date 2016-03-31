@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/davidmcclure/hol/htrc"
 	"github.com/jawher/mow.cli"
 	"github.com/stretchr/powerwalk"
@@ -23,14 +24,21 @@ func main() {
 		"Extract per-year total counts",
 		func(cmd *cli.Cmd) {
 
-			var corpus = cmd.StringArg(
-				"CORPUS",
+			var htrcPath = cmd.StringArg(
+				"HTRC_PATH",
 				"path/to/htrc",
-				"HTRC root",
+				"The HTRC basic features root",
+			)
+
+			var outPath = cmd.StringArg(
+				"OUT_PATH",
+				"path/to/json",
+				"The final JSON output path",
 			)
 
 			cmd.Action = func() {
-				extractYearCounts(*corpus)
+				counts := extractYearCounts(*htrcPath)
+				writeYearCounts(&counts, *outPath)
 			}
 
 		},
@@ -41,7 +49,7 @@ func main() {
 }
 
 // Accumulate per-year counts.
-func extractYearCounts(path string) {
+func extractYearCounts(path string) map[string]int {
 
 	var mutex = &sync.Mutex{}
 
@@ -75,7 +83,18 @@ func extractYearCounts(path string) {
 
 	})
 
-	data, _ := json.Marshal(counts)
-	ioutil.WriteFile("test.json", data, 0644)
+	return counts
+
+}
+
+// Dump year counts to JSON.
+func writeYearCounts(counts *map[string]int, path string) {
+
+	data, err := json.Marshal(counts)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	ioutil.WriteFile(path, data, 0644)
 
 }
