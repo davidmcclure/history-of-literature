@@ -2,6 +2,8 @@ package htrc
 
 import (
 	"github.com/jawher/mow.cli"
+	"github.com/stretchr/powerwalk"
+	"os"
 )
 
 // Get counts, dump JSON.
@@ -24,8 +26,23 @@ func extractTokenCounts(path string) map[string]int {
 
 	counts := make(map[string]int)
 
-	// TODO
-	println(path)
+	powerwalk.Walk(path, func(path string, info os.FileInfo, _ error) error {
+
+		if info.IsDir() {
+			return nil
+		}
+
+		vol, err := NewVolumeFromPath(path)
+		if err != nil {
+			return err
+		}
+
+		// TODO
+		println(vol.Id())
+
+		return nil
+
+	})
 
 	return counts
 
