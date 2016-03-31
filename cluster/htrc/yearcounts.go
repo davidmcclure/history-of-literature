@@ -4,11 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jawher/mow.cli"
-	//"github.com/stretchr/powerwalk"
 	"io/ioutil"
-	//"os"
-	//"sync"
-	//"sync/atomic"
 )
 
 // Get counts, dump JSON.
