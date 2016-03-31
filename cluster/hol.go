@@ -65,7 +65,7 @@ func extractYearCounts(path string) {
 
 			// Log progress.
 			atomic.AddInt64(&ops, 1)
-			if ops%1000 == 0 {
+			if ops%100 == 0 {
 				println(ops)
 			}
 
@@ -86,12 +86,14 @@ func dumpYearCounts(counts map[int]int) {
 // parse the JSON into a Volume.
 func NewVolumeFromPath(path string) (*Volume, error) {
 
-	compressed, err := os.Open(path)
+	deflated, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	inflated := bzip2.NewReader(compressed)
+	defer deflated.Close()
+
+	inflated := bzip2.NewReader(deflated)
 
 	parsed, err := simplejson.NewFromReader(inflated)
 	if err != nil {
