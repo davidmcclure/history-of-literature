@@ -39,8 +39,13 @@ func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
 }
 
-// Get the year, 0 if parse fails.
-func (v *Volume) Year() int {
+// Get the year as a string.
+func (v *Volume) YearString() string {
+	return v.json.GetPath("metadata", "pubDate").MustString()
+}
+
+// Get the year as an int, 0 if parse fails.
+func (v *Volume) YearInt() int {
 
 	ystr := v.json.GetPath("metadata", "pubDate").MustString()
 

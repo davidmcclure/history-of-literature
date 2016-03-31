@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/davidmcclure/hol/htrc"
 	"github.com/jawher/mow.cli"
 	"github.com/stretchr/powerwalk"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"sync"
@@ -43,7 +45,7 @@ func extractYearCounts(path string) {
 
 	var mutex = &sync.Mutex{}
 
-	counts := make(map[int]int)
+	counts := make(map[string]int)
 
 	var ops int64 = 0
 
@@ -58,7 +60,7 @@ func extractYearCounts(path string) {
 
 			// Increment the year count.
 			mutex.Lock()
-			counts[vol.Year()] += vol.TokenCount()
+			counts[vol.YearString()] += vol.TokenCount()
 			mutex.Unlock()
 
 			// Log progress.
@@ -72,5 +74,8 @@ func extractYearCounts(path string) {
 		return nil
 
 	})
+
+	data, _ := json.Marshal(counts)
+	ioutil.WriteFile("test.json", data, 0644)
 
 }
