@@ -2,13 +2,14 @@ package main
 
 import (
 	"compress/bzip2"
-	"fmt"
 	"github.com/bitly/go-simplejson"
 	"github.com/jawher/mow.cli"
 	"github.com/stretchr/powerwalk"
 	"os"
 	"runtime"
 	"strconv"
+	"sync"
+	"sync/atomic"
 )
 
 func main() {
@@ -44,6 +45,10 @@ func extractYearCounts(path string) {
 
 	counts := make(map[int]int)
 
+	var mutex = &sync.Mutex{}
+
+	var ops int64 = 0
+
 	powerwalk.Walk(path, func(path string, info os.FileInfo, _ error) error {
 
 		if !info.IsDir() {
@@ -53,9 +58,16 @@ func extractYearCounts(path string) {
 				return err
 			}
 
-			// Update the year count.
+			// Increment the year count.
+			mutex.Lock()
 			counts[vol.Year()] += vol.TokenCount()
-			fmt.Println(vol.Id())
+			mutex.Unlock()
+
+			// Log progress.
+			atomic.AddInt64(&ops, 1)
+			if ops%1000 == 0 {
+				println(ops)
+			}
 
 		}
 
