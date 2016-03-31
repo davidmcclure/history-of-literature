@@ -36,44 +36,25 @@ func YearCountsCmd(cmd *cli.Cmd) {
 // Accumulate per-year counts.
 func extractYearCounts(path string) map[string]int {
 
-	//var mutex = &sync.Mutex{}
-
-	counts := make(map[string]int)
-
-	//var ops int64 = 0
-
-	//powerwalk.Walk(path, func(path string, info os.FileInfo, _ error) error {
-
-	//if info.IsDir() {
-	//return nil
-	//}
-
-	//vol, err := NewVolumeFromPath(path)
-	//if err != nil {
-	//return err
-	//}
-
-	//// Increment the year count.
-	//mutex.Lock()
-	//counts[vol.YearString()] += vol.TotalTokenCount()
-	//mutex.Unlock()
-
-	//// Log progress.
-	//atomic.AddInt64(&ops, 1)
-	//if ops%100 == 0 {
-	//println(ops)
-	//}
-
-	//return nil
-
-	//})
-
 	corpus := Corpus{path: path}
 
 	volumes := corpus.WalkVolumes()
 
+	counts := make(map[string]int)
+
+	var ops int = 0
+
 	for vol := range volumes {
+
+		// Increment the year count.
 		counts[vol.YearString()] += vol.TotalTokenCount()
+
+		// Log progress.
+		ops++
+		if ops%100 == 0 {
+			println(ops)
+		}
+
 	}
 
 	return counts
