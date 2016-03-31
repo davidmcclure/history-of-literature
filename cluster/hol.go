@@ -68,7 +68,7 @@ func extractYearCounts(path string) map[string]int {
 
 			// Increment the year count.
 			mutex.Lock()
-			counts[vol.YearString()] += vol.TokenCount()
+			counts[vol.YearString()] += vol.TotalTokenCount()
 			mutex.Unlock()
 
 			// Log progress.

@@ -75,7 +75,7 @@ func (v *Volume) Pages() []*Page {
 }
 
 // Get the total token count for all pages.
-func (v *Volume) TokenCount() int {
+func (v *Volume) TotalTokenCount() int {
 
 	count := 0
 	for _, page := range v.Pages() {
