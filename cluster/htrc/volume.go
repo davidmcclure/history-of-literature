@@ -47,7 +47,7 @@ func (v *Volume) YearString() string {
 // Get the year as an int, 0 if parse fails.
 func (v *Volume) YearInt() int {
 
-	ystr := v.json.GetPath("metadata", "pubDate").MustString()
+	ystr := v.YearString()
 
 	yint, err := strconv.Atoi(ystr)
 	if err != nil {
