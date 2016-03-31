@@ -38,12 +38,12 @@ func main() {
 
 }
 
-// Accumulate per-year token counts.
+// Accumulate per-year counts.
 func extractYearCounts(path string) {
 
-	counts := make(map[int]int)
-
 	var mutex = &sync.Mutex{}
+
+	counts := make(map[int]int)
 
 	var ops int64 = 0
 
