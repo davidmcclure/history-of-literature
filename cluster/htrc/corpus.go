@@ -67,7 +67,7 @@ func (c *Corpus) TokenCounts() {
 	volumes := c.WalkEnglishVolumes()
 
 	for vol := range volumes {
-		fmt.Println(vol.CleanedTokenCounts())
+		fmt.Println(vol.CleanedTokenCounts()["the"])
 	}
 
 }

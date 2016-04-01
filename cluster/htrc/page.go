@@ -27,10 +27,10 @@ func (p *Page) CleanedTokenCounts() map[string]int {
 
 	for token, _ := range tps.MustMap() {
 
-		token := strings.ToLower(token)
+		lower := strings.ToLower(token)
 
 		// Ignore irregular tokens.
-		if !tokenRegex.MatchString(token) {
+		if !tokenRegex.MatchString(lower) {
 			continue
 		}
 
@@ -40,7 +40,7 @@ func (p *Page) CleanedTokenCounts() map[string]int {
 			count += tps.GetPath(token, pos).MustInt()
 		}
 
-		counts[token] = count
+		counts[lower] += count
 
 	}
 
