@@ -16,7 +16,7 @@ func (p *Page) TotalTokenCount() int {
 	return p.json.GetPath("body", "tokenCount").MustInt()
 }
 
-// Get a map of (token -> count) for each a-z token.
+// Get a map of (token -> count) for each [a-z] token.
 func (p *Page) CleanedTokenCounts() map[string]int {
 
 	counts := make(map[string]int)
