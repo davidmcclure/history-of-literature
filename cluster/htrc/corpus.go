@@ -1,7 +1,6 @@
 package htrc
 
 import (
-	"fmt"
 	"github.com/stretchr/powerwalk"
 	"os"
 )
@@ -62,12 +61,28 @@ func (c *Corpus) YearCounts() map[string]int {
 }
 
 // Get per-year counts for each token.
-func (c *Corpus) TokenCounts() {
+func (c *Corpus) TokenCounts() map[string]map[string]int {
 
 	volumes := c.WalkEnglishVolumes()
 
+	counts := make(map[string]map[string]int)
+
 	for vol := range volumes {
-		fmt.Println(vol.CleanedTokenCounts()["the"])
+
+		year := vol.YearString()
+
+		// Initialize the year map, if missing.
+		_, hasYear := counts[year]
+		if !hasYear {
+			counts[year] = make(map[string]int)
+		}
+
+		for token, count := range vol.CleanedTokenCounts() {
+			counts[year][token] += count
+		}
+
 	}
+
+	return counts
 
 }

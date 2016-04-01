@@ -76,7 +76,7 @@ func tokenCountsCmd(cmd *cli.Cmd) {
 
 		// TODO|dev
 		corpus := htrc.Corpus{*htrcPath}
-		corpus.TokenCounts()
+		fmt.Println(corpus.TokenCounts())
 
 	}
 
