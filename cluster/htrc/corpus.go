@@ -6,7 +6,7 @@ import (
 )
 
 type Corpus struct {
-	path string
+	Path string
 }
 
 // Generage English volumes concurrently.
@@ -17,7 +17,7 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 	// Spawn a goroutine for the tree walk.
 	go func() {
 
-		powerwalk.Walk(c.path, func(path string, info os.FileInfo, _ error) error {
+		powerwalk.Walk(c.Path, func(path string, info os.FileInfo, _ error) error {
 
 			if info.IsDir() {
 				return nil

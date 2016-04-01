@@ -23,7 +23,7 @@ func TokenCountsCmd(cmd *cli.Cmd) {
 // Accumulate token counts.
 func extractTokenCounts(path string) map[string]int {
 
-	corpus := Corpus{path: path}
+	corpus := Corpus{path}
 
 	volumes := corpus.WalkEnglishVolumes()
 
