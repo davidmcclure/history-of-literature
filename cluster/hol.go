@@ -72,11 +72,25 @@ func tokenCountsCmd(cmd *cli.Cmd) {
 		"The HTRC basic features root",
 	)
 
+	var outPath = cmd.StringArg(
+		"OUT_PATH",
+		"path/to/json",
+		"The final JSON output path",
+	)
+
 	cmd.Action = func() {
 
-		// TODO|dev
+		// Build the counts.
 		corpus := htrc.Corpus{*htrcPath}
-		fmt.Println(corpus.TokenCounts())
+		counts := corpus.TokenCounts()
+
+		data, err := json.Marshal(counts)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// Dump JSON to file.
+		ioutil.WriteFile(*outPath, data, 0644)
 
 	}
 
