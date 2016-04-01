@@ -1,6 +1,7 @@
 package htrc
 
 import (
+	"fmt"
 	"github.com/jawher/mow.cli"
 )
 
@@ -29,7 +30,9 @@ func extractTokenCounts(path string) map[string]int {
 	counts := make(map[string]int)
 
 	for vol := range volumes {
-		println(vol.Id())
+		for _, page := range vol.Pages() {
+			fmt.Println(page.CleanedTokenCounts())
+		}
 	}
 
 	return counts
