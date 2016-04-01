@@ -34,7 +34,7 @@ func extractYearCounts(path string) map[string]int {
 
 	corpus := Corpus{path: path}
 
-	volumes := corpus.WalkVolumes()
+	volumes := corpus.WalkEnglishVolumes()
 
 	counts := make(map[string]int)
 

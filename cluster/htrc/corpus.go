@@ -9,8 +9,8 @@ type Corpus struct {
 	path string
 }
 
-// Make a channel that emits volume instances from the corpus.
-func (c *Corpus) WalkVolumes() <-chan *Volume {
+// Generage English volumes concurrently.
+func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 
 	volumes := make(chan *Volume)
 
@@ -30,7 +30,9 @@ func (c *Corpus) WalkVolumes() <-chan *Volume {
 					return err
 				}
 
-				volumes <- vol
+				if vol.IsEnglish() {
+					volumes <- vol
+				}
 
 				return nil
 

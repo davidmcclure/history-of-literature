@@ -39,6 +39,16 @@ func (v *Volume) Id() string {
 	return v.json.Get("id").MustString()
 }
 
+// Get the language code.
+func (v *Volume) Language() string {
+	return v.json.GetPath("metadata", "language").MustString()
+}
+
+// Is the volume in English?
+func (v *Volume) IsEnglish() bool {
+	return v.Language() == "eng"
+}
+
 // Get the year as a string.
 func (v *Volume) YearString() string {
 	return v.json.GetPath("metadata", "pubDate").MustString()
