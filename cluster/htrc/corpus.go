@@ -48,12 +48,23 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 // Get token counts for each year.
 func (c *Corpus) YearCounts() map[string]int {
 
-	volumes := c.WalkEnglishVolumes()
-
 	counts := make(map[string]int)
 
+	volumes := c.WalkEnglishVolumes()
+
+	var ops int = 0
+
 	for vol := range volumes {
+
+		// Update the year count.
 		counts[vol.YearString()] += vol.TotalTokenCount()
+
+		// Log Progress.
+		ops++
+		if ops%1000 == 0 {
+			println(ops)
+		}
+
 	}
 
 	return counts
@@ -63,9 +74,11 @@ func (c *Corpus) YearCounts() map[string]int {
 // Get per-year counts for each token.
 func (c *Corpus) TokenCounts() map[string]map[string]int {
 
+	counts := make(map[string]map[string]int)
+
 	volumes := c.WalkEnglishVolumes()
 
-	counts := make(map[string]map[string]int)
+	var ops int = 0
 
 	for vol := range volumes {
 
@@ -77,8 +90,15 @@ func (c *Corpus) TokenCounts() map[string]map[string]int {
 			counts[year] = make(map[string]int)
 		}
 
+		// Update the year/token count.
 		for token, count := range vol.CleanedTokenCounts() {
 			counts[year][token] += count
+		}
+
+		// Log Progress.
+		ops++
+		if ops%1000 == 0 {
+			println(ops)
 		}
 
 	}
