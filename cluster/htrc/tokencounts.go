@@ -30,9 +30,7 @@ func extractTokenCounts(path string) map[string]int {
 	counts := make(map[string]int)
 
 	for vol := range volumes {
-		for _, page := range vol.Pages() {
-			fmt.Println(page.CleanedTokenCounts())
-		}
+		fmt.Println(vol.CleanedTokenCounts())
 	}
 
 	return counts

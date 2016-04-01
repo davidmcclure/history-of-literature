@@ -78,10 +78,26 @@ func (v *Volume) Pages() []*Page {
 func (v *Volume) TotalTokenCount() int {
 
 	count := 0
+
 	for _, page := range v.Pages() {
 		count += page.TotalTokenCount()
 	}
 
 	return count
+
+}
+
+// Get combined token counts for all pages.
+func (v *Volume) CleanedTokenCounts() map[string]int {
+
+	vcounts := make(map[string]int)
+
+	for _, page := range v.Pages() {
+		for token, count := range page.CleanedTokenCounts() {
+			vcounts[token] += count
+		}
+	}
+
+	return vcounts
 
 }
