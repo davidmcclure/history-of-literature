@@ -44,3 +44,18 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 	return volumes
 
 }
+
+// Get token counts for each year.
+func (c *Corpus) YearCounts() map[string]int {
+
+	volumes := c.WalkEnglishVolumes()
+
+	counts := make(map[string]int)
+
+	for vol := range volumes {
+		counts[vol.YearString()] += vol.TotalTokenCount()
+	}
+
+	return counts
+
+}

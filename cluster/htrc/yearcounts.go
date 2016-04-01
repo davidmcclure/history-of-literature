@@ -23,37 +23,10 @@ func YearCountsCmd(cmd *cli.Cmd) {
 	)
 
 	cmd.Action = func() {
-		counts := extractYearCounts(*htrcPath)
+		corpus := Corpus{path: *htrcPath}
+		counts := corpus.YearCounts()
 		writeYearCounts(&counts, *outPath)
 	}
-
-}
-
-// Accumulate per-year counts.
-func extractYearCounts(path string) map[string]int {
-
-	corpus := Corpus{path: path}
-
-	volumes := corpus.WalkEnglishVolumes()
-
-	counts := make(map[string]int)
-
-	var ops int = 0
-
-	for vol := range volumes {
-
-		// Increment the year count.
-		counts[vol.YearString()] += vol.TotalTokenCount()
-
-		// Log progress.
-		ops++
-		if ops%100 == 0 {
-			println(ops)
-		}
-
-	}
-
-	return counts
 
 }
 
