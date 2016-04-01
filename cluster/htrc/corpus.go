@@ -34,8 +34,7 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 
 			return nil
 
-		},
-		)
+		})
 
 		close(volumes)
 
