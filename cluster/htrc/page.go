@@ -21,11 +21,11 @@ func (p *Page) CleanedTokenCounts() map[string]int {
 
 	counts := make(map[string]int)
 
-	tps := p.json.GetPath("body", "tokenPosCount")
+	tpc := p.json.GetPath("body", "tokenPosCount")
 
 	tokenRegex, _ := regexp.Compile("^[a-z]+$")
 
-	for token, _ := range tps.MustMap() {
+	for token, _ := range tpc.MustMap() {
 
 		lower := strings.ToLower(token)
 
@@ -36,8 +36,8 @@ func (p *Page) CleanedTokenCounts() map[string]int {
 
 		// Merge part-of-speech counts.
 		count := 0
-		for pos, _ := range tps.Get(token).MustMap() {
-			count += tps.GetPath(token, pos).MustInt()
+		for pos, _ := range tpc.Get(token).MustMap() {
+			count += tpc.GetPath(token, pos).MustInt()
 		}
 
 		counts[lower] += count
