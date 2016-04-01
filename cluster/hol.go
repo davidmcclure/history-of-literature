@@ -25,14 +25,13 @@ func main() {
 	app.Command(
 		"tokenCounts",
 		"Get per-year counts for each token",
-		htrc.TokenCountsCmd,
+		tokenCountsCmd,
 	)
 
 	app.Run(os.Args)
 
 }
 
-// Pull year counts, dump JSON.
 func yearCountsCmd(cmd *cli.Cmd) {
 
 	var htrcPath = cmd.StringArg(
@@ -60,6 +59,24 @@ func yearCountsCmd(cmd *cli.Cmd) {
 
 		// Dump JSON to file.
 		ioutil.WriteFile(*outPath, data, 0644)
+
+	}
+
+}
+
+func tokenCountsCmd(cmd *cli.Cmd) {
+
+	var htrcPath = cmd.StringArg(
+		"HTRC_PATH",
+		"path/to/htrc",
+		"The HTRC basic features root",
+	)
+
+	cmd.Action = func() {
+
+		// TODO|dev
+		corpus := htrc.Corpus{*htrcPath}
+		corpus.TokenCounts()
 
 	}
 
