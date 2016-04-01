@@ -52,13 +52,8 @@ func yearCountsCmd(cmd *cli.Cmd) {
 		corpus := htrc.Corpus{*htrcPath}
 		counts := corpus.YearCounts()
 
-		data, err := json.Marshal(counts)
-		if err != nil {
-			fmt.Println(err)
-		}
-
 		// Dump JSON to file.
-		ioutil.WriteFile(*outPath, data, 0644)
+		dumpJson(&counts, *outPath)
 
 	}
 
@@ -84,14 +79,23 @@ func tokenCountsCmd(cmd *cli.Cmd) {
 		corpus := htrc.Corpus{*htrcPath}
 		counts := corpus.TokenCounts()
 
-		data, err := json.Marshal(counts)
-		if err != nil {
-			fmt.Println(err)
-		}
-
 		// Dump JSON to file.
-		ioutil.WriteFile(*outPath, data, 0644)
+		dumpJson(&counts, *outPath)
 
 	}
+
+}
+
+// Dump data to a JSON file.
+func dumpJson(data interface{}, path string) {
+
+	// Encode the content.
+	out, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Dump JSON to file.
+	ioutil.WriteFile(path, out, 0644)
 
 }
