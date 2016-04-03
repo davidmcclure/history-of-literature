@@ -44,23 +44,46 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 
 }
 
+type YearCount struct {
+	year  string
+	count int
+}
+
 // Get token counts for each year.
 func (c *Corpus) YearCounts() map[string]int {
 
 	counts := make(map[string]int)
 
-	volumes := c.WalkEnglishVolumes()
+	paths := make(chan string)
+	results := make(chan YearCount)
+
+	for w := 1; w <= 100; w++ {
+		go worker(paths, results)
+	}
+
+	go func() {
+
+		powerwalk.Walk(c.Path, func(path string, info os.FileInfo, _ error) error {
+
+			if !info.IsDir() {
+				paths <- path
+			}
+
+			return nil
+
+		})
+
+		close(paths)
+
+	}()
 
 	var ops int = 0
+	for yc := range results {
 
-	for vol := range volumes {
+		counts[yc.year] += yc.count
 
-		// Update the year count.
-		counts[vol.YearString()] += vol.TotalTokenCount()
-
-		// Log Progress.
 		ops++
-		if ops%1000 == 0 {
+		if ops%100 == 0 {
 			println(ops)
 		}
 
@@ -68,6 +91,24 @@ func (c *Corpus) YearCounts() map[string]int {
 
 	return counts
 
+}
+
+func worker(paths <-chan string, results chan<- YearCount) {
+	for path := range paths {
+
+		vol, _ := NewVolumeFromPath(path)
+		//if err != nil {
+		//return err
+		//}
+
+		if vol.IsEnglish() {
+			results <- YearCount{
+				year:  vol.YearString(),
+				count: vol.TotalTokenCount(),
+			}
+		}
+
+	}
 }
 
 // Get per-year counts for each token.
