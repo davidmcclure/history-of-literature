@@ -39,7 +39,7 @@ class YearCounts:
 
             # Job for each volume.
             jobs = pool.imap_unordered(
-                get_vol_count,
+                worker,
                 corpus.paths(),
             )
 
@@ -57,7 +57,7 @@ class YearCounts:
 
 
 
-def get_vol_count(path):
+def worker(path):
 
     """
     Extract a total token count from a volume.
