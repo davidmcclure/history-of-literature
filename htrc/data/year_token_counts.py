@@ -22,6 +22,8 @@ class YearTokenCounts(Shelf):
             num_procs (int)
         """
 
+        # TODO: filter out infrequent words?
+
         corpus = Corpus.from_env()
 
         with Pool(num_procs) as pool:
