@@ -40,7 +40,7 @@ class Page:
         return self.json['body']['tokenCount']
 
 
-    def total_counts(self, min_freq=1e-05):
+    def cleaned_token_counts(self, min_freq=1e-05):
 
         """
         Count the total occurrences of each unique token.

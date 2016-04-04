@@ -101,7 +101,7 @@ class Volume:
             yield Page(json)
 
 
-    def total_counts(self, *args, **kwargs):
+    def cleaned_token_counts(self, *args, **kwargs):
 
         """
         Count the total count of each token in all pages.
@@ -115,7 +115,7 @@ class Volume:
         counts = Counter()
 
         for page in self.pages():
-            counts += page.total_counts(*args, **kwargs)
+            counts += page.cleaned_token_counts(*args, **kwargs)
 
         return counts
 
@@ -139,7 +139,7 @@ class Volume:
                 self.token_count
             )
 
-            counts = page.total_counts(*args, **kwargs)
+            counts = page.cleaned_token_counts(*args, **kwargs)
 
             # Register flattened offsets.
             for token, count in counts.items():

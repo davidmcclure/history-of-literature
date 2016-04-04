@@ -167,4 +167,4 @@ def get_vol_counts(path):
 
     vol = Volume(path)
 
-    return (vol.year, vol.total_counts())
+    return (vol.year, vol.cleaned_token_counts())
