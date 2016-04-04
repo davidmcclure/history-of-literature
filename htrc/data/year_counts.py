@@ -6,22 +6,11 @@ from multiprocessing import Pool
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
+from htrc.data.shelf import Shelf
 
 
 
-class YearCounts:
-
-
-    def __init__(self, path):
-
-        """
-        Open the shelf.
-
-        Args:
-            path (str)
-        """
-
-        self.data = shelve.open(path)
+class YearCounts(Shelf):
 
 
     def index(self, num_procs=8):
