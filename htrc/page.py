@@ -5,12 +5,6 @@ import networkx as nx
 
 from itertools import combinations
 from collections import Counter
-from wordfreq import get_frequency_dict
-from stop_words import get_stop_words
-
-
-# Cache word frequencies.
-FREQS = get_frequency_dict('en')
 
 
 class Page:
@@ -54,9 +48,6 @@ class Page:
         # Filter out non-letters.
         letters = re.compile('^[a-z]+$')
 
-        # Get a stopword list.
-        stop_words = get_stop_words('en')
-
         counts = Counter()
         for token, pc in self.json['body']['tokenPosCount'].items():
 
@@ -64,14 +55,6 @@ class Page:
 
             # Ignore irregular tokens.
             if not letters.match(token):
-                continue
-
-            # Ignore stopwords.
-            if token in stop_words:
-                continue
-
-            # Ignore infrequent words.
-            if FREQS.get(token, 0) < min_freq:
                 continue
 
             counts[token] += sum(pc.values())
