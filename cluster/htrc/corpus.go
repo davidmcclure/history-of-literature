@@ -3,6 +3,7 @@ package htrc
 import (
 	"github.com/stretchr/powerwalk"
 	"os"
+	"runtime"
 )
 
 type Corpus struct {
@@ -17,7 +18,7 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 	// Spawn a goroutine for the tree walk.
 	go func() {
 
-		powerwalk.Walk(c.Path, func(path string, info os.FileInfo, _ error) error {
+		powerwalk.WalkLimit(c.Path, func(path string, info os.FileInfo, _ error) error {
 
 			if info.IsDir() {
 				return nil
@@ -34,7 +35,7 @@ func (c *Corpus) WalkEnglishVolumes() <-chan *Volume {
 
 			return nil
 
-		})
+		}, runtime.NumCPU())
 
 		close(volumes)
 
