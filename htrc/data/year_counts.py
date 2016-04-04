@@ -52,7 +52,8 @@ class YearCounts:
                 else:
                     self.data[year] = count
 
-                print(i)
+                if i%1000 == 0:
+                    print(i)
 
 
 
