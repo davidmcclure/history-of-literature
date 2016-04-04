@@ -3,4 +3,4 @@
 corpus: XXX
 
 redis:
-    year_token_count: 0
+    year_token_counts: 0

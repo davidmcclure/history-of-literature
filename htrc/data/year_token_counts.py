@@ -4,15 +4,15 @@ import shelve
 
 from multiprocessing import Pool
 from collections import defaultdict, Counter
+from redis import StrictRedis
 
 from htrc import config
-from htrc.data.keyset import Keyset
 from htrc.corpus import Corpus
 from htrc.volume import Volume
 
 
 
-class YearTokenCounts(Keyset):
+class YearTokenCounts:
 
 
     @classmethod
@@ -24,7 +24,19 @@ class YearTokenCounts(Keyset):
         Returns: cls
         """
 
-        return cls(config['redis']['year_token_count'])
+        return cls(config['redis']['year_token_counts'])
+
+
+    def __init__(self, db):
+
+        """
+        Initialize the Redis connection.
+
+        Args:
+            db (int)
+        """
+
+        self.redis = StrictRedis(db=db)
 
 
     def index(self, num_procs=8, cache_len=100):
