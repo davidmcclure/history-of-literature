@@ -1,12 +1,11 @@
 
 
-import shelve
+import os
 
-from multiprocessing import Pool
+from vedis import Vedis
 from collections import defaultdict, Counter
-from redis import StrictRedis
+from multiprocessing import Pool
 
-from htrc import config
 from htrc.corpus import Corpus
 from htrc.volume import Volume
 
@@ -15,31 +14,16 @@ from htrc.volume import Volume
 class YearTokenCounts:
 
 
-    @classmethod
-    def from_env(cls):
+    def __init__(self, path):
 
         """
-        Use the ENV-defined Redis database.
-
-        Returns: cls
+        Initialize the Vedis connection.
         """
 
-        return cls(config['redis']['year_token_counts'])
+        self.db = Vedis(path)
 
 
-    def __init__(self, db):
-
-        """
-        Initialize the Redis connection.
-
-        Args:
-            db (int)
-        """
-
-        self.redis = StrictRedis(db=db)
-
-
-    def index(self, num_procs=8, cache_len=100):
+    def index(self, num_procs=8, cache_len=1000):
 
         """
         Index total token counts by year.
@@ -60,18 +44,17 @@ class YearTokenCounts:
                 corpus.paths(),
             )
 
-            # Accumulate the counts.
             for i, (year, counts) in enumerate(jobs):
 
-                # TODO: frequency filter?
                 cache[year] += counts
 
                 # Flush to Redis.
                 if i % cache_len == 0:
+
+                    print(i)
+
                     self.flush_cache(cache)
                     cache.clear()
-
-                print(i)
 
 
     def flush_cache(self, cache):
@@ -83,15 +66,9 @@ class YearTokenCounts:
             cache (dict)
         """
 
-        print('INCR {0}'.format(len(cache)))
-
-        pipe = self.redis.pipeline()
-
         for year, counts in cache.items():
             for token, count in counts.items():
-                pipe.hincrby(str(year), token, str(count))
-
-        pipe.execute()
+                self.db.incr_by((token, year), count)
 
 
 
