@@ -1,5 +1,5 @@
 ---
 
-database: postgresql://localhost/htrc
+corpus: /path/to/corpus
 
-corpus: XXX
+database: sqlite:////path/to/db

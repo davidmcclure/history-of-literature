@@ -2,10 +2,7 @@
 *.pyc
 *.egg-info
 *.tar.gz
-*.dat
-*.log
-*.gml
-*.rld
+*.db
 
 /env
 /build

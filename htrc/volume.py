@@ -20,9 +20,8 @@ class Volume:
             path (str)
         """
 
-        fh = bz2.open(path, 'rt')
-
-        self.json = json.loads(fh.read())
+        with bz2.open(path, 'rt') as fh:
+            self.json = json.loads(fh.read())
 
 
     @property
@@ -102,7 +101,7 @@ class Volume:
             yield Page(json)
 
 
-    def total_counts(self, *args, **kwargs):
+    def cleaned_token_counts(self):
 
         """
         Count the total count of each token in all pages.
@@ -116,37 +115,6 @@ class Volume:
         counts = Counter()
 
         for page in self.pages():
-            counts += page.total_counts(*args, **kwargs)
+            counts += page.cleaned_token_counts()
 
         return counts
-
-
-    def token_offsets(self, *args, **kwargs):
-
-        """
-        For each token, get a set of 0-1 offset ratios in the text.
-
-        Returns: {token: [0.1, 0.2, ...], ...}
-        """
-
-        offsets = defaultdict(list)
-
-        seen = 0
-        for page in self.pages():
-
-            # Get the 0-1 ratio of page "center".
-            center = (
-                (seen + (page.token_count / 2)) /
-                self.token_count
-            )
-
-            counts = page.total_counts(*args, **kwargs)
-
-            # Register flattened offsets.
-            for token, count in counts.items():
-                offsets[token] += [center] * count
-
-            # Track the cumulative token count.
-            seen += page.token_count
-
-        return offsets
