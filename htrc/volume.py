@@ -101,13 +101,10 @@ class Volume:
             yield Page(json)
 
 
-    def cleaned_token_counts(self, *args, **kwargs):
+    def cleaned_token_counts(self):
 
         """
         Count the total count of each token in all pages.
-
-        Args:
-            min_freq (float): Ignore words below this frequency.
 
         Returns: Counter
         """
@@ -115,6 +112,6 @@ class Volume:
         counts = Counter()
 
         for page in self.pages():
-            counts += page.cleaned_token_counts(*args, **kwargs)
+            counts += page.cleaned_token_counts()
 
         return counts

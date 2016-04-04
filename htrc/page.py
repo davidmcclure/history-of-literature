@@ -34,13 +34,10 @@ class Page:
         return self.json['body']['tokenCount']
 
 
-    def cleaned_token_counts(self, min_freq=1e-05):
+    def cleaned_token_counts(self):
 
         """
         Count the total occurrences of each unique token.
-
-        Args:
-            min_freq (float): Ignore words below this frequency.
 
         Returns: Counter
         """
