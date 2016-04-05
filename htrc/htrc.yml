@@ -2,4 +2,4 @@
 
 corpus: /path/to/corpus
 
-database: postgres://localhost/htrc
+database: postgres://localhost/hol
