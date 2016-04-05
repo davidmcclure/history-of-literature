@@ -18,6 +18,8 @@ class Count(Base):
 
     __tablename__ = 'count'
 
+    __table_args = dict(prefixes=['UNLOGGED'])
+
     id = Column(Integer, primary_key=True)
 
     token = Column(String, nullable=False)
