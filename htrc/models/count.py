@@ -5,7 +5,6 @@ from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 from collections import defaultdict, Counter
 from multiprocessing import Pool
-from datetime import datetime as dt
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -73,7 +72,6 @@ class Count(Base):
             page (dict)
         """
 
-        t1 = dt.now()
         session = config.Session()
 
         for year, counts in page.items():
@@ -93,8 +91,6 @@ class Count(Base):
                 ))
 
         session.commit()
-        t2 = dt.now()
-        print(t2-t1)
 
 
 
