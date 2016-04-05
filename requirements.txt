@@ -19,3 +19,4 @@ click
 hirlite
 redis
 vedis
+guppy
