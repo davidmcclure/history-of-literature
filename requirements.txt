@@ -19,4 +19,4 @@ click
 hirlite
 redis
 vedis
-guppy
+pymongo

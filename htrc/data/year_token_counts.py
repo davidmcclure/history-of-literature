@@ -2,10 +2,9 @@
 
 import os
 
-from vedis import Vedis
+from pymongo import MongoClient
 from collections import defaultdict, Counter
 from multiprocessing import Pool
-from wordfreq import top_n_list
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
@@ -15,7 +14,7 @@ from htrc.volume import Volume
 class Writer:
 
 
-    def __init__(self, path):
+    def __init__(self):
 
         """
         Canonicalize the data path.
@@ -24,19 +23,9 @@ class Writer:
             path (str)
         """
 
-        self.path = os.path.abspath(path)
+        client = MongoClient()
 
-
-    @property
-    def db(self):
-
-        """
-        Get a database connection.
-
-        Returns: Vedis
-        """
-
-        return Vedis(self.path)
+        self.db = client.hol.year_token_counts
 
 
     def index(self, num_procs=8, cache_len=1000):
@@ -53,26 +42,26 @@ class Writer:
         groups = corpus.path_groups(cache_len)
 
         with Pool(num_procs) as pool:
-
             for i, group in enumerate(groups):
 
                 # Queue volume jobs.
                 jobs = pool.imap_unordered(worker, group,)
                 cache = defaultdict(Counter)
 
-                # Accumulate the counts.
-                for year, counts in jobs:
+                # Accumulate counts.
+                for j, (year, counts) in enumerate(jobs):
                     cache[year] += counts
+                    print((i*cache_len) + j)
 
-                # Flush to disk.
+                # Flush to Vedis.
                 self.flush_cache(cache)
-                print(i*cache_len)
+                print(cache_len * (i+1))
 
 
     def flush_cache(self, cache):
 
         """
-        Flush a cache to the Redis.
+        Flush a cache to Mongo.
 
         Args:
             cache (dict)
@@ -80,7 +69,20 @@ class Writer:
 
         for year, counts in cache.items():
             for token, count in counts.items():
-                self.db.incr_by((token, year), count)
+
+                self.db.update_one(
+                    {
+                        '_id': '{0}:{1}'.format(year, token),
+                        'year': year,
+                        'token': token,
+                    },
+                    {
+                        '$inc': {
+                            'count': count
+                        }
+                    },
+                    upsert=True,
+                )
 
 
 
