@@ -2,12 +2,14 @@
 
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String
-from multiprocessing import Pool
+from sqlalchemy.sql import text
 from collections import defaultdict, Counter
+from multiprocessing import Pool
 
-from htrc.models import Base
+from htrc import config
 from htrc.corpus import Corpus
 from htrc.corpus import Volume
+from htrc.models import Base
 
 
 
@@ -67,11 +69,25 @@ class Count(Base):
             page (dict)
         """
 
+        session = config.Session()
+
         for year, counts in page.items():
             for token, count in counts.items():
 
-                # TODO
-                print(token, year, count)
+                query = text("""
+                    INSERT INTO count (token, year, count)
+                    VALUES (:token, :year, :count)
+                    ON CONFLICT (token, year)
+                    DO UPDATE SET count = count.count + :count
+                """)
+
+                session.execute(query, dict(
+                    token=token,
+                    year=year,
+                    count=count,
+                ))
+
+        session.commit()
 
 
 
