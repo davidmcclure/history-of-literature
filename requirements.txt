@@ -18,3 +18,5 @@ matplotlib
 click
 hirlite
 redis
+vedis
+pymongo

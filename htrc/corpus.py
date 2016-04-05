@@ -8,6 +8,7 @@ from clint.textui import progress
 
 from htrc import config
 from htrc.volume import Volume
+from htrc.utils import grouper
 
 
 class Corpus:
@@ -59,6 +60,18 @@ class Corpus:
         for root, dirs, files in scandir.walk(self.path):
             for name in files:
                 yield os.path.join(root, name)
+
+
+    def path_groups(self, n=1000):
+
+        """
+        Generate groups of paths.
+
+        Yields: list
+        """
+
+        for group in grouper(self.paths(), n):
+            yield group
 
 
     def volumes(self):

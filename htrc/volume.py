@@ -106,9 +106,6 @@ class Volume:
         """
         Count the total count of each token in all pages.
 
-        Args:
-            min_freq (float): Ignore words below this frequency.
-
         Returns: Counter
         """
 

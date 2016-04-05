@@ -1,19 +1,34 @@
 
 
-import shelve
+import os
 
+from pymongo import MongoClient
+from collections import defaultdict, Counter
 from multiprocessing import Pool
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
-from htrc.data.shelf import Shelf
 
 
 
-class YearTokenCounts(Shelf):
+class Writer:
 
 
-    def index(self, num_procs=8):
+    def __init__(self):
+
+        """
+        Canonicalize the data path.
+
+        Args:
+            path (str)
+        """
+
+        client = MongoClient()
+
+        self.db = client.hol.year_token_counts
+
+
+    def index(self, num_procs=8, cache_len=1000):
 
         """
         Index total token counts by year.
@@ -22,28 +37,52 @@ class YearTokenCounts(Shelf):
             num_procs (int)
         """
 
-        # TODO: filter out infrequent words?
-
         corpus = Corpus.from_env()
 
+        groups = corpus.path_groups(cache_len)
+
         with Pool(num_procs) as pool:
+            for i, group in enumerate(groups):
 
-            # Job for each volume.
-            jobs = pool.imap_unordered(
-                worker,
-                corpus.paths(),
-            )
+                # Queue volume jobs.
+                jobs = pool.imap_unordered(worker, group,)
+                cache = defaultdict(Counter)
 
-            # Accumulate the counts.
-            for i, (year, counts) in enumerate(jobs):
+                # Accumulate counts.
+                for j, (year, counts) in enumerate(jobs):
+                    cache[year] += counts
+                    print((i*cache_len) + j)
 
-                if year in self.data:
-                    self.data[year] += counts
+                # Flush to Vedis.
+                self.flush_cache(cache)
+                print(cache_len * (i+1))
 
-                else:
-                    self.data[year] = counts
 
-                print(i)
+    def flush_cache(self, cache):
+
+        """
+        Flush a cache to Mongo.
+
+        Args:
+            cache (dict)
+        """
+
+        for year, counts in cache.items():
+            for token, count in counts.items():
+
+                self.db.update_one(
+                    {
+                        '_id': '{0}:{1}'.format(year, token),
+                        'year': year,
+                        'token': token,
+                    },
+                    {
+                        '$inc': {
+                            'count': count
+                        }
+                    },
+                    upsert=True,
+                )
 
 
 
@@ -56,9 +95,9 @@ def worker(path):
         path (str): A volume path.
 
     Returns:
-        tuple (year<str>, counts<Counter>)
+        tuple (year<int>, counts<Counter>)
     """
 
     vol = Volume(path)
 
-    return (str(vol.year), vol.cleaned_token_counts())
+    return (vol.year, vol.cleaned_token_counts())

@@ -2,4 +2,4 @@
 
 corpus: /path/to/corpus
 
-database: sqlite:////path/to/db
+database: postgres://localhost/htrc
