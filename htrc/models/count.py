@@ -2,7 +2,7 @@
 
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
-from sqlalchemy.sql import text
+from sqlalchemy.sql import text, func
 from collections import defaultdict, Counter
 from multiprocessing import Pool
 
@@ -102,8 +102,6 @@ class Count(Base):
         Returns: list<int>
         """
 
-        session = config.Session()
-
         res = (
             config.Session()
             .query(cls.year)
@@ -123,8 +121,6 @@ class Count(Base):
         Returns: list<int>
         """
 
-        session = config.Session()
-
         res = (
             config.Session()
             .query(cls.token)
@@ -133,6 +129,27 @@ class Count(Base):
         )
 
         return [r[0] for r in res]
+
+
+    @classmethod
+    def token_count_for_year(cls, year):
+
+        """
+        Get the total token count for a year.
+
+        Args:
+            year (int)
+
+        Returns: int
+        """
+
+        res = (
+            config.Session()
+            .query(func.sum(cls.count))
+            .filter(cls.year==year)
+        )
+
+        return res.scalar()
 
 
 
