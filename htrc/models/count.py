@@ -1,10 +1,11 @@
 
 
 from sqlalchemy.schema import Index
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 from collections import defaultdict, Counter
 from multiprocessing import Pool
+from datetime import datetime as dt
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -18,9 +19,10 @@ class Count(Base):
 
     __tablename__ = 'count'
 
-    __table_args = dict(prefixes=['UNLOGGED'])
-
-    id = Column(Integer, primary_key=True)
+    __table_args__ = (
+        PrimaryKeyConstraint('token', 'year'),
+        dict(prefixes=['UNLOGGED']),
+    )
 
     token = Column(String, nullable=False)
 
@@ -71,6 +73,7 @@ class Count(Base):
             page (dict)
         """
 
+        t1 = dt.now()
         session = config.Session()
 
         for year, counts in page.items():
@@ -90,6 +93,8 @@ class Count(Base):
                 ))
 
         session.commit()
+        t2 = dt.now()
+        print(t2-t1)
 
 
 
