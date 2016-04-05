@@ -114,6 +114,27 @@ class Count(Base):
         return [r[0] for r in res]
 
 
+    @classmethod
+    def tokens(cls):
+
+        """
+        Get an ordered list of all tokens.
+
+        Returns: list<int>
+        """
+
+        session = config.Session()
+
+        res = (
+            config.Session()
+            .query(cls.token)
+            .distinct()
+            .order_by(cls.token.asc())
+        )
+
+        return [r[0] for r in res]
+
+
 
 def worker(path):
 
