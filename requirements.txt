@@ -14,3 +14,4 @@ numpy
 scipy
 scikit-learn
 matplotlib
+jupyter
