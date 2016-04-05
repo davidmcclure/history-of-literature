@@ -5,6 +5,7 @@ import os
 from vedis import Vedis
 from collections import defaultdict, Counter
 from multiprocessing import Pool
+from wordfreq import top_n_list
 
 from htrc.corpus import Corpus
 from htrc.volume import Volume
@@ -26,7 +27,19 @@ class Writer:
         self.path = os.path.abspath(path)
 
 
-    def index(self, num_procs=8, cache_len=100):
+    @property
+    def db(self):
+
+        """
+        Get a database connection.
+
+        Returns: Vedis
+        """
+
+        return Vedis(self.path)
+
+
+    def index(self, num_procs=8, cache_len=1000):
 
         """
         Index total token counts by year.
@@ -48,7 +61,7 @@ class Writer:
                 cache = defaultdict(Counter)
 
                 # Accumulate the counts.
-                for year, counts in enumerate(jobs):
+                for year, counts in jobs:
                     cache[year] += counts
 
                 # Flush to disk.
@@ -65,11 +78,9 @@ class Writer:
             cache (dict)
         """
 
-        writer = Vedis(self.path)
-
         for year, counts in cache.items():
             for token, count in counts.items():
-                writer.incr_by((token, year), count)
+                self.db.incr_by((token, year), count)
 
 
 
