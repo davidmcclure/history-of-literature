@@ -102,7 +102,16 @@ class Count(Base):
         Returns: list<int>
         """
 
-        pass
+        session = config.Session()
+
+        res = (
+            config.Session()
+            .query(cls.year)
+            .distinct()
+            .order_by(cls.year.asc())
+        )
+
+        return [r[0] for r in res]
 
 
 
