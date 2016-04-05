@@ -50,11 +50,10 @@ class YearTokenCounts:
 
                 # Flush to Redis.
                 if i % cache_len == 0:
-
-                    print(i)
-
                     self.flush_cache(cache)
                     cache.clear()
+
+                print(i)
 
 
     def flush_cache(self, cache):
