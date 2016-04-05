@@ -93,14 +93,16 @@ class Count(Base):
         session.commit()
 
 
+    @classmethod
+    def years(cls):
 
-# Unique index token + year.
-Index(
-    'ix_count_token_year',
-    Count.token,
-    Count.year,
-    unique=True,
-)
+        """
+        Get an ordered list of years.
+
+        Returns: list<int>
+        """
+
+        pass
 
 
 
