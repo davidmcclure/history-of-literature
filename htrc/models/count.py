@@ -102,14 +102,15 @@ class Count(Base):
         Returns: list<int>
         """
 
-        res = (
-            config.Session()
-            .query(cls.year)
-            .distinct()
-            .order_by(cls.year.asc())
-        )
+        with config.get_session() as session:
 
-        return [r[0] for r in res]
+            res = (
+                session.query(cls.year)
+                .distinct()
+                .order_by(cls.year.asc())
+            )
+
+            return [r[0] for r in res]
 
 
     @classmethod
