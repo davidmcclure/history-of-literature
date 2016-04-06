@@ -5,7 +5,7 @@ from collections import defaultdict, Counter
 
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
-from sqlalchemy.sql import text, func
+from sqlalchemy.sql import text
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -92,119 +92,6 @@ class Count(Base):
                 ))
 
         session.commit()
-
-
-    @classmethod
-    def years(cls):
-
-        """
-        Get an ordered list of years.
-
-        Returns: list<int>
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.year)
-                .distinct()
-                .order_by(cls.year.asc())
-            )
-
-            return [r[0] for r in res]
-
-
-    @classmethod
-    def tokens(cls):
-
-        """
-        Get an ordered list of all tokens.
-
-        Returns: list<int>
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.token)
-                .distinct()
-                .order_by(cls.token.asc())
-            )
-
-            return [r[0] for r in res]
-
-
-    @classmethod
-    def year_count(cls, year):
-
-        """
-        Get the total token count for a year.
-
-        Args:
-            year (int)
-
-        Returns: int
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.year==year)
-            )
-
-            return res.scalar() or 0
-
-
-    @classmethod
-    def token_year_count(cls, token, year):
-
-        """
-        How many times did token X appear in year Y?
-
-        Args:
-            token (str)
-            year (int)
-
-        Returns: int
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.token==token, cls.year==year)
-            )
-
-            return res.scalar() or 0
-
-
-    @classmethod
-    def token_year_wpm(cls, token, year):
-
-        """
-        How many times did token X appear per million words in year Y?
-
-        Args:
-            token (str)
-            year (int)
-
-        Returns: float
-        """
-
-        year_count = cls.year_count(year)
-
-        if year_count > 0:
-
-            # Normalize per-M ratio.
-            token_count = cls.token_year_count(token, year)
-            return (1e6 * token_count) / year_count
-
-        else: return 0
 
 
 
