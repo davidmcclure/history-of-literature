@@ -1,10 +1,11 @@
 
 
+from multiprocessing import Pool
+from collections import defaultdict, Counter
+
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text, func
-from collections import defaultdict, Counter
-from multiprocessing import Pool
 
 from htrc import config
 from htrc.corpus import Corpus
