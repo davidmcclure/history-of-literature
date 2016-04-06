@@ -11,7 +11,7 @@ from wordfreq import top_n_list
 class Page:
 
 
-    words = set(top_n_list('en', 5000))
+    words = set(top_n_list('en', 10000))
 
 
     def __init__(self, json):
