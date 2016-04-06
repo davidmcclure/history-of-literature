@@ -123,3 +123,23 @@ class CountQueries:
             return (1e6 * token_count) / year_count
 
         else: return 0
+
+
+    @lru_cache()
+    def token_year_wpm_series(self, token, years):
+
+        """
+        Get a WPM time series for a word.
+
+        Args:
+            token (str)
+            years (iter)
+
+        Returns: list
+        """
+
+        series = []
+        for year in years:
+            series.append(self.token_year_wpm(token, year))
+
+        return series
