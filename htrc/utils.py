@@ -21,3 +21,27 @@ def grouper(iterable, size):
     while True:
         group = islice(source, size)
         yield chain([next(group)], group)
+
+
+def window(seq, n):
+
+    """
+    Yield a sliding window over an iterable.
+
+    Args:
+        seq (iter): The sequence.
+        n (int): Window width.
+
+    Yields:
+        tuple: The next window.
+    """
+
+    it = iter(seq)
+    result = tuple(islice(it, n))
+
+    if len(result) == n:
+        yield result
+
+    for token in it:
+        result = result[1:] + (token,)
+        yield result
