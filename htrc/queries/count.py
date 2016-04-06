@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from collections import defaultdict, Counter
 from functools import lru_cache
 from sqlalchemy.sql import func
 
@@ -15,13 +16,17 @@ class CountQueries:
     def __init__(self):
 
         """
-        Initialize a session.
+        Hydrate the count map.
         """
 
-        self.session = config.Session()
+        session = config.Session()
+
+        self.data = defaultdict(Counter)
+
+        for c in session.query(Count).yield_per(1000):
+            self.data[c.year][c.token] = c.count
 
 
-    @lru_cache()
     def years(self):
 
         """
@@ -30,17 +35,9 @@ class CountQueries:
         Returns: list<int>
         """
 
-        res = (
-            self.session
-            .query(Count.year)
-            .distinct()
-            .order_by(Count.year.asc())
-        )
-
-        return [r[0] for r in res]
+        return sorted(self.data.keys())
 
 
-    @lru_cache()
     def tokens(self):
 
         """
@@ -49,17 +46,14 @@ class CountQueries:
         Returns: list<int>
         """
 
-        res = (
-            self.session
-            .query(Count.token)
-            .distinct()
-            .order_by(Count.token.asc())
-        )
+        tokens = set()
 
-        return [r[0] for r in res]
+        for year, counts in self.data.items():
+            tokens.update(counts.keys())
+
+        return sorted(tokens)
 
 
-    @lru_cache()
     def year_count(self, year):
 
         """
@@ -71,13 +65,7 @@ class CountQueries:
         Returns: int
         """
 
-        res = (
-            self.session
-            .query(func.sum(Count.count))
-            .filter(Count.year==year)
-        )
-
-        return res.scalar() or 0
+        return sum(self.data[year].values())
 
 
     @lru_cache()
@@ -93,13 +81,7 @@ class CountQueries:
         Returns: int
         """
 
-        res = (
-            self.session
-            .query(func.sum(Count.count))
-            .filter(Count.token==token, Count.year==year)
-        )
-
-        return res.scalar() or 0
+        return self.data[year][token]
 
 
     @lru_cache()
