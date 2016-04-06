@@ -19,11 +19,11 @@ class CountQueries:
         Hydrate the count map.
         """
 
-        session = config.Session()
+        self.session = config.Session()
 
         self.data = defaultdict(Counter)
 
-        for c in session.query(Count).yield_per(1000):
+        for c in self.session.query(Count).yield_per(1000):
             self.data[c.year][c.token] = c.count
 
 
