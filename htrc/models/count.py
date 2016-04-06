@@ -182,6 +182,30 @@ class Count(Base):
             return res.scalar() or 0
 
 
+    @classmethod
+    def token_year_wpm(cls, token, year):
+
+        """
+        How many times did token X appear per million words in year Y?
+
+        Args:
+            token (str)
+            year (int)
+
+        Returns: float
+        """
+
+        year_count = cls.year_count(year)
+
+        if year_count > 0:
+
+            # Normalize per-M ratio.
+            token_count = cls.token_year_count(token, year)
+            return (1e6 * token_count) / year_count
+
+        else: return 0
+
+
 
 def worker(path):
 
