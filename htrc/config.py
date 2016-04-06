@@ -61,10 +61,10 @@ class Config:
 
         self.config = anyconfig.load(self.paths, ignore_missing=True)
 
-        self.Session = self.build_sessionmaker()
+        self.session = self.make_session()
 
 
-    def build_engine(self):
+    def make_engine(self):
 
         """
         Build a SQLAlchemy engine.
@@ -75,7 +75,7 @@ class Config:
         return create_engine(self['database'])
 
 
-    def build_sessionmaker(self):
+    def make_session(self):
 
         """
         Build a SQLAlchemy session class.
@@ -83,27 +83,6 @@ class Config:
         Returns: Session
         """
 
-        return sessionmaker(bind=self.build_engine())
+        Session = sessionmaker(bind=self.make_engine())
 
-
-    @contextmanager
-    def get_session(self):
-
-        """
-        Provide a transactional scope around a query.
-
-        Yields: Session
-        """
-
-        session = self.Session()
-
-        try:
-            yield session
-            session.commit()
-
-        except:
-            session.rollback()
-            raise
-
-        finally:
-            session.close()
+        return Session()

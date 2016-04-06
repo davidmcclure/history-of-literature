@@ -72,7 +72,7 @@ class Count(Base):
             page (dict)
         """
 
-        session = config.Session()
+        session = config.make_session()
 
         for year, counts in page.items():
             for token, count in counts.items():
@@ -102,16 +102,14 @@ class Count(Base):
         Returns: list<int>
         """
 
-        with config.get_session() as session:
+        res = (
+            config.session
+            .query(cls.year)
+            .distinct()
+            .order_by(cls.year.asc())
+        )
 
-            res = (
-                session
-                .query(cls.year)
-                .distinct()
-                .order_by(cls.year.asc())
-            )
-
-            return [r[0] for r in res]
+        return [r[0] for r in res]
 
 
     @classmethod
@@ -123,16 +121,14 @@ class Count(Base):
         Returns: list<int>
         """
 
-        with config.get_session() as session:
+        res = (
+            config.session
+            .query(cls.token)
+            .distinct()
+            .order_by(cls.token.asc())
+        )
 
-            res = (
-                session
-                .query(cls.token)
-                .distinct()
-                .order_by(cls.token.asc())
-            )
-
-            return [r[0] for r in res]
+        return [r[0] for r in res]
 
 
     @classmethod
@@ -147,15 +143,13 @@ class Count(Base):
         Returns: int
         """
 
-        with config.get_session() as session:
+        res = (
+            config.session
+            .query(func.sum(cls.count))
+            .filter(cls.year==year)
+        )
 
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.year==year)
-            )
-
-            return res.scalar() or 0
+        return res.scalar() or 0
 
 
     @classmethod
@@ -171,15 +165,13 @@ class Count(Base):
         Returns: int
         """
 
-        with config.get_session() as session:
+        res = (
+            config.session
+            .query(func.sum(cls.count))
+            .filter(cls.token==token, cls.year==year)
+        )
 
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.token==token, cls.year==year)
-            )
-
-            return res.scalar() or 0
+        return res.scalar() or 0
 
 
 
