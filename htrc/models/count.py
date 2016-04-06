@@ -113,6 +113,20 @@ class Count(Base):
 
 
     @classmethod
+    def year_range(cls):
+
+        """
+        Get a range from first -> last year.
+
+        Returns: range
+        """
+
+        years = cls.years()
+
+        return range(years[0], years[-1]+1)
+
+
+    @classmethod
     def tokens(cls):
 
         """
