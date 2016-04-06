@@ -2,12 +2,12 @@
 
 import numpy as np
 
+from scipy import stats
 from collections import defaultdict, Counter
-from functools import lru_cache
-from sqlalchemy.sql import func
 
 from htrc import config
 from htrc.models import Count
+from htrc.utils import window
 
 
 class CountQueries:
@@ -68,7 +68,6 @@ class CountQueries:
         return sum(self.data[year].values())
 
 
-    @lru_cache()
     def token_year_count(self, token, year):
 
         """
@@ -84,7 +83,6 @@ class CountQueries:
         return self.data[year][token]
 
 
-    @lru_cache()
     def token_year_wpm(self, token, year):
 
         """
@@ -108,7 +106,6 @@ class CountQueries:
         else: return 0
 
 
-    @lru_cache()
     def token_year_wpm_series(self, token, years):
 
         """
@@ -128,7 +125,6 @@ class CountQueries:
         return series
 
 
-    @lru_cache()
     def token_year_wpm_series_smooth(self, token, years, width=5):
 
         """
@@ -149,3 +145,52 @@ class CountQueries:
             np.ones(width) / width,
             mode='same',
         )
+
+
+    def rolling_correlation(self,
+        token1,
+        token2,
+        years,
+        window_width=30,
+        smooth_width=5,
+    ):
+
+        """
+        Slide a window across a year range, compute the dyanamic correlation
+        between two tokens.
+
+        Args:
+            token1 (str)
+            token2 (str)
+            years (iter)
+            window_width (int)
+            smooth_width (int)
+
+        Returns: tuple (xs, ys)
+        """
+
+        t1_series = self.token_year_wpm_series_smooth(
+            token1,
+            years,
+            smooth_width,
+        )
+
+        t2_series = self.token_year_wpm_series_smooth(
+            token2,
+            years,
+            smooth_width,
+        )
+
+        windows = zip(
+            window(t1_series, window_width),
+            window(t2_series, window_width),
+            window(years, window_width),
+        )
+
+        xs = []
+        ys = []
+        for t1, t2, y in windows:
+            ys.append(stats.pearsonr(t1, t2)[0])
+            xs.append((y[0]+y[-1])/2)
+
+        return (xs, ys)
