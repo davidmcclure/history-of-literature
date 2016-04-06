@@ -1,5 +1,7 @@
 
 
+from functools import lru_cache
+
 from sqlalchemy.sql import func
 
 from htrc import config
@@ -18,6 +20,7 @@ class CountQueries:
         self.session = config.Session()
 
 
+    @lru_cache()
     def years(self):
 
         """
@@ -36,6 +39,7 @@ class CountQueries:
         return [r[0] for r in res]
 
 
+    @lru_cache()
     def tokens(self):
 
         """
@@ -54,6 +58,7 @@ class CountQueries:
         return [r[0] for r in res]
 
 
+    @lru_cache()
     def year_count(self, year):
 
         """
@@ -74,6 +79,7 @@ class CountQueries:
         return res.scalar() or 0
 
 
+    @lru_cache()
     def token_year_count(self, token, year):
 
         """
@@ -95,6 +101,7 @@ class CountQueries:
         return res.scalar() or 0
 
 
+    @lru_cache()
     def token_year_wpm(self, token, year):
 
         """
