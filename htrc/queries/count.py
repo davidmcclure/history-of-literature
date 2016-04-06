@@ -1,7 +1,8 @@
 
 
-from functools import lru_cache
+import numpy as np
 
+from functools import lru_cache
 from sqlalchemy.sql import func
 
 from htrc import config
@@ -143,3 +144,26 @@ class CountQueries:
             series.append(self.token_year_wpm(token, year))
 
         return series
+
+
+    @lru_cache()
+    def token_year_wpm_series_smooth(self, token, years, width=5):
+
+        """
+        Get a WPM time series for a word.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: list
+        """
+
+        series = self.token_year_wpm_series(token, years)
+
+        return np.convolve(
+            series,
+            np.ones(width) / width,
+            mode='same',
+        )
