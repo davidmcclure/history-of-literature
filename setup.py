@@ -5,10 +5,10 @@ from setuptools import setup, find_packages
 
 setup(
 
-    name='htrc-dev',
+    name='hol',
     version='0.1.0',
-    description='Experimental HTRC bindings.',
-    url='https://github.com/davidmcclure/htrc-dev',
+    description='The history of "literature."',
+    url='https://github.com/davidmcclure/history-of-literature',
     license='MIT',
     author='David McClure',
     author_email='dclure@stanford.edu',
