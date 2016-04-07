@@ -11,7 +11,7 @@ from htrc.corpus import Volume
 
 
 
-class TokenYearCounts:
+class TokenCounts:
 
 
     def __init__(self, path):
