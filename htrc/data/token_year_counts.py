@@ -5,7 +5,6 @@ import os
 
 from multiprocessing import Pool
 from collections import defaultdict, Counter
-from datetime import datetime as dt
 
 from htrc.corpus import Corpus
 from htrc.corpus import Volume
