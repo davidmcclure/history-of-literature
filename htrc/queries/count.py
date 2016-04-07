@@ -151,7 +151,7 @@ class CountQueries:
         token1,
         token2,
         years,
-        window_width=30,
+        window_width=100,
         smooth_width=5,
     ):
 
