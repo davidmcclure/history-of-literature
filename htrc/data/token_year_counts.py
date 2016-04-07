@@ -1,39 +1,33 @@
 
 
+import h5py
+import os
+
 from multiprocessing import Pool
 from collections import defaultdict, Counter
 from datetime import datetime as dt
 
-from sqlalchemy.schema import Index
-from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
-from sqlalchemy.sql import text
-
-from htrc import config
 from htrc.corpus import Corpus
 from htrc.corpus import Volume
-from htrc.models import Base
 
 
 
-class Count(Base):
+class TokenYearCounts:
 
 
-    __tablename__ = 'count'
+    def __init__(self, path):
 
-    __table_args__ = (
-        PrimaryKeyConstraint('token', 'year'),
-        dict(prefixes=['UNLOGGED']),
-    )
+        """
+        Open the HDF file.
 
-    token = Column(String, nullable=False)
+        Args:
+            path (str)
+        """
 
-    year = Column(Integer, nullable=False)
-
-    count = Column(Integer, nullable=False)
+        self.data = h5py.File(os.path.abspath(path))
 
 
-    @classmethod
-    def index(cls, num_procs=12, page_size=1000):
+    def index(self, num_procs=12, page_size=1000):
 
         """
         Index token counts by year.
@@ -61,11 +55,10 @@ class Count(Base):
                     print((i*page_size) + j)
 
                 # Flush to the disk.
-                cls.flush_page(page)
+                self.flush_page(page)
 
 
-    @classmethod
-    def flush_page(cls, page):
+    def flush_page(self, page):
 
         """
         Flush a page to disk.
@@ -74,30 +67,19 @@ class Count(Base):
             page (dict)
         """
 
-        t1 = dt.now()
-
-        session = config.Session()
-
         for year, counts in page.items():
             for token, count in counts.items():
 
-                query = text("""
-                    INSERT INTO count (token, year, count)
-                    VALUES (:token, :year, :count)
-                    ON CONFLICT (token, year)
-                    DO UPDATE SET count = count.count + :count
-                """)
+                path = '{0}/{1}'.format(year, token)
 
-                session.execute(query, dict(
-                    token=token,
-                    year=year,
-                    count=count,
-                ))
+                # If the path is set, update the count.
+                if path in self.data:
+                    self.data[path][0] += count
 
-        session.commit()
-
-        t2 = dt.now()
-        print(t2-t1)
+                # Or, initialize the count.
+                else:
+                    ds = self.data.create_dataset(path, (1,), dtype='i')
+                    ds[0] = count
 
 
 

@@ -13,7 +13,7 @@ def reset_db():
     Recreate all database tables.
     """
 
-    engine = config.make_engine()
+    engine = config.build_engine()
 
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
