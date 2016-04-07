@@ -1,5 +1,3 @@
 ---
 
 corpus: /path/to/corpus
-
-database: postgres://localhost/hol

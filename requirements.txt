@@ -1,9 +1,7 @@
 
 ipython
 scandir
-networkx
 clint
-sqlalchemy
 psycopg2
 wordfreq
 invoke

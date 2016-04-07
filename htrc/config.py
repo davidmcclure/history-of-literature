@@ -3,10 +3,6 @@
 import os
 import anyconfig
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from contextlib import contextmanager
-
 
 class Config:
 
@@ -60,50 +56,3 @@ class Config:
         """
 
         self.config = anyconfig.load(self.paths, ignore_missing=True)
-
-        self.Session = self.build_sessionmaker()
-
-
-    def build_engine(self):
-
-        """
-        Build a SQLAlchemy engine.
-
-        Returns: Engine
-        """
-
-        return create_engine(self['database'])
-
-
-    def build_sessionmaker(self):
-
-        """
-        Build a SQLAlchemy session class.
-
-        Returns: Session
-        """
-
-        return sessionmaker(bind=self.build_engine())
-
-
-    @contextmanager
-    def get_session(self):
-
-        """
-        Provide a transactional scope around a query.
-
-        Yields: Session
-        """
-
-        session = self.Session()
-
-        try:
-            yield session
-            session.commit()
-
-        except:
-            session.rollback()
-            raise
-
-        finally:
-            session.close()
