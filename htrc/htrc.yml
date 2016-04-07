@@ -1,3 +1,5 @@
 ---
 
 corpus: /path/to/corpus
+
+token_depth: 10000

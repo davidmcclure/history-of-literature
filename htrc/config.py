@@ -3,6 +3,8 @@
 import os
 import anyconfig
 
+from wordfreq import top_n_list
+
 
 class Config:
 
@@ -52,7 +54,11 @@ class Config:
     def read(self):
 
         """
-        Load the configuration files, set connections.
+        Load the configuration files, set globals.
         """
 
+        # Parse the configuration.
         self.config = anyconfig.load(self.paths, ignore_missing=True)
+
+        # Canonical set of tokens.
+        self.tokens = set(top_n_list('en', self['token_depth']))

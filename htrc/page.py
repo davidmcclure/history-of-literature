@@ -5,13 +5,9 @@ import networkx as nx
 
 from itertools import combinations
 from collections import Counter
-from wordfreq import top_n_list
 
 
 class Page:
-
-
-    words = set(top_n_list('en', 10000))
 
 
     def __init__(self, json):
@@ -46,7 +42,7 @@ class Page:
         Returns: Counter
         """
 
-        # Filter out non-letters.
+        # Match letters.
         letters = re.compile('^[a-z]+$')
 
         counts = Counter()
@@ -56,10 +52,6 @@ class Page:
 
             # Ignore irregular tokens.
             if not letters.match(token):
-                continue
-
-            # Ignore infrequent words.
-            if token not in self.words:
                 continue
 
             counts[token] += sum(pc.values())

@@ -1,11 +1,13 @@
 
 
-import h5py
 import os
+import numpy as np
+import h5py
 
 from multiprocessing import Pool
 from collections import defaultdict, Counter
 
+from htrc import config
 from htrc.corpus import Corpus
 from htrc.corpus import Volume
 
@@ -69,6 +71,10 @@ class TokenCounts:
         for year, counts in page.items():
             for token, count in counts.items():
 
+                # Ignore infrequent tokens.
+                if token not in config.tokens:
+                    continue
+
                 path = '{0}/{1}'.format(year, token)
 
                 # If the path is set, update the count.
@@ -77,8 +83,12 @@ class TokenCounts:
 
                 # Or, initialize the count.
                 else:
-                    ds = self.data.create_dataset(path, (1,), dtype='i')
-                    ds[0] = count
+
+                    val = np.array(count)
+
+                    self.data.create_dataset(
+                        path, (1,), dtype='i', data=val
+                    )
 
 
 
