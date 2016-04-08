@@ -61,4 +61,17 @@ class Config:
         self.config = anyconfig.load(self.paths, ignore_missing=True)
 
         # Canonical set of tokens.
-        self.tokens = set(top_n_list('en', self['token_depth']))
+        self.tokens = self.get_tokens()
+
+
+    def get_tokens(self):
+
+        """
+        Get a set of whitelisted tokens.
+
+        Returns: set
+        """
+
+        tokens = top_n_list('en', self['token_depth'], ascii_only=True)
+
+        return set(tokens)
