@@ -74,37 +74,36 @@ class Count(Base):
 
         session = config.Session()
 
+        # SQLite "upsert."
+        query = text("""
+
+            INSERT OR REPLACE INTO count (token, year, count)
+
+            VALUES (
+                :token,
+                :year,
+                :count + COALESCE(
+                    (
+                        SELECT count FROM count
+                        WHERE token = :token AND year = :year
+                    ),
+                    0
+                )
+            )
+
+        """)
+
         for year, counts in page.items():
             for token, count in counts.items():
 
-                # Apply token whitelist.
-                if token not in config.tokens:
-                    continue
+                # Whitelist tokens.
+                if token in config.tokens:
 
-                # SQLite "upsert."
-                query = text("""
-
-                    INSERT OR REPLACE INTO count (token, year, count)
-
-                    VALUES (
-                        :token,
-                        :year,
-                        :count + COALESCE(
-                            (
-                                SELECT count FROM count
-                                WHERE token = :token AND year = :year
-                            ),
-                            0
-                        )
-                    )
-
-                """)
-
-                session.execute(query, dict(
-                    token=token,
-                    year=year,
-                    count=count,
-                ))
+                    session.execute(query, dict(
+                        token=token,
+                        year=year,
+                        count=count,
+                    ))
 
         session.commit()
 
