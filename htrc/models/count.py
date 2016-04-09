@@ -21,7 +21,6 @@ class Count(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint('token', 'year'),
-        dict(prefixes=['UNLOGGED']),
     )
 
     token = Column(String, nullable=False)
@@ -79,10 +78,11 @@ class Count(Base):
             for token, count in counts.items():
 
                 query = text("""
-                    INSERT INTO count (token, year, count)
-                    VALUES (:token, :year, :count)
-                    ON CONFLICT (token, year)
-                    DO UPDATE SET count = count.count + :count
+                    INSERT OR REPLACE INTO count (token, year, count)
+                    VALUES (:token, :year, COALESCE((
+                        SELECT count FROM count
+                        WHERE token = :token AND year = :year
+                    ), 0) + :count)
                 """)
 
                 session.execute(query, dict(
