@@ -6,6 +6,7 @@ import h5py
 
 from multiprocessing import Pool
 from collections import defaultdict, Counter
+from datetime import datetime as dt
 
 from htrc import config
 from htrc.corpus import Corpus
@@ -25,7 +26,21 @@ class TokenCounts:
             path (str)
         """
 
-        self.data = h5py.File(os.path.abspath(path))
+        self.file = h5py.File(os.path.abspath(path))
+
+        self.years = {
+            y:i for i, y in enumerate(range(1600, 1920))
+        }
+
+        self.tokens = {
+            t:i for i, t in enumerate(config.tokens)
+        }
+
+        self.counts = self.file.require_dataset(
+            'counts',
+            (len(self.tokens), len(self.years)),
+            dtype='i',
+        )
 
 
     def index(self, num_procs=12, page_size=1000):
@@ -68,6 +83,8 @@ class TokenCounts:
             page (dict)
         """
 
+        t1 = dt.now()
+
         for year, counts in page.items():
             for token, count in counts.items():
 
@@ -75,20 +92,20 @@ class TokenCounts:
                 if token not in config.tokens:
                     continue
 
-                path = '{0}/{1}'.format(year, token)
+                try:
 
-                # If the path is set, update the count.
-                if path in self.data:
-                    self.data[path][0] += count
+                    # Get the token row, increment.
+                    row = self.counts[self.tokens[token]]
+                    row[self.years[year]] += count
 
-                # Or, initialize the count.
-                else:
+                    # Set the updated array.
+                    self.counts[self.tokens[token]] = row
 
-                    val = np.array(count)
+                except:
+                    pass
 
-                    self.data.create_dataset(
-                        path, (1,), dtype='i', data=val
-                    )
+        t2 = dt.now()
+        print(t2-t1)
 
 
 
