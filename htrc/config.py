@@ -3,6 +3,8 @@
 import os
 import anyconfig
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from wordfreq import top_n_list
 
 
@@ -61,10 +63,13 @@ class Config:
         self.config = anyconfig.load(self.paths, ignore_missing=True)
 
         # Canonical set of tokens.
-        self.tokens = self.get_tokens()
+        self.tokens = self.build_tokens()
+
+        # SQLAlchemy session maker.
+        self.Session = self.build_sessionmaker()
 
 
-    def get_tokens(self):
+    def build_tokens(self):
 
         """
         Get a set of whitelisted tokens.
@@ -75,3 +80,25 @@ class Config:
         tokens = top_n_list('en', self['token_depth'], ascii_only=True)
 
         return set(tokens)
+
+
+    def build_engine(self):
+
+        """
+        Build a SQLAlchemy engine.
+
+        Returns: Engine
+        """
+
+        return create_engine(self['database'])
+
+
+    def build_sessionmaker(self):
+
+        """
+        Build a SQLAlchemy session class.
+
+        Returns: Session
+        """
+
+        return sessionmaker(bind=self.build_engine())
