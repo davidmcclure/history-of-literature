@@ -1,49 +1,37 @@
 
 
-import os
-import numpy as np
-import h5py
-
 from multiprocessing import Pool
 from collections import defaultdict, Counter
-from datetime import datetime as dt
+
+from sqlalchemy.schema import Index
+from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
+from sqlalchemy.sql import text
 
 from htrc import config
 from htrc.corpus import Corpus
 from htrc.corpus import Volume
+from htrc.models import Base
 
 
 
-class TokenCounts:
+class Count(Base):
 
 
-    def __init__(self, path):
+    __tablename__ = 'count'
 
-        """
-        Open the HDF file.
+    __table_args__ = (
+        PrimaryKeyConstraint('token', 'year'),
+    )
 
-        Args:
-            path (str)
-        """
+    token = Column(String, nullable=False)
 
-        self.file = h5py.File(os.path.abspath(path))
+    year = Column(Integer, nullable=False)
 
-        self.years = {
-            y:i for i, y in enumerate(range(1600, 1920))
-        }
-
-        self.tokens = {
-            t:i for i, t in enumerate(config.tokens)
-        }
-
-        self.counts = self.file.require_dataset(
-            'counts',
-            (len(self.tokens), len(self.years)),
-            dtype='i',
-        )
+    count = Column(Integer, nullable=False)
 
 
-    def index(self, num_procs=12, page_size=1000):
+    @classmethod
+    def index(cls, num_procs=12, page_size=1000):
 
         """
         Index token counts by year.
@@ -71,10 +59,11 @@ class TokenCounts:
                     print((i*page_size) + j)
 
                 # Flush to the disk.
-                self.flush_page(page)
+                cls.flush_page(page)
 
 
-    def flush_page(self, page):
+    @classmethod
+    def flush_page(cls, page):
 
         """
         Flush a page to disk.
@@ -83,29 +72,30 @@ class TokenCounts:
             page (dict)
         """
 
-        t1 = dt.now()
+        session = config.Session()
 
         for year, counts in page.items():
             for token, count in counts.items():
 
-                # Ignore infrequent tokens.
+                # Apply token whitelist.
                 if token not in config.tokens:
                     continue
 
-                try:
+                query = text("""
+                    INSERT OR REPLACE INTO count (token, year, count)
+                    VALUES (:token, :year, COALESCE((
+                        SELECT count FROM count
+                        WHERE token = :token AND year = :year
+                    ), 0) + :count)
+                """)
 
-                    # Get the token row, increment.
-                    row = self.counts[self.tokens[token]]
-                    row[self.years[year]] += count
+                session.execute(query, dict(
+                    token=token,
+                    year=year,
+                    count=count,
+                ))
 
-                    # Set the updated array.
-                    self.counts[self.tokens[token]] = row
-
-                except:
-                    pass
-
-        t2 = dt.now()
-        print(t2-t1)
+        session.commit()
 
 
 
