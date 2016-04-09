@@ -3,3 +3,5 @@
 corpus: /path/to/corpus
 
 token_depth: 10000
+
+database: sqlite:////path/to/db
