@@ -81,12 +81,23 @@ class Count(Base):
                 if token not in config.tokens:
                     continue
 
+                # SQLite "upsert."
                 query = text("""
+
                     INSERT OR REPLACE INTO count (token, year, count)
-                    VALUES (:token, :year, COALESCE((
-                        SELECT count FROM count
-                        WHERE token = :token AND year = :year
-                    ), 0) + :count)
+
+                    VALUES (
+                        :token,
+                        :year,
+                        :count + COALESCE(
+                            (
+                                SELECT count FROM count
+                                WHERE token = :token AND year = :year
+                            ),
+                            0
+                        )
+                    )
+
                 """)
 
                 session.execute(query, dict(
