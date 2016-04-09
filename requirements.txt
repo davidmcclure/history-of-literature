@@ -7,10 +7,7 @@ wordfreq
 invoke
 anyconfig
 PyYAML
-stop-words
 numpy
 scipy
-scikit-learn
 matplotlib
 jupyter
-h5py

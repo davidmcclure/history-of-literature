@@ -2,8 +2,7 @@
 *.pyc
 *.egg-info
 *.ipynb_checkpoints
-*.hdf5
-*.tar.gz
+*.db
 
 /env
 /build
