@@ -3,7 +3,6 @@
 from multiprocessing import Pool
 from collections import defaultdict, Counter
 
-from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 
