@@ -5,7 +5,7 @@ import bz2
 
 from collections import Counter, defaultdict
 
-from htrc.page import Page
+from hol.page import Page
 
 
 class Volume:

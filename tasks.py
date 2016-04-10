@@ -2,8 +2,8 @@
 
 from invoke import task
 
-from htrc.models import Base
-from htrc import config
+from hol.models import Base
+from hol import config
 
 
 @task

@@ -6,9 +6,9 @@ import shelve
 
 from clint.textui import progress
 
-from htrc import config
-from htrc.volume import Volume
-from htrc.utils import grouper
+from hol import config
+from hol.volume import Volume
+from hol.utils import grouper
 
 
 class Corpus:

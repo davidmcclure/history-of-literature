@@ -7,10 +7,10 @@ from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 
-from htrc import config
-from htrc.corpus import Corpus
-from htrc.corpus import Volume
-from htrc.models import Base
+from hol import config
+from hol.corpus import Corpus
+from hol.corpus import Volume
+from hol.models import Base
 
 
 
