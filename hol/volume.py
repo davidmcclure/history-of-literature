@@ -73,6 +73,18 @@ class Volume:
 
 
     @property
+    def is_english(self):
+
+        """
+        Is the volume English?
+
+        Returns: bool
+        """
+
+        return self.language == 'eng'
+
+
+    @property
     def token_count(self):
 
         """

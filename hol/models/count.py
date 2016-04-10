@@ -54,8 +54,8 @@ class Count(Base):
                 page = defaultdict(Counter)
 
                 # Accumulate counts.
-                for j, (year, counts) in enumerate(jobs):
-                    page[year] += counts
+                for j, res in enumerate(jobs):
+                    if res: page[res['year']] += res['counts']
                     print((i*page_size) + j)
 
                 # Flush to the disk.
@@ -123,4 +123,10 @@ def worker(path):
 
     vol = Volume(path)
 
-    return (vol.year, vol.cleaned_token_counts())
+    if not vol.is_english:
+        return False
+
+    return dict(
+        year=vol.year,
+        counts=vol.cleaned_token_counts(),
+    )
