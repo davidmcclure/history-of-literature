@@ -89,21 +89,21 @@ class Count(Base):
         # SQLite "upsert."
         query = text("""
 
-            INSERT OR REPLACE INTO count (token, year, count)
+            INSERT OR REPLACE INTO {table!s} (token, year, count)
 
             VALUES (
                 :token,
                 :year,
                 :count + COALESCE(
                     (
-                        SELECT count FROM count
+                        SELECT count FROM {table!s}
                         WHERE token = :token AND year = :year
                     ),
                     0
                 )
             )
 
-        """)
+        """.format(table=cls.__tablename__))
 
         for year, counts in page.items():
             for token, count in counts.items():
