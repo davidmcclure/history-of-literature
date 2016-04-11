@@ -60,15 +60,11 @@ class Count(Base):
             cache_len (int)
         """
 
-        corpus = Corpus.from_env()
-
-        groups = corpus.path_groups(page_size)
-
-        for i, paths in enumerate(groups):
+        for i, results in enumerate(map_english_vols(cls.worker)):
 
             page = defaultdict(Counter)
 
-            for year, counts in map_english_vols(paths, cls.worker):
+            for year, counts in results:
                 page[year] += counts
 
             cls.flush_page(page)
@@ -123,7 +119,7 @@ class Count(Base):
 
 
 
-def map_english_vols(paths, worker, num_procs=12):
+def map_english_vols(worker, num_procs=12, page_size=100):
 
     """
     Apply a worker to English volumes in a set of paths.
@@ -133,15 +129,19 @@ def map_english_vols(paths, worker, num_procs=12):
         worker (func)
     """
 
+    corpus = Corpus.from_env()
+
+    groups = corpus.path_groups(page_size)
+
     with Pool(num_procs) as pool:
+        for i, paths in enumerate(groups):
 
-        jobs = pool.imap_unordered(
-            partial(map_vol, worker),
-            paths,
-        )
+            jobs = pool.imap_unordered(
+                partial(map_vol, worker),
+                paths,
+            )
 
-        for result in jobs:
-            if result: yield result
+            yield JobGroup(jobs)
 
 
 
@@ -159,3 +159,14 @@ def map_vol(worker, path):
 
     if vol.is_english:
         return worker(vol)
+
+
+
+class JobGroup:
+
+    def __init__(self, jobs):
+        self.jobs = jobs
+
+    def __iter__(self):
+        for result in self.jobs:
+            if result: yield result
