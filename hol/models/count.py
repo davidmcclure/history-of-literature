@@ -54,8 +54,8 @@ class Count(Base):
                 page = defaultdict(Counter)
 
                 # Gather counts for English volumes.
-                for j, res in enumerate(jobs):
-                    if res: page[res['year']] += res['counts']
+                for j, (year, counts) in enumerate(jobs):
+                    page[year] += counts
                     print((i*page_size) + j)
 
                 # Flush to disk.
@@ -118,17 +118,11 @@ def worker(path):
         path (str): A volume path.
 
     Returns:
-        dict (year<int>, counts<Counter>)
+        tuple (year<int>, counts<Counter>)
     """
 
     vol = Volume(path)
 
-    if not vol.is_english:
-        return False
-
     counts = vol.cleaned_token_counts()
 
-    return dict(
-        year=vol.year,
-        counts=counts,
-    )
+    return (vol.year, counts)
