@@ -2,6 +2,7 @@
 
 from multiprocessing import Pool
 from collections import defaultdict, Counter
+from functools import partial
 
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
@@ -31,19 +32,17 @@ class Count(Base):
 
 
     @staticmethod
-    def worker(path):
+    def worker(vol):
 
         """
         Extract a token counts for a volume.
 
         Args:
-            path (str): A volume path.
+            vol (Volume)
 
         Returns:
             tuple (year<int>, counts<Counter>)
         """
-
-        vol = Volume.from_path(path)
 
         counts = vol.cleaned_token_counts()
 
@@ -65,21 +64,16 @@ class Count(Base):
 
         groups = corpus.path_groups(page_size)
 
-        with Pool(num_procs) as pool:
-            for i, group in enumerate(groups):
+        for i, paths in enumerate(groups):
 
-                # Queue volume jobs.
-                jobs = pool.imap_unordered(cls.worker, group)
+            page = defaultdict(Counter)
 
-                page = defaultdict(Counter)
+            for year, counts in map_english_vols(paths, cls.worker):
+                page[year] += counts
 
-                # Gather counts for English volumes.
-                for j, (year, counts) in enumerate(jobs):
-                    page[year] += counts
-                    print((i*page_size) + j)
+            cls.flush_page(page)
 
-                # Flush to disk.
-                cls.flush_page(page)
+            print(page_size*(i+1))
 
 
     @classmethod
@@ -126,3 +120,42 @@ class Count(Base):
                     ))
 
         session.commit()
+
+
+
+def map_english_vols(paths, worker, num_procs=12):
+
+    """
+    Apply a worker to English volumes in a set of paths.
+
+    Args:
+        paths (list)
+        worker (func)
+    """
+
+    with Pool(num_procs) as pool:
+
+        jobs = pool.imap_unordered(
+            partial(map_vol, worker),
+            paths,
+        )
+
+        for result in jobs:
+            if result: yield result
+
+
+
+def map_vol(worker, path):
+
+    """
+    Inflate a volume and map a function, if it's English.
+
+    Args:
+        worker (func)
+        path (str)
+    """
+
+    vol = Volume.from_path(path)
+
+    if vol.is_english:
+        return worker(vol)
