@@ -1,11 +1,14 @@
 
 
+from collections import defaultdict, Counter
 from functools import partial
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
+from sqlalchemy.sql import text
 
 from hol.models import Base
 from hol.corpus import Corpus
+from hol import config
 
 
 
@@ -67,7 +70,71 @@ class AnchoredCount(Base):
 
         for i, results in enumerate(mapper):
 
-            for year, counts in results:
-                print(year, counts)
+            # year -> level -> counts
+            page = defaultdict(lambda: defaultdict(Counter))
 
-            # TODO
+            for year, level_counts in results:
+                for level, counts in level_counts.items():
+                    page[year][level] += counts
+
+            cls.flush_page(page)
+
+            print((i+1)*page_size)
+
+
+    @classmethod
+    def flush_page(cls, page):
+
+        """
+        Flush a page to disk.
+
+        Args:
+            page (dict)
+        """
+
+        session = config.Session()
+
+        # SQLite "upsert."
+        query = text("""
+
+            INSERT OR REPLACE INTO {table!s} (
+                token,
+                year,
+                anchor_count,
+                count
+            )
+
+            VALUES (
+                :token,
+                :year,
+                :anchor_count,
+                :count + COALESCE(
+                    (
+                        SELECT count FROM {table!s} WHERE (
+                            token = :token AND
+                            year = :year AND
+                            anchor_count = :anchor_count
+                        )
+                    ),
+                    0
+                )
+            )
+
+        """.format(table=cls.__tablename__))
+
+        for year, level_counts in page.items():
+            for level, counts in level_counts.items():
+                for token, count in counts.items():
+
+                    # Whitelist tokens.
+                    if token in config.tokens:
+
+                        session.execute(query, dict(
+                            table=cls.__tablename__,
+                            token=token,
+                            year=year,
+                            anchor_count=level,
+                            count=count,
+                        ))
+
+        session.commit()
