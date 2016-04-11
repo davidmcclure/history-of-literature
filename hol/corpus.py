@@ -84,7 +84,7 @@ class Corpus:
         """
 
         for path in self.paths():
-            yield Volume(path)
+            yield Volume.from_path(path)
 
 
     def map(self, worker, num_procs=12, page_size=100):

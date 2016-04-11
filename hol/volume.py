@@ -113,3 +113,26 @@ class Volume:
             counts += page.token_counts()
 
         return counts
+
+
+    def anchored_token_counts(self, anchor):
+
+        """
+        Get counts for tokens that appear on pages with an "anchor" token,
+        broken out by the count of thethe anchor on the page.
+
+        Returns: dict
+        """
+
+        counts = defaultdict(Counter)
+
+        for page in self.pages():
+
+            page_counts = page.token_counts()
+
+            level = page_counts.get(anchor)
+
+            if level:
+                counts[level] += page_counts
+
+        return counts
