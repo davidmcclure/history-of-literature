@@ -27,16 +27,16 @@ class Volume:
             return cls(json.loads(fh.read()))
 
 
-    def __init__(self, json):
+    def __init__(self, data):
 
         """
         Read the compressed volume archive.
 
         Args:
-            json (dict)
+            data (dict)
         """
 
-        self.json = json
+        self.data = data
 
 
     @property
@@ -48,7 +48,7 @@ class Volume:
         Returns: str
         """
 
-        return self.json['id']
+        return self.data['id']
 
 
     @property
@@ -60,7 +60,7 @@ class Volume:
         Returns: int
         """
 
-        return int(self.json['metadata']['pubDate'])
+        return int(self.data['metadata']['pubDate'])
 
 
     @property
@@ -72,7 +72,7 @@ class Volume:
         Returns: str
         """
 
-        return self.json['metadata']['language']
+        return self.data['metadata']['language']
 
 
     @property
@@ -112,8 +112,8 @@ class Volume:
         Yields: Page
         """
 
-        for json in self.json['features']['pages']:
-            yield Page(json)
+        for data in self.data['features']['pages']:
+            yield Page(data)
 
 
     def cleaned_token_counts(self):

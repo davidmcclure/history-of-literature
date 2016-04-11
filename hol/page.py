@@ -8,16 +8,16 @@ from collections import Counter
 class Page:
 
 
-    def __init__(self, json):
+    def __init__(self, data):
 
         """
         Wrap an individual page.
 
         Args:
-            json (dict)
+            data (dict)
         """
 
-        self.json = json
+        self.data = data
 
 
     @property
@@ -29,7 +29,7 @@ class Page:
         Returns: int
         """
 
-        return self.json['body']['tokenCount']
+        return self.data['body']['tokenCount']
 
 
     def cleaned_token_counts(self):
@@ -44,7 +44,7 @@ class Page:
         letters = re.compile('^[a-z]+$')
 
         counts = Counter()
-        for token, pc in self.json['body']['tokenPosCount'].items():
+        for token, pc in self.data['body']['tokenPosCount'].items():
 
             token = token.lower()
 
