@@ -30,6 +30,26 @@ class Count(Base):
     count = Column(Integer, nullable=False)
 
 
+    @staticmethod
+    def worker(path):
+
+        """
+        Extract a token counts for a volume.
+
+        Args:
+            path (str): A volume path.
+
+        Returns:
+            tuple (year<int>, counts<Counter>)
+        """
+
+        vol = Volume.from_path(path)
+
+        counts = vol.cleaned_token_counts()
+
+        return (vol.year, counts)
+
+
     @classmethod
     def index(cls, num_procs=12, page_size=1000):
 
@@ -49,7 +69,7 @@ class Count(Base):
             for i, group in enumerate(groups):
 
                 # Queue volume jobs.
-                jobs = pool.imap_unordered(worker, group)
+                jobs = pool.imap_unordered(cls.worker, group)
 
                 page = defaultdict(Counter)
 
@@ -106,23 +126,3 @@ class Count(Base):
                     ))
 
         session.commit()
-
-
-
-def worker(path):
-
-    """
-    Extract a token counts for a volume.
-
-    Args:
-        path (str): A volume path.
-
-    Returns:
-        tuple (year<int>, counts<Counter>)
-    """
-
-    vol = Volume.from_path(path)
-
-    counts = vol.cleaned_token_counts()
-
-    return (vol.year, counts)
