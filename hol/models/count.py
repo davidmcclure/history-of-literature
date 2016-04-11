@@ -33,7 +33,7 @@ class Count(Base):
     def worker(vol):
 
         """
-        Extract a token counts for a volume.
+        Extract token counts for a volume.
 
         Args:
             vol (Volume)
@@ -66,7 +66,7 @@ class Count(Base):
 
             page = defaultdict(Counter)
 
-            for j, (year, counts) in enumerate(results):
+            for year, counts in results:
                 page[year] += counts
 
             cls.flush_page(page)
