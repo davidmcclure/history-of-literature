@@ -11,17 +11,32 @@ from hol.page import Page
 class Volume:
 
 
-    def __init__(self, path):
+    @classmethod
+    def from_path(cls, path):
+
+        """
+        Inflate a volume and make an instance.
+
+        Args:
+            path (str)
+
+        Returns: cls
+        """
+
+        with bz2.open(path, 'rt') as fh:
+            return cls(json.loads(fh.read()))
+
+
+    def __init__(self, json):
 
         """
         Read the compressed volume archive.
 
         Args:
-            path (str)
+            json (dict)
         """
 
-        with bz2.open(path, 'rt') as fh:
-            self.json = json.loads(fh.read())
+        self.json = json
 
 
     @property

@@ -121,7 +121,7 @@ def worker(path):
         tuple (year<int>, counts<Counter>)
     """
 
-    vol = Volume(path)
+    vol = Volume.from_path(path)
 
     counts = vol.cleaned_token_counts()
 
