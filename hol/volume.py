@@ -87,23 +87,6 @@ class Volume:
         return self.language == 'eng'
 
 
-    @property
-    def token_count(self):
-
-        """
-        Get the total number of tokens in the page "body" sections.
-
-        Returns: int
-        """
-
-        total = 0
-
-        for page in self.pages():
-            total += page.token_count
-
-        return total
-
-
     def pages(self):
 
         """
@@ -116,7 +99,7 @@ class Volume:
             yield Page(data)
 
 
-    def cleaned_token_counts(self):
+    def token_counts(self):
 
         """
         Count the total count of each token in all pages.
@@ -127,6 +110,6 @@ class Volume:
         counts = Counter()
 
         for page in self.pages():
-            counts += page.cleaned_token_counts()
+            counts += page.token_counts()
 
         return counts

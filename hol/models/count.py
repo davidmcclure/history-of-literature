@@ -42,7 +42,7 @@ class Count(Base):
             tuple (year<int>, counts<Counter>)
         """
 
-        counts = vol.cleaned_token_counts()
+        counts = vol.token_counts()
 
         return (vol.year, counts)
 
@@ -68,9 +68,10 @@ class Count(Base):
 
             for j, (year, counts) in enumerate(results):
                 page[year] += counts
-                print((i*page_size)+j)
 
             cls.flush_page(page)
+
+            print((i+1)*page_size)
 
 
     @classmethod

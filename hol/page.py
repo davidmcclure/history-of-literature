@@ -20,19 +20,7 @@ class Page:
         self.data = data
 
 
-    @property
-    def token_count(self):
-
-        """
-        Get the total number of "body" tokens.
-
-        Returns: int
-        """
-
-        return self.data['body']['tokenCount']
-
-
-    def cleaned_token_counts(self):
+    def token_counts(self):
 
         """
         Count the total occurrences of each unique token.
