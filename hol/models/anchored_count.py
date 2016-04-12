@@ -6,10 +6,10 @@ from functools import partial
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 
+from hol import config
+from hol.utils import flatten_dict
 from hol.models import Base
 from hol.corpus import Corpus
-from hol import config
-
 
 
 class AnchoredCount(Base):
@@ -122,19 +122,16 @@ class AnchoredCount(Base):
 
         """.format(table=cls.__tablename__))
 
-        for year, level_counts in page.items():
-            for level, counts in level_counts.items():
-                for token, count in counts.items():
+        for year, level, token, count in flatten_dict(page):
 
-                    # Whitelist tokens.
-                    if token in config.tokens:
+            # Whitelist tokens.
+            if token in config.tokens:
 
-                        session.execute(query, dict(
-                            table=cls.__tablename__,
-                            token=token,
-                            year=year,
-                            anchor_count=level,
-                            count=count,
-                        ))
+                session.execute(query, dict(
+                    token=token,
+                    year=year,
+                    anchor_count=level,
+                    count=count,
+                ))
 
         session.commit()

@@ -7,10 +7,9 @@ from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text
 
 from hol import config
-from hol.corpus import Corpus
-from hol.corpus import Volume
+from hol.utils import flatten_dict
 from hol.models import Base
-
+from hol.corpus import Corpus
 
 
 class Count(Base):
@@ -105,16 +104,15 @@ class Count(Base):
 
         """.format(table=cls.__tablename__))
 
-        for year, counts in page.items():
-            for token, count in counts.items():
+        for year, token, count in flatten_dict(page):
 
-                # Whitelist tokens.
-                if token in config.tokens:
+            # Whitelist tokens.
+            if token in config.tokens:
 
-                    session.execute(query, dict(
-                        token=token,
-                        year=year,
-                        count=count,
-                    ))
+                session.execute(query, dict(
+                    token=token,
+                    year=year,
+                    count=count,
+                ))
 
         session.commit()
