@@ -130,7 +130,7 @@ class Volume:
 
             page_counts = page.token_counts()
 
-            level = page_counts.get(anchor)
+            level = page_counts.pop(anchor)
 
             if level:
                 counts[level] += page_counts
