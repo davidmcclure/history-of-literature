@@ -5,7 +5,7 @@ import pytest
 from hol.utils import flatten_dict
 
 
-@pytest.mark.parametrize('nested,flat', [
+@pytest.mark.parametrize('d,flat', [
 
     (
 
@@ -46,5 +46,5 @@ from hol.utils import flatten_dict
     )
 
 ])
-def test_flatten_dict(nested, flat):
-    assert flatten_dict(nested) == flat
+def test_flatten_dict(d, flat):
+    assert set(map(tuple, flatten_dict(d))) == set(flat)

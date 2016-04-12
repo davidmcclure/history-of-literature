@@ -47,7 +47,7 @@ def window(seq, n):
         yield result
 
 
-def flatten_dict(nested):
+def flatten_dict(d):
 
     """
     Flatten a dict into a list of tuples.
@@ -58,4 +58,11 @@ def flatten_dict(nested):
     Returns: tuple
     """
 
-    pass
+    for k, v in d.items():
+
+        if isinstance(v, dict):
+            for item in flatten_dict(v):
+                yield [k] + item
+
+        else:
+            yield [k, v]
