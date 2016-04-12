@@ -62,7 +62,7 @@ def flatten_dict(d):
 
         if isinstance(v, dict):
             for item in flatten_dict(v):
-                yield [k] + item
+                yield (k,) + item
 
         else:
-            yield [k, v]
+            yield (k, v)

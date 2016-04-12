@@ -47,4 +47,4 @@ from hol.utils import flatten_dict
 
 ])
 def test_flatten_dict(d, flat):
-    assert set(map(tuple, flatten_dict(d))) == set(flat)
+    assert set(flatten_dict(d)) == set(flat)
