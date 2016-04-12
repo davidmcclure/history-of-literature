@@ -47,4 +47,8 @@ from hol.utils import flatten_dict
 
 ])
 def test_flatten_dict(d, flat):
-    assert set(flatten_dict(d)) == set(flat)
+
+    result = list(flatten_dict(d))
+
+    assert len(result) == len(flat)
+    assert set(result) == set(flat)
