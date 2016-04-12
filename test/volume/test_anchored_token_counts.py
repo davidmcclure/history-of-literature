@@ -3,10 +3,11 @@
 from hol.volume import Volume
 
 
-def test_combine_page_counts():
+def test_anchored_token_counts():
 
     """
-    Volume#token_counts() should add up page-specific counts.
+    Volume#anchored_token_counts() should add up token counts for pages where
+    an "anchor" token appears, bucketed by the anchor token count.
     """
 
     v = Volume({
