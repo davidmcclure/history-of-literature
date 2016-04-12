@@ -45,3 +45,17 @@ def window(seq, n):
     for token in it:
         result = result[1:] + (token,)
         yield result
+
+
+def flatten_dict(nested):
+
+    """
+    Flatten a dict into a list of tuples.
+
+    Args:
+        nested (dict)
+
+    Returns: tuple
+    """
+
+    pass
