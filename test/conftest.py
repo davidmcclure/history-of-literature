@@ -33,7 +33,7 @@ def mock_corpus(config):
     corpus = MockCorpus()
 
     # Point config -> mock.
-    config.config.update_w_merge({
+    config.config.update({
         'corpus': corpus.path
     })
 

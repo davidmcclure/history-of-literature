@@ -3,6 +3,7 @@
 import os
 import tempfile
 import json
+import shutil
 
 from bz2 import compress
 
