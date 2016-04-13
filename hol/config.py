@@ -21,7 +21,6 @@ class Config:
         return cls([
             os.path.join(os.path.dirname(__file__), 'hol.yml'),
             '~/.hol.yml',
-            '/etc/hol.yml',
         ])
 
 

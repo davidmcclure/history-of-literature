@@ -10,10 +10,11 @@ from hol import config
 def reset_db():
 
     """
-    Recreate all database tables.
+    Initialize the database.
     """
 
     engine = config.build_engine()
 
+    # Clear and recreate all tables.
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
