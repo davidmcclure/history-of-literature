@@ -6,6 +6,7 @@ import anyconfig
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from wordfreq import top_n_list
+from contextlib import contextmanager
 
 
 class Config:
@@ -101,3 +102,26 @@ class Config:
         """
 
         return sessionmaker(bind=self.build_engine())
+
+
+    @contextmanager
+    def get_session(self):
+
+        """
+        Provide a transactional scope around a query.
+
+        Yields: Session
+        """
+
+        session = self.Session()
+
+        try:
+            yield session
+            session.commit()
+
+        except:
+            session.rollback()
+            raise
+
+        finally:
+            session.close()

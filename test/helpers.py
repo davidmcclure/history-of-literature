@@ -24,7 +24,7 @@ def make_page(counts):
     })
 
 
-def make_vol(counts, id=None, year=1900, language='eng'):
+def make_vol(counts=[], year=1900, language='eng', id=None):
 
     """
     Make a volume instance with the provided tokenPosCount maps.
