@@ -26,9 +26,9 @@ def test_add_pos_counts():
     })
 
     assert p.token_counts() == {
-        'aaa': 3,
-        'bbb': 7,
-        'ccc': 11,
+        'aaa': 1+2,
+        'bbb': 3+4,
+        'ccc': 5+6,
     }
 
 
@@ -48,7 +48,7 @@ def test_combine_casing_variants():
     })
 
     assert p.token_counts() == {
-        'token': 3,
+        'token': 1+2,
     }
 
 

@@ -105,4 +105,3 @@ def test_anchored_token_counts():
             'ccc': 4,
         }
     }
-
