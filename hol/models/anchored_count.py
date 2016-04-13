@@ -2,6 +2,7 @@
 
 from collections import defaultdict, Counter
 from functools import partial
+from datetime import datetime as dt
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text, func
@@ -61,6 +62,8 @@ class AnchoredCount(Base):
             cache_len (int)
         """
 
+        t1 = dt.now()
+
         corpus = Corpus.from_env()
 
         # Apply the anchor token.
@@ -80,6 +83,9 @@ class AnchoredCount(Base):
             cls.flush_page(page)
 
             print((i+1)*page_size)
+
+        t2 = dt.now()
+        print(t2-t1)
 
 
     @classmethod
