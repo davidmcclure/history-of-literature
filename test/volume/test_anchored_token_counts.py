@@ -87,7 +87,6 @@ def test_anchored_token_counts():
 
     ])
 
-
     assert v.anchored_token_counts('literature') == {
         1: {
             'aaa': 1,
@@ -104,4 +103,54 @@ def test_anchored_token_counts():
             'bbb': 4,
             'ccc': 4,
         }
+    }
+
+
+def test_ignore_pages_without_anchor_token():
+
+    """
+    Ignore tokens on pages that don't contain the anchor token.
+    """
+
+    v = make_vol([
+
+        {
+
+            'literature': {
+                'POS': 1,
+            },
+
+            'aaa': {
+                'POS': 1,
+            },
+            'bbb': {
+                'POS': 1,
+            },
+            'ccc': {
+                'POS': 1,
+            },
+
+        },
+
+        # No anchor token.
+        {
+            'aaa': {
+                'POS': 2,
+            },
+            'bbb': {
+                'POS': 2,
+            },
+            'ccc': {
+                'POS': 2,
+            },
+        },
+
+    ])
+
+    assert v.anchored_token_counts('literature') == {
+        1: {
+            'aaa': 1,
+            'bbb': 1,
+            'ccc': 1,
+        },
     }
