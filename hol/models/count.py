@@ -1,7 +1,6 @@
 
 
 from collections import defaultdict, Counter
-from datetime import datetime as dt
 
 from sqlalchemy.schema import Index
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
@@ -58,8 +57,6 @@ class Count(Base):
             cache_len (int)
         """
 
-        t1 = dt.now()
-
         corpus = Corpus.from_env()
 
         mapper = corpus.map(cls.worker, num_procs, page_size)
@@ -74,9 +71,6 @@ class Count(Base):
             cls.flush_page(page)
 
             print((i+1)*page_size)
-
-        t2 = dt.now()
-        print(t2-t1)
 
 
     @classmethod
