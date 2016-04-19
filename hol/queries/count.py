@@ -21,19 +21,19 @@ class CountQueries:
 
 
     @lru_cache()
-    def years(self):
+    def tokens(self):
 
         """
-        Get an ordered list of years.
+        Get an ordered list of all tokens.
 
-        Returns: list<int>
+        Returns: list<str>
         """
 
         res = (
             self.session
-            .query(Count.year)
+            .query(Count.token)
             .distinct()
-            .order_by(Count.year.asc())
+            .order_by(Count.token.asc())
         )
 
         return [r[0] for r in res]
