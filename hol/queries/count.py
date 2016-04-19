@@ -1,5 +1,7 @@
 
 
+import numpy as np
+
 from functools import lru_cache
 from collections import defaultdict, Counter
 from sqlalchemy.sql import func
@@ -57,13 +59,13 @@ class CountQueries:
 
 
     @lru_cache()
-    def year_count_series(self, years):
+    def baseline_series(self, years):
 
         """
         Get per-year counts for all tokens.
 
         Args:
-            year (range)
+            year (iter)
 
         Returns: list[tuple[year, count]]
         """
@@ -76,18 +78,18 @@ class CountQueries:
             .order_by(Count.year)
         )
 
-        return res.all()
+        return np.array(res.all())
 
 
     @lru_cache()
-    def token_year_count_series(self, token, years):
+    def token_series(self, token, years):
 
         """
         Get per-year counts for an individual token.
 
         Args:
             token (str)
-            year (range)
+            year (iter)
 
         Returns: list[tuple[year, count]]
         """
@@ -100,4 +102,28 @@ class CountQueries:
             .order_by(Count.year)
         )
 
-        return res.all()
+        return np.array(res.all())
+
+
+    @lru_cache()
+    def token_wpm_series(self, token, years):
+
+        """
+        Get a WMP time series for a token.
+
+        Args:
+            token (str)
+            year (iter)
+
+        Returns: list[tuple[year, count]]
+        """
+
+        baseline = self.baseline_series(years)
+
+        token = self.token_series(token, years)
+
+        series = []
+        for bc, tc, year in zip(baseline[:,1], token[:,1], years):
+            series.append((year, (1e6 * tc) / bc))
+
+        return series
