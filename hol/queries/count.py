@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from collections import defaultdict, Counter
+from sqlalchemy.sql import func
 
 from hol import config
 from hol.models import Count
@@ -36,3 +37,20 @@ class CountQueries:
         )
 
         return [r[0] for r in res]
+
+
+    @lru_cache()
+    def total_token_count(self):
+
+        """
+        Get the total number of observed tokens.
+
+        Returns: int
+        """
+
+        res = (
+            self.session
+            .query(func.sum(Count.count))
+        )
+
+        return res.scalar()
