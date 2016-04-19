@@ -54,3 +54,26 @@ class CountQueries:
         )
 
         return res.scalar()
+
+
+    @lru_cache()
+    def year_count_time_series(self, years):
+
+        """
+        Get per-year token counts.
+
+        Args:
+            year (range)
+
+        Returns: list[tuple[year, count]]
+        """
+
+        res = (
+            self.session
+            .query(Count.year, func.sum(Count.count))
+            .filter(Count.year.in_(years))
+            .group_by(Count.year)
+            .order_by(Count.year)
+        )
+
+        return res.all()
