@@ -65,9 +65,9 @@ class CountQueries:
         Get per-year counts for all tokens.
 
         Args:
-            year (iter)
+            years (iter)
 
-        Returns: list[tuple[year, count]]
+        Returns: [(year, count), ...]
         """
 
         res = (
@@ -78,7 +78,7 @@ class CountQueries:
             .order_by(Count.year)
         )
 
-        return np.array(res.all())
+        return res.all()
 
 
     @lru_cache()
@@ -89,9 +89,9 @@ class CountQueries:
 
         Args:
             token (str)
-            year (iter)
+            years (iter)
 
-        Returns: list[tuple[year, count]]
+        Returns: [(year, count), ...]
         """
 
         res = (
@@ -102,7 +102,7 @@ class CountQueries:
             .order_by(Count.year)
         )
 
-        return np.array(res.all())
+        return res.all()
 
 
     @lru_cache()
@@ -113,17 +113,18 @@ class CountQueries:
 
         Args:
             token (str)
-            year (iter)
+            years (iter)
 
-        Returns: list[tuple[year, count]]
+        Returns: [(year, wpm), ...]
         """
 
-        baseline = self.baseline_series(years)
+        baseline = dict(self.baseline_series(years))
 
-        token = self.token_series(token, years)
+        ts = self.token_series(token, years)
 
         series = []
-        for bc, tc, year in zip(baseline[:,1], token[:,1], years):
-            series.append((year, (1e6 * tc) / bc))
+        for year, count in ts:
+            wpm = (1e6 * count) / baseline[year]
+            series.append((year, wpm))
 
         return series
