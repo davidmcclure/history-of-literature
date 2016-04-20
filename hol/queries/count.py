@@ -51,7 +51,25 @@ class CountQueries(QuerySet):
 
 
     @lru_cache()
-    def baseline_series(self, years):
+    def year_count(self, year):
+
+        """
+        How many tokens appeared in year X?
+
+        Returns: int
+        """
+
+        res = (
+            self.session
+            .query(func.sum(Count.count))
+            .filter(Count.year==year)
+        )
+
+        return res.scalar()
+
+
+    @lru_cache()
+    def year_count_series(self, years):
 
         """
         Get per-year counts for all tokens.
@@ -74,7 +92,7 @@ class CountQueries(QuerySet):
 
 
     @lru_cache()
-    def token_series(self, token, years):
+    def token_count_series(self, token, years):
 
         """
         Get per-year counts for an individual token.
@@ -110,9 +128,9 @@ class CountQueries(QuerySet):
         Returns: [(year, wpm), ...]
         """
 
-        baseline = dict(self.baseline_series(years))
+        baseline = dict(self.year_count_series(years))
 
-        ts = self.token_series(token, years)
+        ts = self.token_count_series(token, years)
 
         series = []
         for year, count in ts:
