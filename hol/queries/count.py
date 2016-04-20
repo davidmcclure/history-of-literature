@@ -109,7 +109,7 @@ class CountQueries:
     def token_wpm_series(self, token, years):
 
         """
-        Get a WMP time series for a token.
+        Get a WMP series for a token.
 
         Args:
             token (str)
@@ -128,3 +128,30 @@ class CountQueries:
             series.append((year, wpm))
 
         return series
+
+
+    @lru_cache()
+    def token_wpm_series_smooth(self, token, years, width=10):
+
+        """
+        Smooth the WMP series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: [(year, wpm), ...]
+        """
+
+        series = self.token_wpm_series(token, years)
+
+        years, wpms = zip(*series)
+
+        smooth = np.convolve(
+            wpms,
+            np.ones(width) / width,
+            mode='same',
+        )
+
+        return zip(years, smooth)
