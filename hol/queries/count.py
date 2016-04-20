@@ -165,3 +165,25 @@ class CountQueries(QuerySet):
         )
 
         return zip(years, smooth)
+
+
+    @lru_cache()
+    def token_counts_by_year(self, year):
+
+        """
+        Get the counts for all tokens that appeared in year X.
+
+        Args:
+            year (int)
+
+        Returns: [(token, count), ...]
+        """
+
+        res = (
+            self.session
+            .query(Count.token, Count.count)
+            .filter(Count.year==year)
+            .order_by(Count.token.asc())
+        )
+
+        return res.all()
