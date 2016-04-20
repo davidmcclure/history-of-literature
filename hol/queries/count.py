@@ -7,19 +7,11 @@ from collections import defaultdict, Counter
 from sqlalchemy.sql import func
 
 from hol import config
+from .query_set import QuerySet
 from hol.models import Count
 
 
-class CountQueries:
-
-
-    def __init__(self):
-
-        """
-        Initialize a session.
-        """
-
-        self.session = config.Session()
+class CountQueries(QuerySet):
 
 
     @lru_cache()
