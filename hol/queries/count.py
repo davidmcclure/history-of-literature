@@ -7,7 +7,7 @@ from collections import defaultdict, Counter
 from sqlalchemy.sql import func
 
 from hol import config
-from .query_set import QuerySet
+from hol.queries.query_set import QuerySet
 from hol.models import Count
 
 
