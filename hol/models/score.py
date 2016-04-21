@@ -56,6 +56,8 @@ class Score(Base):
             tc0 = AnchoredCount.token_counts_by_year(year)
             tc1 = Count.token_counts_by_year(year)
 
+            if not tc0: continue
+
             rows = []
             for token in tc0.keys():
 
