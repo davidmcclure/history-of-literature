@@ -145,3 +145,30 @@ class Score(Base):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_series_smooth(cls, token, years, width=10):
+
+        """
+        Smooth the series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: OrderedDict {year: wpm, ...}
+        """
+
+        series = cls.token_series(token, years)
+
+        wpms = series.values()
+
+        smooth = np.convolve(
+            list(wpms),
+            np.ones(width) / width,
+            mode='same',
+        )
+
+        return OrderedDict(zip(series.keys(), smooth))
