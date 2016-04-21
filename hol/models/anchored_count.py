@@ -1,7 +1,7 @@
 
 
 from functools import partial, lru_cache
-from collections import defaultdict, Counter
+from collections import defaultdict, Counter, OrderedDict
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text, func
@@ -185,3 +185,29 @@ class AnchoredCount(Base):
             )
 
             return res.scalar() or 0
+
+
+    @classmethod
+    def token_counts_by_year(cls, year):
+
+        """
+        Get the counts for all tokens that appeared on pages with the anchor
+        token in year X.
+
+        Args:
+            year (int)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.token, func.sum(cls.count))
+                .filter(cls.year==year)
+                .group_by(cls.token)
+                .order_by(cls.token.asc())
+            )
+
+            return OrderedDict(res.all())
