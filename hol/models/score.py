@@ -80,6 +80,10 @@ class Score(Base):
         """
         Get the top N tokens for a year.
 
+        Args:
+            year (int)
+            n (int)
+
         Returns: [(token, rank), ...]
         """
 
@@ -96,6 +100,6 @@ class Score(Base):
             )
 
             for i, (token, rank) in enumerate(res):
-                ranks[token] = i+1
+                ranks[token] = n-i
 
             return ranks
