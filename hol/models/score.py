@@ -70,3 +70,24 @@ class Score(Base):
             print(year)
 
         session.commit()
+
+
+    @classmethod
+    def tokens(cls):
+
+        """
+        Get an ordered list of all tokens.
+
+        Returns: list<str>
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.token)
+                .distinct()
+                .order_by(cls.token.asc())
+            )
+
+            return [r[0] for r in res]
