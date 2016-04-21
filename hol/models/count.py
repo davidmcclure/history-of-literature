@@ -122,7 +122,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def token_year_count(cls, token, year):
 
         """
@@ -147,7 +146,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def tokens(cls):
 
         """
@@ -169,7 +167,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def total_token_count(cls):
 
         """
@@ -189,7 +186,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def year_count(cls, year):
 
         """
@@ -209,11 +205,10 @@ class Count(Base):
                 .filter(cls.year==year)
             )
 
-            return res.scalar()
+            return res.scalar() or 0
 
 
     @classmethod
-    @lru_cache()
     def year_count_series(cls, years):
 
         """
@@ -239,7 +234,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def token_count_series(cls, token, years):
 
         """
@@ -266,7 +260,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def token_wpm_series(cls, token, years):
 
         """
@@ -292,7 +285,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def token_wpm_series_smooth(cls, token, years, width=10):
 
         """
@@ -320,7 +312,6 @@ class Count(Base):
 
 
     @classmethod
-    @lru_cache()
     def token_counts_by_year(cls, year):
 
         """

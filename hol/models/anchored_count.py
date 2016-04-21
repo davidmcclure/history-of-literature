@@ -1,7 +1,7 @@
 
 
+from functools import partial, lru_cache
 from collections import defaultdict, Counter
-from functools import partial
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text, func
@@ -162,6 +162,26 @@ class AnchoredCount(Base):
                     cls.year==year,
                     cls.anchor_count==level,
                 )
+            )
+
+            return res.scalar() or 0
+
+
+    @classmethod
+    def year_count(cls, year):
+
+        """
+        How many tokens appeared on pages with the anchor token in year X?
+
+        Returns: int
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(cls.year==year)
             )
 
             return res.scalar() or 0
