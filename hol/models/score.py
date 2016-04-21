@@ -198,3 +198,39 @@ class Score(Base):
 
         # No data.
         else: return series
+
+
+    @classmethod
+    def ranked_series(cls, years, width=10):
+
+        """
+        Compute smoothed series for all tokens, rank by variance.
+
+        Args:
+            years (iter)
+            width (int)
+
+        Returns: OrderedDict {token: series, ...}
+        """
+
+        tsv = []
+        for t in Score.tokens():
+
+            # Smoothed log-likelihood series.
+            s = cls.token_series_smooth(t, years, width)
+
+            # Variance of the series.
+            if s:
+                v = np.var(list(s.values()))
+                tsv.append((t, s, v))
+
+        # Sort descending.
+        tsv = sorted(tsv, key=lambda x: x[2], reverse=True)
+
+        result = OrderedDict()
+
+        # Index by token.
+        for (t, s, v) in tsv:
+            result[t] = (s, v)
+
+        return result
