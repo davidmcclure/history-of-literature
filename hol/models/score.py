@@ -2,8 +2,10 @@
 
 import numpy as np
 
-from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 from scipy.stats import chi2_contingency
+from collections import OrderedDict
+
+from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
 from hol import config
 from hol.models import Base, Count, AnchoredCount
@@ -91,3 +93,29 @@ class Score(Base):
             )
 
             return [r[0] for r in res]
+
+
+    @classmethod
+    def token_series(cls, token, years):
+
+        """
+        Get scores for a set of years.
+
+        Args:
+            token (str)
+            years (iter)
+
+        Returns: OrderedDict {year: score, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, cls.score)
+                .filter(cls.token==token, cls.year.in_(years))
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
