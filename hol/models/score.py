@@ -184,12 +184,17 @@ class Score(Base):
 
         series = cls.token_series(token, years)
 
-        wpms = series.values()
+        if series:
 
-        smooth = np.convolve(
-            list(wpms),
-            np.ones(width) / width,
-            mode='same',
-        )
+            wpms = series.values()
 
-        return OrderedDict(zip(series.keys(), smooth))
+            smooth = np.convolve(
+                list(wpms),
+                np.ones(width) / width,
+                mode='same',
+            )
+
+            return OrderedDict(zip(series.keys(), smooth))
+
+        # No data.
+        else: return series
