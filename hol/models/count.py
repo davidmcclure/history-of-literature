@@ -122,30 +122,6 @@ class Count(Base):
 
 
     @classmethod
-    def token_year_count(cls, token, year):
-
-        """
-        How many times did token X appear in year Y?
-
-        Args:
-            token (str)
-            year (int)
-
-        Returns: int
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.token==token, cls.year==year)
-            )
-
-            return res.scalar() or 0
-
-
-    @classmethod
     def tokens(cls):
 
         """
@@ -183,6 +159,30 @@ class Count(Base):
             )
 
             return res.scalar()
+
+
+    @classmethod
+    def token_year_count(cls, token, year):
+
+        """
+        How many times did token X appear in year Y?
+
+        Args:
+            token (str)
+            year (int)
+
+        Returns: int
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(cls.token==token, cls.year==year)
+            )
+
+            return res.scalar() or 0
 
 
     @classmethod

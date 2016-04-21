@@ -7,14 +7,13 @@ from hol import config
 
 
 @task
-def reset_db():
+def init_db():
 
     """
-    Initialize the database.
+    Create database tables.
     """
 
     engine = config.build_engine()
 
-    # Clear and recreate all tables.
-    Base.metadata.drop_all(engine)
+    # Create all tables.
     Base.metadata.create_all(engine)
