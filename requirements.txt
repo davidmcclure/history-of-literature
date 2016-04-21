@@ -11,5 +11,6 @@ sqlalchemy
 numpy
 scipy
 matplotlib
-jupyter
+scikit-learn
 pytest
+jupyter

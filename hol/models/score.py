@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from sklearn.preprocessing import scale
 from scipy.stats import chi2_contingency
 from collections import OrderedDict
 
@@ -42,6 +43,7 @@ class Score(Base):
         # Clear existing rows.
         session.query(cls).delete()
 
+        # Per-year counts.
         yc0 = AnchoredCount.year_count_series(years)
         yc1 = Count.year_count_series(years)
 
@@ -50,18 +52,30 @@ class Score(Base):
             c = yc0.get(year, 0)
             d = yc1.get(year, 0)
 
+            # Per-year, per-token counts.
             tc0 = AnchoredCount.token_counts_by_year(year)
             tc1 = Count.token_counts_by_year(year)
 
+            rows = []
             for token in tc0.keys():
 
                 a = tc0.get(token, 0)
                 b = tc1.get(token, 0)
 
+                # Compute the log-likelihood.
                 score, p, dof, exp = chi2_contingency(
                     np.array([[a, b], [c, d]]),
                     lambda_='log-likelihood',
                 )
+
+                rows.append((token, year, score))
+
+            # Normalize the scores.
+            scores = [r[2] for r in rows]
+            scaled = scale(scores)
+
+            # Flush the rows.
+            for (token, year, _), score in zip(rows, scaled):
 
                 session.add(cls(
                     token=token,
