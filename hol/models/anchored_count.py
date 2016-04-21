@@ -188,6 +188,31 @@ class AnchoredCount(Base):
 
 
     @classmethod
+    def year_count_series(cls, years):
+
+        """
+        Get total token counts for a set of years.
+
+        Args:
+            years (iter)
+
+        Returns: OrderedDict {year: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, func.sum(cls.count))
+                .filter(cls.year.in_(years))
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
+
+
+    @classmethod
     def token_counts_by_year(cls, year):
 
         """
