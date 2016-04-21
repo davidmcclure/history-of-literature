@@ -75,47 +75,27 @@ class Score(Base):
 
 
     @classmethod
-    def tokens(cls):
+    def topn_by_year(cls, year, n):
 
         """
-        Get an ordered list of all tokens.
+        Get the top N tokens for a year.
 
-        Returns: list<str>
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.token)
-                .distinct()
-                .order_by(cls.token.asc())
-            )
-
-            return [r[0] for r in res]
-
-
-    @classmethod
-    def token_series(cls, token, years):
-
-        """
-        Get scores for a set of years.
-
-        Args:
-            token (str)
-            years (iter)
-
-        Returns: OrderedDict {year: score, ...}
+        Returns: [(token, rank), ...]
         """
 
         with config.get_session() as session:
 
+            ranks = OrderedDict()
+
             res = (
                 session
-                .query(cls.year, cls.score)
-                .filter(cls.token==token, cls.year.in_(years))
-                .group_by(cls.year)
-                .order_by(cls.year)
+                .query(cls.token, cls.score)
+                .filter(cls.year==year)
+                .order_by(cls.score.desc())
+                .limit(n)
             )
 
-            return OrderedDict(res.all())
+            for i, (token, rank) in enumerate(res):
+                ranks[token] = i+1
+
+            return ranks
