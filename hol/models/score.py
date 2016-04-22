@@ -136,10 +136,7 @@ class Score(Base):
                 .limit(n)
             )
 
-            for i, (token, rank) in enumerate(res):
-                ranks[token] = n-i
-
-            return ranks
+            return OrderedDict(res.all())
 
 
     @classmethod

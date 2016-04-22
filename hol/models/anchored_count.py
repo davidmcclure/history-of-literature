@@ -138,6 +138,31 @@ class AnchoredCount(Base):
 
 
     @classmethod
+    def token_year_count(cls, token, year):
+
+        """
+        How many times did token X appear in year Y on all pages that contain
+        the anchor token?
+
+        Args:
+            token (str)
+            year (int)
+
+        Returns: int
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(cls.token==token, cls.year==year)
+            )
+
+            return res.scalar() or 0
+
+
+    @classmethod
     def token_year_level_count(cls, token, year, level):
 
         """
