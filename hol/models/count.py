@@ -280,7 +280,6 @@ class Count(Base):
         smooth = np.convolve(
             list(wpms),
             np.ones(width) / width,
-            mode='same',
         )
 
         return OrderedDict(zip(series.keys(), smooth))
@@ -332,7 +331,6 @@ class Count(Base):
         smooth = np.convolve(
             list(wpms),
             np.ones(width) / width,
-            mode='same',
         )
 
         return OrderedDict(zip(series.keys(), smooth))

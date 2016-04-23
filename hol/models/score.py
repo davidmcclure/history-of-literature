@@ -2,8 +2,9 @@
 
 import numpy as np
 
-from scipy.stats import chi2_contingency, rankdata
 from collections import OrderedDict
+from scipy.stats import chi2_contingency, rankdata
+from scipy.signal import savgol_filter
 
 from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
@@ -197,7 +198,6 @@ class Score(Base):
             smooth = np.convolve(
                 list(wpms),
                 np.ones(width) / width,
-                mode='same',
             )
 
             return OrderedDict(zip(series.keys(), smooth))
@@ -255,7 +255,6 @@ class Score(Base):
             smooth = np.convolve(
                 list(wpms),
                 np.ones(width) / width,
-                mode='same',
             )
 
             return OrderedDict(zip(series.keys(), smooth))
