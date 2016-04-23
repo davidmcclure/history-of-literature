@@ -1,7 +1,10 @@
 
 
+import numpy as np
+
 from itertools import islice, chain
 from collections import OrderedDict
+from sklearn import preprocessing
 
 
 def grouper(iterable, size):
@@ -69,19 +72,19 @@ def flatten_dict(d):
             yield (k, v)
 
 
-def sort_dict(d, desc=True):
+def scale_01(seq):
 
     """
-    Sort an ordered dictionary by value, descending.
+    Scale a list from 0-1.
 
     Args:
-        d (OrderedDict): An ordered dictionary.
-        desc (bool): If true, sort desc.
+        d (list)
 
-    Returns:
-        OrderedDict: The sorted dictionary.
+    Returns: np.array
     """
 
-    sort = sorted(d.items(), key=lambda x: x[1], reverse=desc)
+    scaler = preprocessing.MinMaxScaler()
 
-    return OrderedDict(sort)
+    data = np.array([[float(s)] for s in seq])
+
+    return scaler.fit_transform(data)
