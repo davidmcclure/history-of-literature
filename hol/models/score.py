@@ -27,6 +27,8 @@ class Score(Base):
 
     score = Column(Float, nullable=False)
 
+    rank = Column(Float, nullable=False)
+
 
     @classmethod
     def index(cls, years):
@@ -80,12 +82,13 @@ class Score(Base):
             scaled = scale_01(ranked)
 
             # Flush the rows.
-            for (token, year, _), score in zip(rows, scaled):
+            for (token, year, score), rank in zip(rows, scaled):
 
                 session.add(cls(
                     token=token,
                     year=year,
                     score=score,
+                    rank=rank,
                 ))
 
             print(year)
@@ -124,22 +127,25 @@ class Score(Base):
             year (int)
             n (int)
 
-        Returns: [(token, rank), ...]
+        Returns: OrderedDict {year: (score, rank), ...}
         """
 
         with config.get_session() as session:
 
-            ranks = OrderedDict()
-
             res = (
                 session
-                .query(cls.token, cls.score)
+                .query(cls.token, cls.score, cls.rank)
                 .filter(cls.year==year)
                 .order_by(cls.score.desc())
                 .limit(n)
             )
 
-            return OrderedDict(res.all())
+            topn = OrderedDict()
+
+            for token, score, rank in res:
+                topn[token] = (score, rank)
+
+            return topn
 
 
     @classmethod
