@@ -150,7 +150,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_score_series(cls, token, years):
+    def score_series(cls, token, years):
 
         """
         Get scores for a set of years.
@@ -176,7 +176,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_score_series_smooth(cls, token, years, width=10):
+    def score_series_smooth(cls, token, years, width=10):
 
         """
         Smooth the series for a token.
@@ -189,7 +189,7 @@ class Score(Base):
         Returns: OrderedDict {year: wpm, ...}
         """
 
-        series = cls.token_score_series(token, years)
+        series = cls.score_series(token, years)
 
         if series:
 
@@ -207,7 +207,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_rank_series(cls, token, years):
+    def rank_series(cls, token, years):
 
         """
         Get ranks for a set of years.
@@ -233,7 +233,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_rank_series_smooth(cls, token, years, width=10):
+    def rank_series_smooth(cls, token, years, width=10):
 
         """
         Smooth the rank series for a token.
@@ -246,7 +246,7 @@ class Score(Base):
         Returns: OrderedDict {year: wpm, ...}
         """
 
-        series = cls.token_rank_series(token, years)
+        series = cls.rank_series(token, years)
 
         if series:
 
@@ -281,7 +281,7 @@ class Score(Base):
         for t in Score.tokens():
 
             # Smoothed log-likelihood series.
-            s = cls.token_rank_series_smooth(t, years, width)
+            s = cls.rank_series_smooth(t, years, width)
 
             # Variance of the series.
             if s:
