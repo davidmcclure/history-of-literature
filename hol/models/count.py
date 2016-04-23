@@ -260,6 +260,33 @@ class Count(Base):
 
 
     @classmethod
+    def token_count_series_smooth(cls, token, years, width=10):
+
+        """
+        Smooth the count series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: OrderedDict {year: wpm, ...}
+        """
+
+        series = cls.token_count_series(token, years)
+
+        wpms = series.values()
+
+        smooth = np.convolve(
+            list(wpms),
+            np.ones(width) / width,
+            mode='same',
+        )
+
+        return OrderedDict(zip(series.keys(), smooth))
+
+
+    @classmethod
     def token_wpm_series(cls, token, years):
 
         """

@@ -149,7 +149,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_series(cls, token, years):
+    def token_score_series(cls, token, years):
 
         """
         Get scores for a set of years.
@@ -175,7 +175,7 @@ class Score(Base):
 
 
     @classmethod
-    def token_series_smooth(cls, token, years, width=10):
+    def token_score_series_smooth(cls, token, years, width=10):
 
         """
         Smooth the series for a token.
@@ -188,7 +188,65 @@ class Score(Base):
         Returns: OrderedDict {year: wpm, ...}
         """
 
-        series = cls.token_series(token, years)
+        series = cls.token_score_series(token, years)
+
+        if series:
+
+            wpms = series.values()
+
+            smooth = np.convolve(
+                list(wpms),
+                np.ones(width) / width,
+                mode='same',
+            )
+
+            return OrderedDict(zip(series.keys(), smooth))
+
+        # No data.
+        else: return series
+
+
+    @classmethod
+    def token_rank_series(cls, token, years):
+
+        """
+        Get ranks for a set of years.
+
+        Args:
+            token (str)
+            years (iter)
+
+        Returns: OrderedDict {year: score, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, cls.rank)
+                .filter(cls.token==token, cls.year.in_(years))
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_rank_series_smooth(cls, token, years, width=10):
+
+        """
+        Smooth the rank series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: OrderedDict {year: wpm, ...}
+        """
+
+        series = cls.token_rank_series(token, years)
 
         if series:
 
