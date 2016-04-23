@@ -73,17 +73,17 @@ class Score(Base):
                     lambda_='log-likelihood',
                 )
 
-                rows.append((token, year, score))
+                rows.append((token, score))
 
             # Rank the scores.
-            scores = [r[2] for r in rows]
+            scores = [r[1] for r in rows]
             ranked = rankdata(scores, method='dense')
 
             # Scale to 0-1.
             scaled = scale_01(ranked)
 
             # Flush the rows.
-            for (token, year, score), rank in zip(rows, scaled):
+            for (token, score), rank in zip(rows, scaled):
 
                 session.add(cls(
                     token=token,
