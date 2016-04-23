@@ -213,13 +213,14 @@ class AnchoredCount(Base):
 
 
     @classmethod
-    def year_count_series(cls, years):
+    def year_count_series(cls, years, min_count=5):
 
         """
         Get total token counts for a set of years.
 
         Args:
             years (iter)
+            min_count (int)
 
         Returns: OrderedDict {year: count, ...}
         """
@@ -229,7 +230,10 @@ class AnchoredCount(Base):
             res = (
                 session
                 .query(cls.year, func.sum(cls.count))
-                .filter(cls.year.in_(years))
+                .filter(
+                    cls.anchor_count > min_count,
+                    cls.year.in_(years),
+                )
                 .group_by(cls.year)
                 .order_by(cls.year)
             )
@@ -238,7 +242,7 @@ class AnchoredCount(Base):
 
 
     @classmethod
-    def token_counts_by_year(cls, year):
+    def token_counts_by_year(cls, year, min_count=5):
 
         """
         Get the counts for all tokens that appeared on pages with the anchor
@@ -246,6 +250,7 @@ class AnchoredCount(Base):
 
         Args:
             year (int)
+            min_count (int)
 
         Returns: OrderedDict {token: count, ...}
         """
@@ -255,7 +260,10 @@ class AnchoredCount(Base):
             res = (
                 session
                 .query(cls.token, func.sum(cls.count))
-                .filter(cls.year==year)
+                .filter(
+                    cls.anchor_count > min_count,
+                    cls.year==year,
+                )
                 .group_by(cls.token)
                 .order_by(cls.token.asc())
             )
