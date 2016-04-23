@@ -2,14 +2,14 @@
 
 import numpy as np
 
-from sklearn.preprocessing import scale
-from scipy.stats import chi2_contingency
+from scipy.stats import chi2_contingency, rankdata
 from collections import OrderedDict
 
 from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
 from hol import config
 from hol.models import Base, Count, AnchoredCount
+from hol.utils import scale_01
 
 
 class Score(Base):
@@ -72,9 +72,12 @@ class Score(Base):
 
                 rows.append((token, year, score))
 
-            # Normalize the scores.
+            # Rank the scores.
             scores = [r[2] for r in rows]
-            scaled = scale(scores)
+            ranked = rankdata(scores, method='dense')
+
+            # Scale to 0-1.
+            scaled = scale_01(ranked)
 
             # Flush the rows.
             for (token, year, _), score in zip(rows, scaled):
