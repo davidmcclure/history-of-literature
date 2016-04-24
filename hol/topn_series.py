@@ -88,3 +88,33 @@ class TopnSeries:
         )
 
         return OrderedDict(zip(series.keys(), smooth))
+
+
+    def ranked_series(self, years, rank, width=10):
+
+        """
+        Compute series for all tokens, sort on a callback.
+
+        Args:
+            years (iter)
+            rank (function)
+            width (int)
+
+        Returns: OrderedDict {token: series, ...}
+        """
+
+        series = []
+        for t in self.tokens():
+            s = self.rank_series_smooth(t, width)
+            series.append((t, s, rank(s)))
+
+        # Sort descending.
+        tsv = sorted(series, key=lambda x: x[2], reverse=True)
+
+        result = OrderedDict()
+
+        # Index by token.
+        for (t, s, v) in tsv:
+            result[t] = (s, v)
+
+        return result
