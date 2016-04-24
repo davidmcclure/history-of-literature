@@ -28,8 +28,6 @@ class Score(Base):
 
     score = Column(Float, nullable=False)
 
-    rank = Column(Float, nullable=False)
-
 
     @classmethod
     def index(cls, years):
@@ -52,14 +50,17 @@ class Score(Base):
 
         for year in years:
 
+            print(year)
+
             c = yc0.get(year, 0)
             d = yc1.get(year, 0)
 
-            # Per-year, per-token counts.
+            # Literature token counts.
             tc0 = AnchoredCount.token_counts_by_year(year)
-            tc1 = Count.token_counts_by_year(year)
-
             if not tc0: continue
+
+            # All token counts.
+            tc1 = Count.token_counts_by_year(year)
 
             rows = []
             for token in tc0.keys():
@@ -73,26 +74,11 @@ class Score(Base):
                     lambda_='log-likelihood',
                 )
 
-                rows.append((token, score))
-
-            # Rank the scores.
-            scores = [r[1] for r in rows]
-            ranked = rankdata(scores, method='dense')
-
-            # Scale to 0-1.
-            scaled = scale_01(ranked)
-
-            # Flush the rows.
-            for (token, score), rank in zip(rows, scaled):
-
                 session.add(cls(
                     token=token,
                     year=year,
                     score=score,
-                    rank=rank,
                 ))
-
-            print(year)
 
         session.commit()
 
