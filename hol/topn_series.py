@@ -20,7 +20,15 @@ class TopnSeries:
         self.topns = OrderedDict()
 
         for year in years:
-            self.topns[year] = Score.topn_by_year(year, n)
+
+            topn = Score.topn_by_year(year, n)
+
+            ranks = OrderedDict()
+
+            for i, (token, _) in enumerate(topn.items()):
+                ranks[token] = n-i
+
+            self.topns[year] = ranks
 
 
     def tokens(self):
