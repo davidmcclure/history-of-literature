@@ -1,5 +1,7 @@
 
 
+import numpy as np
+
 from collections import OrderedDict
 
 from hol.models import Score
@@ -45,3 +47,44 @@ class TopnSeries:
             tokens.update(series.keys())
 
         return tokens
+
+
+    def rank_series(self, token):
+
+        """
+        Get the rank series for a token.
+
+        Returns: OrderedDict {year: rank, ...}
+        """
+
+        series = OrderedDict()
+
+        for year, topn in self.topns.items():
+            series[year] = topn.get(token, 0)
+
+        return series
+
+
+    def rank_series_smooth(self, token, width=10):
+
+        """
+        Smooth the rank series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+            width (int)
+
+        Returns: OrderedDict {year: wpm, ...}
+        """
+
+        series = self.rank_series(token)
+
+        ranks = series.values()
+
+        smooth = np.convolve(
+            list(ranks),
+            np.ones(width) / width,
+        )
+
+        return OrderedDict(zip(series.keys(), smooth))
