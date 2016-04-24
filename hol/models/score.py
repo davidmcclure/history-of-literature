@@ -114,25 +114,20 @@ class Score(Base):
             year (int)
             n (int)
 
-        Returns: OrderedDict {year: (score, rank), ...}
+        Returns: OrderedDict {year: score, ...}
         """
 
         with config.get_session() as session:
 
             res = (
                 session
-                .query(cls.token, cls.score, cls.rank)
+                .query(cls.token, cls.score)
                 .filter(cls.year==year)
                 .order_by(cls.score.desc())
                 .limit(n)
             )
 
-            topn = OrderedDict()
-
-            for token, score, rank in res:
-                topn[token] = (score, rank)
-
-            return topn
+            return OrderedDict(res.all())
 
 
     @classmethod
