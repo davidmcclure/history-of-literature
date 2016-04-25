@@ -213,7 +213,7 @@ class AnchoredCount(Base):
 
 
     @classmethod
-    def year_count_series(cls, years, min_count=3):
+    def year_count_series(cls, years, min_count=0):
 
         """
         Get total token counts for a set of years.
@@ -242,7 +242,7 @@ class AnchoredCount(Base):
 
 
     @classmethod
-    def token_counts_by_year(cls, year, min_count=3):
+    def token_counts_by_year(cls, year, min_count=0):
 
         """
         Get the counts for all tokens that appeared on pages with the anchor

@@ -29,13 +29,14 @@ class Score(Base):
 
 
     @classmethod
-    def index(cls, years):
+    def index(cls, years, min_count=3):
 
         """
         Index log-likelihood scores.
 
         Args:
             years (iter)
+            min_count (int)
         """
 
         session = config.Session()
@@ -44,7 +45,7 @@ class Score(Base):
         session.query(cls).delete()
 
         # Per-year counts.
-        yc0 = AnchoredCount.year_count_series(years)
+        yc0 = AnchoredCount.year_count_series(years, min_count)
         yc1 = Count.year_count_series(years)
 
         for year in years:
@@ -55,7 +56,7 @@ class Score(Base):
             d = yc1.get(year, 0)
 
             # Literature token counts.
-            tc0 = AnchoredCount.token_counts_by_year(year)
+            tc0 = AnchoredCount.token_counts_by_year(year, min_count)
             if not tc0: continue
 
             # All token counts.
