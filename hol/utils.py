@@ -70,21 +70,3 @@ def flatten_dict(d):
 
         else:
             yield (k, v)
-
-
-def scale_01(seq):
-
-    """
-    Scale a list from 0-1.
-
-    Args:
-        d (list)
-
-    Returns: np.array
-    """
-
-    scaler = preprocessing.MinMaxScaler()
-
-    data = np.array([[float(s)] for s in seq])
-
-    return scaler.fit_transform(data)

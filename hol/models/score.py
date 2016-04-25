@@ -10,7 +10,6 @@ from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
 from hol import config
 from hol.models import Base, Count, AnchoredCount
-from hol.utils import scale_01
 
 
 class Score(Base):
@@ -81,27 +80,6 @@ class Score(Base):
                 ))
 
         session.commit()
-
-
-    @classmethod
-    def tokens(cls):
-
-        """
-        Get an ordered list of all tokens.
-
-        Returns: list<str>
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.token)
-                .distinct()
-                .order_by(cls.token.asc())
-            )
-
-            return [r[0] for r in res]
 
 
     @classmethod
@@ -185,96 +163,3 @@ class Score(Base):
 
         # No data.
         else: return series
-
-
-    @classmethod
-    def rank_series(cls, token, years):
-
-        """
-        Get ranks for a set of years.
-
-        Args:
-            token (str)
-            years (iter)
-
-        Returns: OrderedDict {year: score, ...}
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.year, cls.rank)
-                .filter(cls.token==token, cls.year.in_(years))
-                .group_by(cls.year)
-                .order_by(cls.year)
-            )
-
-            return OrderedDict(res.all())
-
-
-    @classmethod
-    def rank_series_smooth(cls, token, years, width=10):
-
-        """
-        Smooth the rank series for a token.
-
-        Args:
-            token (str)
-            years (iter)
-            width (int)
-
-        Returns: OrderedDict {year: wpm, ...}
-        """
-
-        series = cls.rank_series(token, years)
-
-        if series:
-
-            wpms = series.values()
-
-            smooth = np.convolve(
-                list(wpms),
-                np.ones(width) / width,
-            )
-
-            return OrderedDict(zip(series.keys(), smooth))
-
-        # No data.
-        else: return series
-
-
-    @classmethod
-    def ranked_series(cls, years, rank, width=10):
-
-        """
-        Compute smoothed series for all tokens, rank by variance.
-
-        Args:
-            years (iter)
-            rank (function)
-            width (int)
-
-        Returns: OrderedDict {token: series, ...}
-        """
-
-        tsv = []
-        for t in Score.tokens():
-
-            # Smoothed log-likelihood series.
-            s = cls.rank_series_smooth(t, years, width)
-
-            # Variance of the series.
-            if s:
-                tsv.append((t, s, rank(s)))
-
-        # Sort descending.
-        tsv = sorted(tsv, key=lambda x: x[2], reverse=True)
-
-        result = OrderedDict()
-
-        # Index by token.
-        for (t, s, v) in tsv:
-            result[t] = (s, v)
-
-        return result
