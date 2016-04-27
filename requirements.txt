@@ -2,7 +2,6 @@
 ipython
 scandir
 clint
-psycopg2
 wordfreq
 invoke
 anyconfig
