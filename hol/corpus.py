@@ -131,7 +131,8 @@ def read_vol(worker, path):
         if vol.is_english:
             return worker(vol)
 
-    except: pass
+    except Exception as e:
+        print(e)
 
 
 
