@@ -124,10 +124,14 @@ def read_vol(worker, path):
         path (str)
     """
 
-    vol = Volume.from_path(path)
+    try:
 
-    if vol.is_english:
-        return worker(vol)
+        vol = Volume.from_path(path)
+
+        if vol.is_english:
+            return worker(vol)
+
+    except: pass
 
 
 
