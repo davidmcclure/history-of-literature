@@ -122,6 +122,8 @@ def read_vol(worker, path):
     Args:
         worker (func)
         path (str)
+
+    Returns: mixed
     """
 
     try:
