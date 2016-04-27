@@ -10,7 +10,7 @@ def test_combine_page_counts():
     Volume#token_counts() should add up page-specific counts.
     """
 
-    v = make_vol([
+    v = make_vol(counts=[
 
         {
             'aaa': {

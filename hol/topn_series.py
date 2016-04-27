@@ -10,7 +10,7 @@ from hol.models import Score
 class TopnSeries:
 
 
-    def __init__(self, years, n=500):
+    def __init__(self, years, n=1000):
 
         """
         Cache topn lists for a range of years.
@@ -105,7 +105,8 @@ class TopnSeries:
 
         series = []
         for t in self.tokens():
-            s = self.rank_series_smooth(t, width)
+            # s = self.rank_series_smooth(t, width)
+            s = self.rank_series(t, width)
             series.append((t, s, rank(s)))
 
         # Sort descending.

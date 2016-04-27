@@ -11,7 +11,7 @@ def test_anchored_token_counts():
     an "anchor" token appears, bucketed by the anchor token count.
     """
 
-    v = make_vol([
+    v = make_vol(counts=[
 
         {
 
@@ -112,7 +112,7 @@ def test_ignore_pages_without_anchor_token():
     Ignore tokens on pages that don't contain the anchor token.
     """
 
-    v = make_vol([
+    v = make_vol(counts=[
 
         {
 
