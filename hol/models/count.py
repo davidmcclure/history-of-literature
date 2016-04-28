@@ -15,6 +15,25 @@ from hol.models import Base
 from hol.corpus import Corpus
 
 
+
+def worker(vol):
+
+    """
+    Extract token counts for a volume.
+
+    Args:
+        vol (Volume)
+
+    Returns:
+        tuple (year<int>, counts<Counter>)
+    """
+
+    counts = vol.token_counts()
+
+    return (vol.year, counts)
+
+
+
 class Count(Base):
 
 
@@ -31,24 +50,6 @@ class Count(Base):
     count = Column(Integer, nullable=False)
 
 
-    @staticmethod
-    def worker(vol):
-
-        """
-        Extract token counts for a volume.
-
-        Args:
-            vol (Volume)
-
-        Returns:
-            tuple (year<int>, counts<Counter>)
-        """
-
-        counts = vol.token_counts()
-
-        return (vol.year, counts)
-
-
     @classmethod
     def index(cls, num_procs=12, page_size=1000):
 
@@ -62,7 +63,7 @@ class Count(Base):
 
         corpus = Corpus.from_env()
 
-        mapper = corpus.map(cls.worker, num_procs, page_size)
+        mapper = corpus.map(worker, num_procs, page_size)
 
         for i, results in enumerate(mapper):
 

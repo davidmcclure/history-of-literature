@@ -12,6 +12,26 @@ from hol.models import Base
 from hol.corpus import Corpus
 
 
+
+def worker(anchor, vol):
+
+    """
+    Extract anchored token counts for a volume.
+
+    Args:
+        anchor (str)
+        vol (Volume)
+
+    Returns:
+        tuple (year<int>, counts<dict>)
+    """
+
+    counts = vol.anchored_token_counts(anchor)
+
+    return (vol.year, counts)
+
+
+
 class AnchoredCount(Base):
 
 
@@ -30,25 +50,6 @@ class AnchoredCount(Base):
     count = Column(Integer, nullable=False)
 
 
-    @staticmethod
-    def worker(anchor, vol):
-
-        """
-        Extract anchored token counts for a volume.
-
-        Args:
-            anchor (str)
-            vol (Volume)
-
-        Returns:
-            tuple (year<int>, counts<dict>)
-        """
-
-        counts = vol.anchored_token_counts(anchor)
-
-        return (vol.year, counts)
-
-
     @classmethod
     def index(cls, anchor, num_procs=12, page_size=1000):
 
@@ -64,9 +65,11 @@ class AnchoredCount(Base):
         corpus = Corpus.from_env()
 
         # Apply the anchor token.
-        worker = partial(cls.worker, anchor)
-
-        mapper = corpus.map(worker, num_procs, page_size)
+        mapper = corpus.map(
+            partial(worker, anchor),
+            num_procs,
+            page_size,
+        )
 
         for i, results in enumerate(mapper):
 
