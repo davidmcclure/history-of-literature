@@ -6,7 +6,7 @@ from hol.page import Page
 from hol.volume import Volume
 
 
-def make_page(counts={}):
+def make_page(counts={}, token_count=100):
 
     """
     Make a page instance with the provided tokenPosCount map.
@@ -19,7 +19,8 @@ def make_page(counts={}):
 
     return Page({
         'body': {
-            'tokenPosCount': counts
+            'tokenCount': token_count,
+            'tokenPosCount': counts,
         }
     })
 
