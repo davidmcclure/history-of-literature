@@ -1,7 +1,7 @@
 
 
 from hol.volume import Volume
-from test.helpers import make_vol
+from test.helpers import make_page, make_vol
 
 
 def test_anchored_token_counts():
@@ -11,9 +11,9 @@ def test_anchored_token_counts():
     an "anchor" token appears, bucketed by the anchor token count.
     """
 
-    v = make_vol(counts=[
+    v = make_vol(pages=[
 
-        {
+        make_page(counts={
 
             'literature': {
                 'POS': 1,
@@ -29,9 +29,9 @@ def test_anchored_token_counts():
                 'POS': 1,
             },
 
-        },
+        }),
 
-        {
+        make_page(counts={
 
             'literature': {
                 'POS': 2,
@@ -47,9 +47,9 @@ def test_anchored_token_counts():
                 'POS': 2,
             },
 
-        },
+        }),
 
-        {
+        make_page(counts={
 
             'literature': {
                 'POS': 2,
@@ -65,9 +65,9 @@ def test_anchored_token_counts():
                 'POS': 3,
             },
 
-        },
+        }),
 
-        {
+        make_page(counts={
 
             'literature': {
                 'POS': 3,
@@ -83,7 +83,7 @@ def test_anchored_token_counts():
                 'POS': 4,
             },
 
-        },
+        }),
 
     ])
 
@@ -112,9 +112,9 @@ def test_ignore_pages_without_anchor_token():
     Ignore tokens on pages that don't contain the anchor token.
     """
 
-    v = make_vol(counts=[
+    v = make_vol(pages=[
 
-        {
+        make_page(counts={
 
             'literature': {
                 'POS': 1,
@@ -130,10 +130,10 @@ def test_ignore_pages_without_anchor_token():
                 'POS': 1,
             },
 
-        },
+        }),
 
         # No anchor token.
-        {
+        make_page(counts={
             'aaa': {
                 'POS': 2,
             },
@@ -143,7 +143,7 @@ def test_ignore_pages_without_anchor_token():
             'ccc': {
                 'POS': 2,
             },
-        },
+        }),
 
     ])
 

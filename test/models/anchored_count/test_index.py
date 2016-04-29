@@ -6,7 +6,7 @@ import time
 from hol.models import AnchoredCount
 from hol import config
 
-from test.helpers import make_vol
+from test.helpers import make_page, make_vol
 
 
 pytestmark = pytest.mark.usefixtures('db')
@@ -19,8 +19,8 @@ def test_index_year_token_counts(mock_corpus, config):
     on the same page with the anchor token, bucketed by anchor token count.
     """
 
-    v1 = make_vol(year=1901, counts=[
-        {
+    v1 = make_vol(year=1901, pages=[
+        make_page(counts={
 
             'anchor': {
                 'POS': 1
@@ -33,11 +33,11 @@ def test_index_year_token_counts(mock_corpus, config):
                 'POS': 2
             },
 
-        },
+        }),
     ])
 
-    v2 = make_vol(year=1902, counts=[
-        {
+    v2 = make_vol(year=1902, pages=[
+        make_page(counts={
 
             'anchor': {
                 'POS': 2
@@ -50,11 +50,11 @@ def test_index_year_token_counts(mock_corpus, config):
                 'POS': 4
             },
 
-        },
+        }),
     ])
 
-    v3 = make_vol(year=1903, counts=[
-        {
+    v3 = make_vol(year=1903, pages=[
+        make_page(counts={
 
             'anchor': {
                 'POS': 3
@@ -67,7 +67,7 @@ def test_index_year_token_counts(mock_corpus, config):
                 'POS': 6
             },
 
-        },
+        }),
     ])
 
     mock_corpus.add_vol(v1)
@@ -90,8 +90,8 @@ def test_merge_year_level_counts(mock_corpus, config):
     Token counts for the same year/level should be merged.
     """
 
-    v1 = make_vol(year=1901, counts=[
-        {
+    v1 = make_vol(year=1901, pages=[
+        make_page(counts={
 
             'anchor': {
                 'POS': 1
@@ -104,11 +104,11 @@ def test_merge_year_level_counts(mock_corpus, config):
                 'POS': 2
             },
 
-        },
+        }),
     ])
 
-    v2 = make_vol(year=1901, counts=[
-        {
+    v2 = make_vol(year=1901, pages=[
+        make_page(counts={
 
             'anchor': {
                 'POS': 1
@@ -121,7 +121,7 @@ def test_merge_year_level_counts(mock_corpus, config):
                 'POS': 12
             },
 
-        },
+        }),
     ])
 
     mock_corpus.add_vol(v1)

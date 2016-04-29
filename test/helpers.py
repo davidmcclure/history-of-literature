@@ -6,7 +6,7 @@ from hol.page import Page
 from hol.volume import Volume
 
 
-def make_page(counts):
+def make_page(counts={}):
 
     """
     Make a page instance with the provided tokenPosCount map.
@@ -24,13 +24,16 @@ def make_page(counts):
     })
 
 
-def make_vol(counts=[], year=1900, language='eng', id=None):
+def make_vol(pages=[], year=1900, language='eng', id=None):
 
     """
     Make a volume instance with the provided tokenPosCount maps.
 
     Args:
-        counts (list)
+        pages (list)
+        year (int)
+        language (str)
+        id (str)
 
     Returns: Volume
     """
@@ -48,12 +51,9 @@ def make_vol(counts=[], year=1900, language='eng', id=None):
         },
 
         'features': {
-            'pages': []
+            'pages': [p.data for p in pages]
         },
 
     }
-
-    for c in counts:
-        data['features']['pages'].append(make_page(c).data)
 
     return Volume(data)

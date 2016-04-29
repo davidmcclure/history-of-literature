@@ -115,7 +115,33 @@ class Volume:
         return counts
 
 
-    # def anchored_token_counts(self, anchor):
+    def anchored_token_counts(self, anchor):
+
+        """
+        Get counts for tokens that appear on pages with an "anchor" token,
+        broken out by the count of thethe anchor on the page.
+
+        Args:
+            anchor (str)
+
+        Returns: dict
+        """
+
+        counts = defaultdict(Counter)
+
+        for page in self.pages():
+
+            page_counts = page.token_counts()
+
+            level = page_counts.pop(anchor, None)
+
+            if level:
+                counts[level] += page_counts
+
+        return counts
+
+
+    # def anchored_token_counts(self, anchor, width=1000):
 
         # """
         # Get counts for tokens that appear on pages with an "anchor" token,
@@ -126,52 +152,27 @@ class Volume:
 
         # counts = defaultdict(Counter)
 
+        # chunk = Counter()
+        # chunk_size = 0
+
         # for page in self.pages():
 
             # page_counts = page.token_counts()
 
-            # level = page_counts.pop(anchor, None)
+            # new_size = chunk_size + page.total_token_count
 
-            # if level:
-                # counts[level] += page_counts
+            # if abs(new_size-width) < abs(chunk_size-width):
+                # chunk += page_counts
+                # chunk_size = new_size
+
+            # else:
+
+                # level = chunk.pop(anchor, None)
+
+                # if level:
+                    # counts[level] += chunk
+
+                # chunk = page_counts
+                # chunk_size = page.total_token_count
 
         # return counts
-
-
-    def anchored_token_counts(self, anchor, width=1000):
-
-        """
-        Get counts for tokens that appear on pages with an "anchor" token,
-        broken out by the count of thethe anchor on the page.
-
-        Returns: dict
-        """
-
-        counts = defaultdict(Counter)
-
-        chunk = Counter()
-        chunk_size = 0
-
-        for page in self.pages():
-
-            page_counts = page.token_counts()
-
-            new_size = chunk_size + page.total_token_count
-
-            if abs(new_size-width) < abs(chunk_size-width):
-                chunk += page_counts
-                chunk_size = new_size
-
-            else:
-
-                print(chunk_size)
-
-                level = chunk.pop(anchor, None)
-
-                if level:
-                    counts[level] += chunk
-
-                chunk = page_counts
-                chunk_size = page.total_token_count
-
-        return counts

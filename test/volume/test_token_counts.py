@@ -1,7 +1,7 @@
 
 
 from hol.volume import Volume
-from test.helpers import make_vol
+from test.helpers import make_page, make_vol
 
 
 def test_combine_page_counts():
@@ -10,9 +10,9 @@ def test_combine_page_counts():
     Volume#token_counts() should add up page-specific counts.
     """
 
-    v = make_vol(counts=[
+    v = make_vol(pages=[
 
-        {
+        make_page(counts={
             'aaa': {
                 'POS': 1,
             },
@@ -22,9 +22,9 @@ def test_combine_page_counts():
             'ccc': {
                 'POS': 3,
             },
-        },
+        }),
 
-        {
+        make_page(counts={
             'bbb': {
                 'POS': 4,
             },
@@ -34,7 +34,7 @@ def test_combine_page_counts():
             'ddd': {
                 'POS': 6,
             },
-        },
+        }),
 
     ])
 

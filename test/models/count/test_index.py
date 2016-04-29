@@ -6,7 +6,7 @@ import time
 from hol.models import Count
 from hol import config
 
-from test.helpers import make_vol
+from test.helpers import make_page, make_vol
 
 
 pytestmark = pytest.mark.usefixtures('db')
@@ -18,37 +18,37 @@ def test_index_year_token_counts(mock_corpus, config):
     Count.index() should index per-year token counts.
     """
 
-    v1 = make_vol(year=1901, counts=[
-        {
+    v1 = make_vol(year=1901, pages=[
+        make_page(counts={
             'one': {
                 'POS': 1
             },
             'two': {
                 'POS': 2
             },
-        },
+        }),
     ])
 
-    v2 = make_vol(year=1902, counts=[
-        {
+    v2 = make_vol(year=1902, pages=[
+        make_page(counts={
             'two': {
                 'POS': 3
             },
             'three': {
                 'POS': 4
             },
-        },
+        }),
     ])
 
-    v3 = make_vol(year=1903, counts=[
-        {
+    v3 = make_vol(year=1903, pages=[
+        make_page(counts={
             'three': {
                 'POS': 5
             },
             'four': {
                 'POS': 6
             },
-        },
+        }),
     ])
 
     mock_corpus.add_vol(v1)
@@ -71,26 +71,26 @@ def test_merge_year_counts(mock_corpus, config):
     Token counts for the same years should be merged.
     """
 
-    v1 = make_vol(year=1901, counts=[
-        {
+    v1 = make_vol(year=1901, pages=[
+        make_page(counts={
             'one': {
                 'POS': 1
             },
             'two': {
                 'POS': 2
             },
-        },
+        }),
     ])
 
-    v2 = make_vol(year=1901, counts=[
-        {
+    v2 = make_vol(year=1901, pages=[
+        make_page(counts={
             'one': {
                 'POS': 11
             },
             'two': {
                 'POS': 12
             },
-        },
+        }),
     ])
 
     mock_corpus.add_vol(v1)
