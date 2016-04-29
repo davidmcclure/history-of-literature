@@ -20,6 +20,18 @@ class Page:
         self.data = data
 
 
+    @property
+    def total_token_count(self):
+
+        """
+        Get the total token count on the page.
+
+        Returns: int
+        """
+
+        return int(self.data['body']['tokenCount'])
+
+
     def token_counts(self):
 
         """
