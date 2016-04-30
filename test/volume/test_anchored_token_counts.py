@@ -13,7 +13,7 @@ def test_anchored_token_counts():
 
     v = make_vol(pages=[
 
-        make_page(counts={
+        make_page(token_count=100, counts={
 
             'literature': {
                 'POS': 1,
@@ -31,7 +31,7 @@ def test_anchored_token_counts():
 
         }),
 
-        make_page(counts={
+        make_page(token_count=100, counts={
 
             'literature': {
                 'POS': 2,
@@ -49,7 +49,7 @@ def test_anchored_token_counts():
 
         }),
 
-        make_page(counts={
+        make_page(token_count=100, counts={
 
             'literature': {
                 'POS': 2,
@@ -67,7 +67,7 @@ def test_anchored_token_counts():
 
         }),
 
-        make_page(counts={
+        make_page(token_count=100, counts={
 
             'literature': {
                 'POS': 3,
@@ -87,7 +87,7 @@ def test_anchored_token_counts():
 
     ])
 
-    assert v.anchored_token_counts('literature') == {
+    assert v.anchored_token_counts('literature', 100) == {
         1: {
             'aaa': 1,
             'bbb': 1,
@@ -114,7 +114,7 @@ def test_ignore_pages_without_anchor_token():
 
     v = make_vol(pages=[
 
-        make_page(counts={
+        make_page(token_count=100, counts={
 
             'literature': {
                 'POS': 1,
@@ -133,7 +133,7 @@ def test_ignore_pages_without_anchor_token():
         }),
 
         # No anchor token.
-        make_page(counts={
+        make_page(token_count=100, counts={
             'aaa': {
                 'POS': 2,
             },
@@ -147,7 +147,7 @@ def test_ignore_pages_without_anchor_token():
 
     ])
 
-    assert v.anchored_token_counts('literature') == {
+    assert v.anchored_token_counts('literature', 100) == {
         1: {
             'aaa': 1,
             'bbb': 1,

@@ -6,6 +6,7 @@ import bz2
 from collections import Counter, defaultdict
 
 from hol.page import Page
+from hol.utils import group_counts
 
 
 class Volume:
@@ -115,27 +116,39 @@ class Volume:
         return counts
 
 
-    def anchored_token_counts(self, anchor):
+    def anchored_token_counts(self, anchor, size=1000):
 
         """
-        Get counts for tokens that appear on pages with an "anchor" token,
-        broken out by the count of thethe anchor on the page.
+        Get counts for tokens that appear on (grouped) pages with an "anchor"
+        token, broken out by the count of thethe anchor on the page.
 
         Args:
             anchor (str)
+            size (int)
 
         Returns: dict
         """
 
-        counts = defaultdict(Counter)
+        pages = list(self.pages())
 
-        for page in self.pages():
+        counts = [p.total_token_count for p in pages]
 
-            page_counts = page.token_counts()
+        groups = group_counts(counts, size)
 
-            level = page_counts.pop(anchor, None)
+        levels = defaultdict(Counter)
+
+        i = 0
+        for group in groups:
+
+            chunk = Counter()
+
+            for _ in group:
+                chunk += pages[i].token_counts()
+                i += 1
+
+            level = chunk.pop(anchor, None)
 
             if level:
-                counts[level] += page_counts
+                levels[level] += chunk
 
-        return counts
+        return levels
