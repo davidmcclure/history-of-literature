@@ -92,10 +92,13 @@ def group_counts(counts, size=1000):
         s0 = sum(groups[-1])
         s1 = sum(groups[-1] + [c])
 
-        # If the new count gets the group closer to the target size, add it to
-        # the running group.
+        m0 = (sum(map(sum, groups[:-1])) + s0) / len(groups)
+        m1 = (sum(map(sum, groups[:-1])) + s1) / len(groups)
 
-        if abs(s1-size) <= abs(s0-size):
+        # If adding the new count to the running group gets the average group
+        # size closer to the target, add it to the group.
+
+        if abs(m1-size) <= abs(m0-size):
             groups[-1].append(c)
 
         # Otherwise, start a new group with the count.
