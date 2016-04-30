@@ -3,8 +3,9 @@
 import numpy as np
 
 from itertools import islice, chain
-from collections import OrderedDict
 from sklearn import preprocessing
+from collections import OrderedDict
+from functools import reduce
 
 
 def grouper(iterable, size):
@@ -70,3 +71,38 @@ def flatten_dict(d):
 
         else:
             yield (k, v)
+
+
+def group_counts(counts, size=1000):
+
+    """
+    Given a set of integer counts, group them together into buckets so that the
+    counts in each bucket add up to roughly a given size.
+
+    Args:
+        counts (list<int>)
+        size (int)
+    """
+
+    def _group(groups, c):
+
+        if not groups:
+            groups.append([])
+
+        s0 = sum(groups[-1])
+        s1 = sum(groups[-1] + [c])
+
+        # If the new count gets the group closer to the target size, add it to
+        # the running group.
+
+        if abs(s1-size) <= abs(s0-size):
+            groups[-1].append(c)
+
+        # Otherwise, start a new group with the count.
+
+        else:
+            groups.append([c])
+
+        return groups
+
+    return reduce(_group, counts, [])
