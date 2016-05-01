@@ -82,6 +82,8 @@ def group_counts(counts, size=1000):
     Args:
         counts (list<int>)
         size (int)
+
+    Returns: list
     """
 
     groups = [[]]
