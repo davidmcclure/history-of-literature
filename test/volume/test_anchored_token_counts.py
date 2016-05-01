@@ -154,3 +154,60 @@ def test_ignore_pages_without_anchor_token():
             'ccc': 1,
         },
     }
+
+
+def test_combine_counts_for_grouped_pages():
+
+    """
+    When pages are grouped together in order to hit the requested token count
+    average, the word counts should be merged.
+    """
+
+    v = make_vol(pages=[
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 1,
+            },
+            'aaa': {
+                'POS': 1,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 2,
+            },
+            'aaa': {
+                'POS': 2,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 3,
+            },
+            'aaa': {
+                'POS': 3,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 4,
+            },
+            'aaa': {
+                'POS': 4,
+            },
+        }),
+
+    ])
+
+    assert v.anchored_token_counts('anchor', 200) == {
+        1+2: {
+            'aaa': 1+2,
+        },
+        3+4: {
+            'aaa': 3+4,
+        },
+    }
