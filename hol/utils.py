@@ -86,9 +86,9 @@ def group_counts(counts, size=1000):
 
     groups = [[]]
 
-    for c in counts:
+    locked = 0
 
-        locked = sum(map(sum, groups[:-1]))
+    for c in counts:
 
         s0 = sum(groups[-1])
         s1 = sum(groups[-1] + [c])
@@ -109,5 +109,6 @@ def group_counts(counts, size=1000):
 
         else:
             groups.append([c])
+            locked += s0
 
     return groups
