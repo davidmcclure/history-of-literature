@@ -86,7 +86,7 @@ def group_counts(counts, size=1000):
 
     groups = [[]]
 
-    locked = 0
+    tsum = 0
 
     for c in counts:
 
@@ -94,10 +94,10 @@ def group_counts(counts, size=1000):
         s1 = sum(groups[-1] + [c])
 
         # Current group mean.
-        m0 = (locked + s0) / len(groups)
+        m0 = (tsum + s0) / len(groups)
 
         # Mean if new count is added to the running group.
-        m1 = (locked + s1) / len(groups)
+        m1 = (tsum + s1) / len(groups)
 
         # If adding the new count to the running group gets the average group
         # size closer to the target, add it to the group.
@@ -109,6 +109,6 @@ def group_counts(counts, size=1000):
 
         else:
             groups.append([c])
-            locked += s0
+            tsum += s0
 
     return groups
