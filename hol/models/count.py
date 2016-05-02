@@ -35,28 +35,6 @@ def worker(vol):
     return (vol.year, counts)
 
 
-def _map(path):
-
-    """
-    Extract token counts for a volume.
-
-    Args:
-        vol (Volume)
-
-    Returns:
-        tuple (year<int>, counts<Counter>)
-    """
-
-    vol = Volume.from_path(path)
-
-    if not vol.is_english:
-        return None
-
-    counts = vol.token_counts()
-
-    return (vol.year, counts)
-
-
 class Count(Base):
 
 
@@ -84,48 +62,21 @@ class Count(Base):
             cache_len (int)
         """
 
-        # corpus = Corpus.from_env()
-
-        # mapper = corpus.map(worker, num_procs, page_size)
-
-        # for i, results in enumerate(mapper):
-
-            # t1 = dt.now()
-
-            # page = defaultdict(Counter)
-
-            # for j, (year, counts) in enumerate(results):
-                # page[year] += counts
-                # print((i*page_size)+j)
-
-            # t2 = dt.now()
-            # print(t2-t1)
-
-            # cls.flush_page(page)
-
-
         corpus = Corpus.from_env()
 
-        groups = corpus.path_groups(page_size)
+        mapper = corpus.map(worker, num_procs, page_size)
 
-        for i, paths in enumerate(groups):
-
-            t1 = dt.now()
+        for i, results in enumerate(mapper):
 
             page = defaultdict(Counter)
 
-            results = futures.map_as_completed(_map, paths)
+            for j, (year, counts) in enumerate(results):
+                page[year] += counts
+                print((i*page_size)+j)
 
-            for j, res in enumerate(results):
-                if res:
-                    year, counts = res
-                    page[year] += counts
-                    print((i*page_size)+j)
+            cls.flush_page(page)
 
-            t2 = dt.now()
-            print(t2-t1)
-
-            # cls.flush_page(page)
+            print((i+1)*page_size)
 
 
     @classmethod

@@ -3,6 +3,7 @@
 import os
 import scandir
 
+from scoop import futures
 from multiprocessing import Pool
 from functools import partial
 
@@ -102,15 +103,14 @@ class Corpus:
 
         groups = self.path_groups(page_size)
 
-        with Pool(num_procs) as pool:
-            for paths in groups:
+        for paths in groups:
 
-                jobs = pool.imap_unordered(
-                    partial(read_vol, worker),
-                    paths,
-                )
+            jobs = futures.map_as_completed(
+                partial(read_vol, worker),
+                paths
+            )
 
-                yield JobGroup(jobs)
+            yield JobGroup(jobs)
 
 
 
