@@ -18,6 +18,8 @@ if __name__ == '__main__':
     size = comm.Get_size()
     rank = comm.Get_rank()
 
+    # Scatter the path segments.
+
     if rank == 0:
 
         corpus = Corpus.from_env()
@@ -31,6 +33,8 @@ if __name__ == '__main__':
 
     data = comm.scatter(data, root=0)
 
+    # Build up counts.
+
     page = defaultdict(Counter)
 
     for path in data:
@@ -43,9 +47,16 @@ if __name__ == '__main__':
         except:
             pass
 
+    # Gather counts, merge, flush to disk.
+
     pages = comm.gather(page, root=0)
 
     if rank == 0:
-        for i, page in enumerate(pages):
-            Count.flush_page(page)
-            print('flush {0}'.format(i))
+
+        result = defaultdict(Counter)
+
+        for page in pages:
+            for year, counts in page.items():
+                result[year] += counts
+
+        Count.flush_page(result)
