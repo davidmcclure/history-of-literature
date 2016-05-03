@@ -74,8 +74,8 @@ class Count(Base):
                 if vol.is_english:
                     page[vol.year] += vol.token_counts()
 
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         # Gather counts, merge, flush to disk.
 
