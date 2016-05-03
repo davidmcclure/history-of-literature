@@ -47,6 +47,8 @@ class Count(Base):
 
         # Scatter the path segments.
 
+        data = None
+
         if rank == 0:
 
             corpus = Corpus.from_env()
@@ -56,16 +58,13 @@ class Count(Base):
                 size,
             )
 
-        else:
-            data = None
-
-        data = comm.scatter(data, root=0)
+        paths = comm.scatter(data, root=0)
 
         # Build up the counts.
 
         page = defaultdict(Counter)
 
-        for path in data:
+        for path in paths:
 
             try:
 
