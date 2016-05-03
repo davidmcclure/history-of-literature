@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 
 import numpy as np
@@ -43,3 +44,4 @@ if __name__ == '__main__':
             pass
 
     Count.flush_page(page)
+
