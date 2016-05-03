@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from mpi4py import MPI
 from collections import defaultdict, Counter, OrderedDict
 from functools import lru_cache
 
@@ -13,25 +14,7 @@ from hol import config
 from hol.utils import flatten_dict
 from hol.models import Base
 from hol.corpus import Corpus
-
-
-
-def worker(vol):
-
-    """
-    Extract token counts for a volume.
-
-    Args:
-        vol (Volume)
-
-    Returns:
-        tuple (year<int>, counts<Counter>)
-    """
-
-    counts = vol.token_counts()
-
-    return (vol.year, counts)
-
+from hol.volume import Volume
 
 
 class Count(Base):
@@ -51,30 +34,62 @@ class Count(Base):
 
 
     @classmethod
-    def index(cls, num_procs=12, page_size=1000):
+    def index(cls):
 
         """
         Index token counts by year.
-
-        Args:
-            num_procs (int)
-            cache_len (int)
         """
 
-        corpus = Corpus.from_env()
+        comm = MPI.COMM_WORLD
 
-        mapper = corpus.map(worker, num_procs, page_size)
+        size = comm.Get_size()
+        rank = comm.Get_rank()
 
-        for i, results in enumerate(mapper):
+        # Scatter the path segments.
 
-            page = defaultdict(Counter)
+        if rank == 0:
 
-            for year, counts in results:
-                page[year] += counts
+            corpus = Corpus.from_env()
 
-            cls.flush_page(page)
+            data = np.array_split(
+                list(corpus.paths()),
+                size,
+            )
 
-            print((i+1)*page_size)
+        else:
+            data = None
+
+        data = comm.scatter(data, root=0)
+
+        # Build up the counts.
+
+        page = defaultdict(Counter)
+
+        for path in data:
+
+            try:
+
+                vol = Volume.from_path(path)
+
+                if vol.is_english:
+                    page[vol.year] += vol.token_counts()
+
+            except:
+                pass
+
+        # Gather counts, merge, flush to disk.
+
+        pages = comm.gather(page, root=0)
+
+        if rank == 0:
+
+            result = defaultdict(Counter)
+
+            for page in pages:
+                for year, counts in page.items():
+                    result[year] += counts
+
+            cls.flush_page(result)
 
 
     @classmethod
