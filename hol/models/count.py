@@ -17,6 +17,57 @@ from hol.corpus import Corpus
 from hol.volume import Volume
 
 
+
+def _map(paths):
+
+    """
+    Tabulate token counts for a set of volumes.
+
+    Args:
+        paths (list)
+
+    Returns: defaultdict(Counter)
+    """
+
+    counts = defaultdict(Counter)
+
+    for path in paths:
+
+        try:
+
+            vol = Volume.from_path(path)
+
+            if vol.is_english:
+                counts[vol.year] += vol.token_counts()
+
+        except Exception as e:
+            print(e)
+
+    return counts
+
+
+
+def _reduce(results):
+
+    """
+    Merge together the count segments.
+
+    Args:
+        results ([defaultdict(Counter)])
+
+    Returns: defaultdict(Counter)
+    """
+
+    merged = defaultdict(Counter)
+
+    for result in results:
+        for year, counts in result.items():
+            merged[year] += counts
+
+    return merged
+
+
+
 class Count(Base):
 
 
@@ -40,55 +91,11 @@ class Count(Base):
         Index token counts by year.
         """
 
-        comm = MPI.COMM_WORLD
+        corpus = Corpus.from_env()
 
-        size = comm.Get_size()
-        rank = comm.Get_rank()
+        result = corpus.map_mpi(_map, _reduce)
 
-        # Scatter the path segments.
-
-        data = None
-
-        if rank == 0:
-
-            corpus = Corpus.from_env()
-
-            data = np.array_split(
-                list(corpus.paths()),
-                size,
-            )
-
-        paths = comm.scatter(data, root=0)
-
-        # Build up the counts.
-
-        page = defaultdict(Counter)
-
-        for path in paths:
-
-            try:
-
-                vol = Volume.from_path(path)
-
-                if vol.is_english:
-                    page[vol.year] += vol.token_counts()
-
-            except Exception as e:
-                print(e)
-
-        # Gather counts, merge, flush to disk.
-
-        pages = comm.gather(page, root=0)
-
-        if rank == 0:
-
-            result = defaultdict(Counter)
-
-            for page in pages:
-                for year, counts in page.items():
-                    result[year] += counts
-
-            cls.flush_page(result)
+        cls.flush_page(result)
 
 
     @classmethod

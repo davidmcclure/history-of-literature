@@ -1,8 +1,10 @@
 
 
-import os
 import scandir
+import os
+import numpy as np
 
+from mpi4py import MPI
 from multiprocessing import Pool
 from functools import partial
 
@@ -111,6 +113,40 @@ class Corpus:
                 )
 
                 yield JobGroup(jobs)
+
+
+    def map_mpi(self, _map, _reduce):
+
+        """
+        Apply a (pseudo) map-reduce to the corpus.
+
+        Args:
+            _map (func)
+            _reduce (func)
+
+        Returns: mixed
+        """
+
+        comm = MPI.COMM_WORLD
+
+        size = comm.Get_size()
+        rank = comm.Get_rank()
+
+        # Scatter the path segments.
+
+        data = None
+
+        if rank == 0:
+            data = np.array_split(list(self.paths()), size)
+
+        paths = comm.scatter(data, root=0)
+
+        # Process the volumes, merge results.
+
+        results = comm.gather(_map(paths), root=0)
+
+        if rank == 0:
+            return _reduce(results)
 
 
 
