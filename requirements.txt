@@ -1,5 +1,6 @@
 
 ipython
+ipyparallel
 scandir
 clint
 wordfreq
@@ -13,3 +14,4 @@ matplotlib
 scikit-learn
 pytest
 jupyter
+mpi4py
