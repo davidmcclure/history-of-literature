@@ -40,6 +40,8 @@ def _map(paths):
             if vol.is_english:
                 counts[vol.year] += vol.token_counts()
 
+            print(path)
+
         except Exception as e:
             print(e)
 
@@ -94,6 +96,8 @@ class Count(Base):
         corpus = Corpus.from_env()
 
         result = corpus.map_mpi(_map, _reduce)
+
+        print('flush')
 
         cls.flush_page(result)
 
