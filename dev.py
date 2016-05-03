@@ -1,8 +1,13 @@
 
 
-from mpi4py import MPI
+import numpy as np
 
-from hol.utils import grouper
+from mpi4py import MPI
+from collections import defaultdict, Counter
+
+from hol.corpus import Corpus
+from hol.volume import Volume
+from hol.models import Count
 
 
 if __name__ == '__main__':
@@ -13,14 +18,28 @@ if __name__ == '__main__':
     rank = comm.Get_rank()
 
     if rank == 0:
-        data = list(range(size))
-        print(data)
+
+        corpus = Corpus.from_env()
+
+        paths = list(corpus.paths())
+
+        data = np.array_split(paths, size)
+
     else:
         data = None
 
     data = comm.scatter(data, root=0)
 
-    new_data = comm.gather(data**2, root=0)
+    page = defaultdict(Counter)
 
-    if rank == 0:
-        print(new_data)
+    for path in data:
+
+        try:
+            vol = Volume.from_path(path)
+            page[vol.year] += vol.token_counts()
+            print(path)
+
+        except:
+            pass
+
+    Count.flush_page(page)
