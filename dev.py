@@ -43,5 +43,9 @@ if __name__ == '__main__':
         except:
             pass
 
-    Count.flush_page(page)
+    pages = comm.gather(page, root=0)
 
+    if rank == 0:
+        for i, page in enumerate(pages):
+            Count.flush_page(page)
+            print('flush {0}'.format(i))
