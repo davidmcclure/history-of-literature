@@ -2,9 +2,7 @@
 
 import numpy as np
 
-from mpi4py import MPI
 from collections import defaultdict, Counter, OrderedDict
-from functools import lru_cache
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.schema import Index
@@ -15,60 +13,6 @@ from hol.utils import flatten_dict
 from hol.models import Base
 from hol.corpus import Corpus
 from hol.volume import Volume
-
-
-
-def _map(paths):
-
-    """
-    Tabulate token counts for a set of volumes.
-
-    Args:
-        paths (list)
-
-    Returns: defaultdict(Counter)
-    """
-
-    counts = defaultdict(Counter)
-
-    for path in paths:
-
-        try:
-
-            vol = Volume.from_path(path)
-
-            if vol.is_english:
-                counts[vol.year] += vol.token_counts()
-
-            print(path)
-
-        except Exception as e:
-            print(e)
-
-    return counts
-
-
-
-def _reduce(results):
-
-    """
-    Merge together the count segments.
-
-    Args:
-        results ([defaultdict(Counter)])
-
-    Returns: defaultdict(Counter)
-    """
-
-    merged = defaultdict(Counter)
-
-    for result in results:
-        for year, counts in result.items():
-            merged[year] += counts
-
-    print('flush')
-
-    Count.flush_page(merged)
 
 
 
@@ -86,18 +30,6 @@ class Count(Base):
     year = Column(Integer, nullable=False)
 
     count = Column(Integer, nullable=False)
-
-
-    @classmethod
-    def index(cls):
-
-        """
-        Index token counts by year.
-        """
-
-        corpus = Corpus.from_env()
-
-        corpus.map_mpi(_map, _reduce)
 
 
     @classmethod
