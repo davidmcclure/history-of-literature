@@ -39,7 +39,7 @@ def index_count():
 
     # Tabulate the token counts.
 
-    counts = defaultdict(Counter)
+    page = defaultdict(Counter)
 
     for path in paths:
 
@@ -48,21 +48,83 @@ def index_count():
             vol = Volume.from_path(path)
 
             if vol.is_english:
-                counts[vol.year] += vol.token_counts()
-
-            print(path)
+                page[vol.year] += vol.token_counts()
 
         except Exception as e:
             print(e)
 
     # Gather the results, merge, flush to disk.
 
-    results = comm.gather(counts, root=0)
+    pages = comm.gather(page, root=0)
 
-    merged = defaultdict(Counter)
+    if rank == 0:
 
-    for result in results:
-        for year, counts in result.items():
-            merged[year] += counts
+        merged = defaultdict(Counter)
 
-    Count.flush_page(merged)
+        for page in pages:
+            for year, counts in page.items():
+                merged[year] += counts
+
+        Count.flush_page(merged)
+
+
+def index_anchored_count(anchor):
+
+    """
+    Index anchored token counts.
+
+    Args:
+        anchor (str)
+    """
+
+    comm = MPI.COMM_WORLD
+
+    size = comm.Get_size()
+    rank = comm.Get_rank()
+
+    # Scatter path segments.
+
+    data = None
+
+    if rank == 0:
+
+        corpus = Corpus.from_env()
+
+        data = np.array_split(list(corpus.paths()), size)
+
+    paths = comm.scatter(data, root=0)
+
+    # Tabulate the token counts.
+
+    page = defaultdict(lambda: defaultdict(Counter))
+
+    for path in paths:
+
+        try:
+
+            vol = Volume.from_path(path)
+
+            if vol.is_english:
+
+                level_counts = vol.anchored_token_counts(anchor)
+
+                for level, counts in level_counts.items():
+                    page[vol.year][level] += counts
+
+        except Exception as e:
+            print(e)
+
+    # Gather the results, merge, flush to disk.
+
+    pages = comm.gather(dict(page), root=0)
+
+    if rank == 0:
+
+        merged = defaultdict(lambda: defaultdict(Counter))
+
+        for page in pages:
+            for year, level_counts in page.items():
+                for level, counts in level_counts.items():
+                    merged[year][level] += counts
+
+        AnchoredCount.flush_page(merged)
