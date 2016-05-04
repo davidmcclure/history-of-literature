@@ -11,6 +11,7 @@ from hol.volume import Volume
 from hol.models import Count
 
 
+@click.command()
 def index_count():
 
     """

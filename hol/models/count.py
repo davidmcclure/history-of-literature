@@ -3,7 +3,6 @@
 import numpy as np
 
 from collections import defaultdict, Counter, OrderedDict
-from mpi4py import MPI
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.schema import Index
