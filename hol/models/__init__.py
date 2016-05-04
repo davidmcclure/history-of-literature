@@ -65,7 +65,7 @@ def index_count():
             for year, counts in page.items():
                 merged[year] += counts
 
-        Count.flush_page(merged)
+        Count.flush(merged)
 
 
 def index_anchored_count(anchor, size=1000):
@@ -127,4 +127,4 @@ def index_anchored_count(anchor, size=1000):
                 for level, counts in level_counts.items():
                     merged[year][level] += counts
 
-        AnchoredCount.flush_page(merged)
+        AnchoredCount.flush(merged)

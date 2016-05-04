@@ -33,13 +33,13 @@ class Count(Base):
 
 
     @classmethod
-    def flush_page(cls, page):
+    def flush(cls, counts):
 
         """
-        Flush a page to disk.
+        Flush a set of counts to disk.
 
         Args:
-            page (dict)
+            page (dict): year -> token -> count
         """
 
         session = config.Session()
@@ -63,7 +63,7 @@ class Count(Base):
 
         """.format(table=cls.__tablename__))
 
-        for year, token, count in flatten_dict(page):
+        for year, token, count in flatten_dict(counts):
 
             # Whitelist tokens.
             if token in config.tokens:

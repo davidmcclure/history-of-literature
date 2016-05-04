@@ -51,48 +51,13 @@ class AnchoredCount(Base):
 
 
     @classmethod
-    def index(cls, anchor, num_procs=12, page_size=1000):
+    def flush(cls, counts):
 
         """
-        Index token counts by year.
+        Flush a set of counts to disk.
 
         Args:
-            anchor (str)
-            num_procs (int)
-            cache_len (int)
-        """
-
-        corpus = Corpus.from_env()
-
-        # Apply the anchor token.
-        mapper = corpus.map(
-            partial(worker, anchor),
-            num_procs,
-            page_size,
-        )
-
-        for i, results in enumerate(mapper):
-
-            # year -> level -> counts
-            page = defaultdict(lambda: defaultdict(Counter))
-
-            for year, level_counts in results:
-                for level, counts in level_counts.items():
-                    page[year][level] += counts
-
-            cls.flush_page(page)
-
-            print((i+1)*page_size)
-
-
-    @classmethod
-    def flush_page(cls, page):
-
-        """
-        Flush a page to disk.
-
-        Args:
-            page (dict)
+            counts (dict): year -> level -> token -> count
         """
 
         session = config.Session()
@@ -125,7 +90,7 @@ class AnchoredCount(Base):
 
         """.format(table=cls.__tablename__))
 
-        for year, level, token, count in flatten_dict(page):
+        for year, level, token, count in flatten_dict(counts):
 
             # Whitelist tokens.
             if token in config.tokens:
