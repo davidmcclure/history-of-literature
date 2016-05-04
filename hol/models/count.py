@@ -66,7 +66,9 @@ def _reduce(results):
         for year, counts in result.items():
             merged[year] += counts
 
-    return merged
+    print('flush')
+
+    Count.flush_page(merged)
 
 
 
@@ -95,11 +97,7 @@ class Count(Base):
 
         corpus = Corpus.from_env()
 
-        result = corpus.map_mpi(_map, _reduce)
-
-        print('flush')
-
-        cls.flush_page(result)
+        corpus.map_mpi(_map, _reduce)
 
 
     @classmethod
