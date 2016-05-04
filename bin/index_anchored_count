@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+
+import click
+
+from hol.models import AnchoredCount
+
+
+@click.command()
+
+@click.argument('anchor')
+
+@click.option(
+    '--page_size',
+    help='Group pages together into N-token chunks',
+    default=1000,
+)
+
+def index_anchored_count(anchor, page_size):
+
+    """
+    Index year -> level -> token -> count.
+    """
+
+    AnchoredCount.index(anchor, page_size)
+
+
+if __name__ == '__main__':
+    index_anchored_count()

@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+
+
+import click
+
+from hol.models import Count
+
+
+@click.command()
+def index_count():
+
+    """
+    Index year -> token -> count.
+    """
+
+    Count.index()
+
+
+if __name__ == '__main__':
+    index_count()
