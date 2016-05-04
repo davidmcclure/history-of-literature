@@ -30,5 +30,4 @@
 #SBATCH --ntasks-per-node=16
 #################
 
-# Rsync down Hathi.
 rsync -av data.sharc.hathitrust.org::pd-features/basic/ /scratch/PI/malgeehe/htrc/
