@@ -68,7 +68,7 @@ def index_count():
         Count.flush_page(merged)
 
 
-def index_anchored_count(anchor):
+def index_anchored_count(anchor, size=1000):
 
     """
     Index anchored token counts.
@@ -106,7 +106,7 @@ def index_anchored_count(anchor):
 
             if vol.is_english:
 
-                level_counts = vol.anchored_token_counts(anchor)
+                level_counts = vol.anchored_token_counts(anchor, size)
 
                 for level, counts in level_counts.items():
                     page[vol.year][level] += counts
