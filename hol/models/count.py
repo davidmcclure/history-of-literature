@@ -34,61 +34,6 @@ class Count(Base):
 
 
     @classmethod
-    def index(cls):
-
-        """
-        Index raw token counts.
-        """
-
-        comm = MPI.COMM_WORLD
-
-        size = comm.Get_size()
-        rank = comm.Get_rank()
-
-        # Scatter path segments.
-
-        data = None
-
-        if rank == 0:
-
-            corpus = Corpus.from_env()
-
-            data = np.array_split(list(corpus.paths()), size)
-
-        paths = comm.scatter(data, root=0)
-
-        # Tabulate the token counts.
-
-        page = defaultdict(Counter)
-
-        for path in paths:
-
-            try:
-
-                vol = Volume.from_path(path)
-
-                if vol.is_english:
-                    page[vol.year] += vol.token_counts()
-
-            except Exception as e:
-                print(e)
-
-        # Gather the results, merge, flush to disk.
-
-        pages = comm.gather(page, root=0)
-
-        if rank == 0:
-
-            merged = defaultdict(Counter)
-
-            for page in pages:
-                for year, counts in page.items():
-                    merged[year] += counts
-
-            cls.flush(merged)
-
-
-    @classmethod
     def flush(cls, counts):
 
         """

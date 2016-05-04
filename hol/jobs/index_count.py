@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 
 
+import numpy as np
 import click
 
 from collections import defaultdict, Counter
@@ -11,7 +11,6 @@ from hol.volume import Volume
 from hol.models import Count
 
 
-@click.command()
 def index_count():
 
     """
