@@ -3,7 +3,7 @@
 import pytest
 import time
 
-from hol.models import AnchoredCount, index_anchored_count
+from hol.models import AnchoredCount
 from hol import config
 
 from test.helpers import make_page, make_vol
@@ -74,7 +74,7 @@ def test_index_year_token_counts(mock_corpus, config):
     mock_corpus.add_vol(v2)
     mock_corpus.add_vol(v3)
 
-    index_anchored_count('anchor')
+    AnchoredCount.index('anchor')
 
     assert AnchoredCount.token_year_level_count('one',   1901, 1) == 1
     assert AnchoredCount.token_year_level_count('two',   1901, 1) == 2
@@ -127,7 +127,7 @@ def test_merge_year_level_counts(mock_corpus, config):
     mock_corpus.add_vol(v1)
     mock_corpus.add_vol(v2)
 
-    index_anchored_count('anchor')
+    AnchoredCount.index('anchor')
 
     assert AnchoredCount.token_year_level_count('one', 1901, 1) == 1+11
     assert AnchoredCount.token_year_level_count('two', 1901, 1) == 2+12
