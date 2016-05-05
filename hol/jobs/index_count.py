@@ -55,12 +55,13 @@ def index_count():
 
     # Wait for all slots to finish, flush to disk.
 
-    comm.barrier()
-
     for i in range(size):
+
         if rank == i:
             Count.flush(page)
             print(i)
+
+        comm.barrier()
 
     # pages = comm.gather(page, root=0)
 
