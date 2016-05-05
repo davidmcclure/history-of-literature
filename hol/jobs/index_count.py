@@ -53,21 +53,28 @@ def index_count():
         except Exception as e:
             print(e)
 
-    # Gather the results, merge, flush to disk.
+    # Wait for all slots to finish, flush to disk.
 
-    pages = comm.gather(page, root=0)
+    comm.barrier()
 
-    if rank == 0:
+    for i in range(size):
+        if rank == i:
+            Count.flush(page)
+            print(i)
 
-        merged = defaultdict(Counter)
+    # pages = comm.gather(page, root=0)
 
-        for page in pages:
-            for year, counts in page.items():
-                merged[year] += counts
+    # if rank == 0:
 
-        print('flush')
+        # merged = defaultdict(Counter)
 
-        Count.flush(merged)
+        # for page in pages:
+            # for year, counts in page.items():
+                # merged[year] += counts
+
+        # print('flush')
+
+        # Count.flush(merged)
 
 
 if __name__ == '__main__':
