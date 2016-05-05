@@ -19,7 +19,7 @@
 #SBATCH --qos=normal
 #################
 #number of nodes you are requesting
-#SBATCH --nodes=20
+#SBATCH --nodes=2
 #################
 #memory per node; default is 4000 MB per CPU
 #SBATCH --mem=4000
@@ -29,6 +29,9 @@
 # for local parallelism (OpenMP or threads), use "--ntasks-per-node=1 --cpus-per-task=16" instead
 #SBATCH --ntasks-per-node=16
 #################
+
+module load openmpi/1.10.2/gcc
+module load python/3.3.2
 
 export PYTHONPATH=/home/dclure/history-of-literature
 
