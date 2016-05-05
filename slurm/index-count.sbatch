@@ -19,7 +19,7 @@
 #SBATCH --qos=normal
 #################
 #number of nodes you are requesting
-#SBATCH --nodes=2
+#SBATCH --nodes=5
 #################
 #memory per node; default is 4000 MB per CPU
 #SBATCH --mem=16000
