@@ -96,7 +96,7 @@ class Job:
                     self.merge(data)
 
                     # Log progress.
-                    print((i+1) * self.group_size)
+                    print((i+1) * self.group_size, 'merge')
                     i += 1
 
                 # EXIT

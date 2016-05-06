@@ -50,9 +50,6 @@ class IndexCountJob(Job):
                 if vol.is_english:
                     result[vol.year] += vol.token_counts()
 
-                if i%100 == 0:
-                    print(i)
-
             except Exception as e:
                 print(e)
 
