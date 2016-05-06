@@ -29,7 +29,7 @@ def index_count():
 
         corpus = Corpus.from_env()
 
-        path_groups = corpus.path_groups(10)
+        path_groups = corpus.path_groups(1000)
 
         closed = 0
         while closed < size-1:
@@ -70,8 +70,10 @@ def index_count():
 
         while True:
 
+            # Notify ready.
             comm.send(None, dest=0, tag=1)
 
+            # Request paths.
             paths = comm.recv(
                 source=0,
                 tag=MPI.ANY_SOURCE,
@@ -80,10 +82,12 @@ def index_count():
 
             tag = status.Get_tag()
 
+            # Extract counts.
             if tag == 1:
                 counts = extract_counts(paths)
                 comm.send(counts, dest=0, tag=2)
 
+            # Or, no paths, exit.
             elif tag == 3:
                 break
 
@@ -111,8 +115,6 @@ def extract_counts(paths):
 
             if vol.is_english:
                 counts[vol.year] += vol.token_counts()
-
-            print(path)
 
         except Exception as e:
             print(e)
