@@ -13,6 +13,7 @@ from test.helpers import make_page, make_vol
 
 
 pytestmark = pytest.mark.usefixtures('db')
+pytestmark = pytest.mark.skip()
 
 
 def test_index_year_token_counts(mock_corpus, config):
