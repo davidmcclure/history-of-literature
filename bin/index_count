@@ -13,7 +13,14 @@ from hol.models import Count
 
 
 @click.command()
-def index_count():
+
+@click.option(
+    '--group_size',
+    help='Process the corpus in groups of N paths.',
+    default=1000,
+)
+
+def index_count(group_size):
 
     """
     Index year -> token -> count.
@@ -30,7 +37,7 @@ def index_count():
 
         corpus = Corpus.from_env()
 
-        path_groups = corpus.path_groups(1000)
+        path_groups = corpus.path_groups(group_size)
 
         closed = 0
         while closed < size-1:
@@ -61,7 +68,6 @@ def index_count():
 
             # RESULT
             elif tag == 2:
-                print(data)
                 Count.flush(data)
 
             # EXIT
@@ -107,6 +113,8 @@ def extract_counts(paths):
     Returns: defaultdict(Counter)
     """
 
+    print(paths)
+
     counts = defaultdict(Counter)
 
     for path in paths:
@@ -117,8 +125,6 @@ def extract_counts(paths):
 
             if vol.is_english:
                 counts[vol.year] += vol.token_counts()
-
-            print(path)
 
         except Exception as e:
             print(e)
