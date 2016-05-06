@@ -1,6 +1,7 @@
 
 
 from mpi4py import MPI
+from datetime import datetime as dt
 
 from hol.corpus import Corpus
 from hol.utils import enum
@@ -57,6 +58,8 @@ class Job:
         i = 0
         if rank == 0:
 
+            t1 = dt.now()
+
             corpus = Corpus.from_env()
 
             path_groups = corpus.path_groups(self.group_size)
@@ -77,18 +80,16 @@ class Job:
                 # READY
                 if tag == Tags.READY:
 
-                    # Get a path group.
+                    # Try to send a new path group.
                     try:
                         paths = next(path_groups)
+                        comm.send(list(paths), dest=source, tag=Tags.WORK)
+                        print(source, 'work')
 
                     # If finished, close the worker.
                     except StopIteration:
                         comm.send(None, dest=source, tag=Tags.EXIT)
                         print(source, 'exit')
-
-                    # Otherwise, send the paths.
-                    comm.send(list(paths), dest=source, tag=Tags.WORK)
-                    print(source, 'work')
 
                 # RESULT
                 elif tag == Tags.RESULT:
@@ -103,7 +104,12 @@ class Job:
                 elif tag == Tags.EXIT:
                     closed += 1
 
+            # Write to disk.
             self.flush()
+
+            # Log total duration.
+            t2 = dt.now()
+            print(t2-t1)
 
         else:
 
