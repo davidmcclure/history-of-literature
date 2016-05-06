@@ -4,10 +4,8 @@ import pytest
 
 from subprocess import call
 
-from hol.models import AnchoredCount
-from hol.jobs import index_anchored_count
-
 from test.helpers import make_page, make_vol
+from hol.models import AnchoredCount
 
 
 pytestmark = pytest.mark.usefixtures('db', 'mpi')
