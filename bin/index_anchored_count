@@ -1,0 +1,141 @@
+#!/usr/bin/env python
+
+
+import numpy as np
+import click
+
+from collections import defaultdict, Counter
+from mpi4py import MPI
+
+from hol.corpus import Corpus
+from hol.volume import Volume
+from hol.models import AnchoredCount
+
+
+@click.command()
+
+@click.argument('anchor')
+
+@click.option(
+    '--group_size',
+    help='Process the corpus in groups of N paths.',
+    default=1000,
+)
+
+def index_anchored_count(anchor, group_size):
+
+    """
+    Index year -> token -> count.
+    """
+
+    comm = MPI.COMM_WORLD
+
+    size = comm.Get_size()
+    rank = comm.Get_rank()
+
+    status = MPI.Status()
+
+    if rank == 0:
+
+        corpus = Corpus.from_env()
+
+        path_groups = corpus.path_groups(group_size)
+
+        closed = 0
+        while closed < size-1:
+
+            # Get a work request from a slot.
+            data = comm.recv(
+                status=status,
+                source=MPI.ANY_SOURCE,
+                tag=MPI.ANY_TAG,
+            )
+
+            source = status.Get_source()
+            tag = status.Get_tag()
+
+            # READY
+            if tag == 1:
+
+                # Get a path group.
+                try:
+                    paths = next(path_groups)
+
+                # If finished, close the worker.
+                except StopIteration:
+                    comm.send(None, dest=source, tag=3)
+
+                # Otherwise, send the paths.
+                comm.send(list(paths), dest=source, tag=1)
+
+            # RESULT
+            elif tag == 2:
+                AnchoredCount.flush(data)
+
+            # EXIT
+            elif tag == 3:
+                closed += 1
+
+    else:
+
+        while True:
+
+            # Notify ready.
+            comm.send(None, dest=0, tag=1)
+
+            # Request paths.
+            paths = comm.recv(
+                source=0,
+                tag=MPI.ANY_SOURCE,
+                status=status,
+            )
+
+            tag = status.Get_tag()
+
+            # Extract counts.
+            if tag == 1:
+                counts = extract_counts(paths, anchor)
+                comm.send(counts, dest=0, tag=2)
+
+            # Or, no paths, exit.
+            elif tag == 3:
+                break
+
+        comm.send(None, dest=0, tag=3)
+
+
+def extract_counts(paths, anchor):
+
+    """
+    Accumulate counts for a set of paths.
+
+    Args:
+        paths (list)
+        anchor (str)
+
+    Returns: dict
+    """
+
+    page = defaultdict(lambda: defaultdict(Counter))
+
+    for path in paths:
+
+        try:
+
+            vol = Volume.from_path(path)
+
+            if vol.is_english:
+
+                counts = vol.anchored_token_counts(anchor, 1000)
+
+                for level, counts in counts.items():
+                    page[vol.year][level] += counts
+
+        except Exception as e:
+            print(e)
+
+    return dict(page)
+
+
+if __name__ == '__main__':
+    index_anchored_count()

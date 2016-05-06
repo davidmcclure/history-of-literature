@@ -1,19 +1,19 @@
 
 
 import pytest
-import time
+
+from subprocess import call
 
 from hol.models import AnchoredCount
 from hol.jobs import index_anchored_count
-from hol import config
 
 from test.helpers import make_page, make_vol
 
 
-pytestmark = pytest.mark.usefixtures('db')
+pytestmark = pytest.mark.usefixtures('db', 'mpi')
 
 
-def test_index_year_token_counts(mock_corpus, config):
+def test_index_year_token_counts(mock_corpus):
 
     """
     AnchoredCount.index() should index per-year counts for tokens that appear
@@ -75,7 +75,12 @@ def test_index_year_token_counts(mock_corpus, config):
     mock_corpus.add_vol(v2)
     mock_corpus.add_vol(v3)
 
-    index_anchored_count.callback('anchor')
+    call([
+        'mpirun',
+        'bin/index_anchored_count',
+        'anchor',
+        '--group_size=2',
+    ])
 
     assert AnchoredCount.token_year_level_count('one',   1901, 1) == 1
     assert AnchoredCount.token_year_level_count('two',   1901, 1) == 2
@@ -85,7 +90,7 @@ def test_index_year_token_counts(mock_corpus, config):
     assert AnchoredCount.token_year_level_count('four',  1903, 3) == 6
 
 
-def test_merge_year_level_counts(mock_corpus, config):
+def test_merge_year_level_counts(mock_corpus):
 
     """
     Token counts for the same year/level should be merged.
@@ -128,7 +133,11 @@ def test_merge_year_level_counts(mock_corpus, config):
     mock_corpus.add_vol(v1)
     mock_corpus.add_vol(v2)
 
-    index_anchored_count.callback('anchor')
+    call([
+        'mpirun',
+        'bin/index_anchored_count',
+        'anchor',
+    ])
 
     assert AnchoredCount.token_year_level_count('one', 1901, 1) == 1+11
     assert AnchoredCount.token_year_level_count('two', 1901, 1) == 2+12
