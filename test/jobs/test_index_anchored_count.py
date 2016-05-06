@@ -252,3 +252,62 @@ def test_ignore_non_english_volumes(mock_corpus):
 
     assert AnchoredCount.token_year_level_count('one', 1900, 1) == 1
     assert AnchoredCount.token_year_level_count('two', 1900, 1) == 2
+
+
+def test_combine_counts_for_grouped_pages(mock_corpus):
+
+    """
+    The --page_size option should control the page grouping.
+    """
+
+    vol = make_vol(year=1900, pages=[
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 1,
+            },
+            'one': {
+                'POS': 1,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 2,
+            },
+            'one': {
+                'POS': 2,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 3,
+            },
+            'one': {
+                'POS': 3,
+            },
+        }),
+
+        make_page(token_count=100, counts={
+            'anchor': {
+                'POS': 4,
+            },
+            'one': {
+                'POS': 4,
+            },
+        }),
+
+    ])
+
+    mock_corpus.add_vol(vol)
+
+    call([
+        'mpirun',
+        'bin/index_anchored_count',
+        'anchor',
+        '--page_size=200',
+    ])
+
+    assert AnchoredCount.token_year_level_count('one', 1900, 1+2) == 1+2
+    assert AnchoredCount.token_year_level_count('one', 1900, 3+4) == 3+4

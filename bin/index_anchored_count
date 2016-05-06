@@ -14,7 +14,7 @@ from hol.volume import Volume
 class IndexAnchoredCountJob(Job):
 
 
-    def __init__(self, anchor, *args, **kwargs):
+    def __init__(self, anchor, page_size=1000, *args, **kwargs):
 
         """
         Set the anchor token.
@@ -27,6 +27,8 @@ class IndexAnchoredCountJob(Job):
         super().__init__(*args, **kwargs)
 
         self.anchor = anchor
+
+        self.page_size = page_size
 
 
     def process_paths(self, paths):
@@ -50,8 +52,10 @@ class IndexAnchoredCountJob(Job):
 
                 if vol.is_english:
 
-                    # TODO: page_size var
-                    counts = vol.anchored_token_counts(self.anchor, 1000)
+                    counts = vol.anchored_token_counts(
+                        self.anchor,
+                        self.page_size,
+                    )
 
                     for level, counts in counts.items():
                         result[vol.year][level] += counts
@@ -85,13 +89,19 @@ class IndexAnchoredCountJob(Job):
     default=1000,
 )
 
-def index_anchored_count(anchor, group_size):
+@click.option(
+    '--page_size',
+    help='Group pages into units of N tokens.',
+    default=1000,
+)
+
+def index_anchored_count(anchor, group_size, page_size):
 
     """
     Index year -> token -> count.
     """
 
-    job = IndexAnchoredCountJob(anchor, group_size)
+    job = IndexAnchoredCountJob(anchor, page_size, group_size)
 
     job.run()
 
