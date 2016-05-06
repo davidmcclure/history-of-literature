@@ -29,8 +29,12 @@ def index_count():
 
         corpus = Corpus.from_env()
 
-        for paths in corpus.path_groups(10):
+        path_groups = corpus.path_groups(10)
 
+        closed = 0
+        while closed < size-1:
+
+            # Get a work request from a slot.
             data = comm.recv(
                 status=status,
                 source=MPI.ANY_SOURCE,
@@ -42,39 +46,81 @@ def index_count():
 
             # READY
             if tag == 1:
-                comm.send(list(paths), dest=source)
 
-            # DONE
+                # Get a path group.
+                try:
+                    paths = next(path_groups)
+
+                # If finished, close the worker.
+                except StopIteration:
+                    comm.send(None, dest=source, tag=3)
+
+                # Otherwise, send the paths.
+                comm.send(list(paths), dest=source, tag=1)
+
+            # RESULT
             elif tag == 2:
+                # TODO: merge
                 print(data)
 
+            # EXIT
+            elif tag == 3:
+                closed += 1
+
+        # TODO: flush
+
     else:
+
         while True:
 
-            # Request a path segment.
             comm.send(None, dest=0, tag=1)
-            paths = comm.recv(source=0)
 
-            print(paths)
+            paths = comm.recv(
+                source=0,
+                tag=MPI.ANY_SOURCE,
+                status=status,
+            )
 
-            # Extract the counts.
-            page = defaultdict(Counter)
-            for path in paths:
+            tag = status.Get_tag()
 
-                try:
+            if tag == 1:
+                counts = extract_counts(paths)
+                comm.send(counts, dest=0, tag=2)
 
-                    vol = Volume.from_path(path)
+            elif tag == 3:
+                break
 
-                    if vol.is_english:
-                        page[vol.year] += vol.token_counts()
+        comm.send(None, dest=0, tag=3)
 
-                    print(path)
 
-                except Exception as e:
-                    print(e)
+def extract_counts(paths):
 
-            # Return the counts.
-            comm.send(page, dest=0, tag=2)
+    """
+    Accumulate counts for a set of paths.
+
+    Args:
+        paths (list)
+
+    Returns: defaultdict(Counter)
+    """
+
+    counts = defaultdict(Counter)
+
+    for path in paths:
+
+        try:
+
+            vol = Volume.from_path(path)
+
+            if vol.is_english:
+                counts[vol.year] += vol.token_counts()
+
+            print(path)
+
+        except Exception as e:
+            print(e)
+
+    return counts
 
 
 if __name__ == '__main__':
