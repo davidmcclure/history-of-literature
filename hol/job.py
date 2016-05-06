@@ -12,11 +12,15 @@ Tags = enum('READY', 'WORK', 'RESULT', 'EXIT')
 class Job:
 
 
-    def process_paths(self, paths):
+    def process(self, paths):
         raise NotImplementedError
 
 
-    def flush_result(self, result):
+    def merge(self, result):
+        raise NotImplementedError
+
+
+    def flush(self):
         raise NotImplementedError
 
 
@@ -86,12 +90,18 @@ class Job:
 
                 # RESULT
                 elif tag == Tags.RESULT:
-                    self.flush_result(data)
-                    print((i+1)*self.group_size)
+
+                    self.merge(data)
+
+                    # Log progress.
+                    print((i+1) * self.group_size)
+                    i += 1
 
                 # EXIT
                 elif tag == Tags.EXIT:
                     closed += 1
+
+            self.flush()
 
         else:
 
@@ -111,7 +121,7 @@ class Job:
 
                 # Extract counts.
                 if tag == Tags.WORK:
-                    result = self.process_paths(paths)
+                    result = self.process(paths)
                     comm.send(result, dest=0, tag=Tags.RESULT)
 
                 # Or, no paths, exit.

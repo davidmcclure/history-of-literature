@@ -17,7 +17,18 @@ from hol.models import Count
 class IndexCountJob(Job):
 
 
-    def process_paths(self, paths):
+    def __init__(self, *args, **kwargs):
+
+        """
+        Initialize the merged counter.
+        """
+
+        super().__init__(*args, **kwargs)
+
+        self.data = defaultdict(Counter)
+
+
+    def process(self, paths):
 
         """
         Accumulate counts for a set of paths.
@@ -45,7 +56,20 @@ class IndexCountJob(Job):
         return result
 
 
-    def flush_result(self, data):
+    def merge(self, result):
+
+        """
+        Merge in a batch of counts from a rank.
+
+        Args:
+            result (dict)
+        """
+
+        for year, counts in result.items():
+            self.data[year] += counts
+
+
+    def flush(self):
 
         """
         Increment database counters.
@@ -54,7 +78,7 @@ class IndexCountJob(Job):
             data (dict)
         """
 
-        Count.flush(data)
+        Count.flush(self.data)
 
 
 
