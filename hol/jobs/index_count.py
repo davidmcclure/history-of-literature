@@ -23,59 +23,58 @@ def index_count():
     size = comm.Get_size()
     rank = comm.Get_rank()
 
-    # Scatter path segments.
-
-    data = None
+    status = MPI.Status()
 
     if rank == 0:
 
         corpus = Corpus.from_env()
 
-        data = np.array_split(list(corpus.paths()), size)
+        for paths in corpus.path_groups(10):
 
-    paths = comm.scatter(data, root=0)
+            data = comm.recv(
+                status=status,
+                source=MPI.ANY_SOURCE,
+                tag=MPI.ANY_TAG,
+            )
 
-    # Tabulate the token counts.
+            source = status.Get_source()
+            tag = status.Get_tag()
 
-    page = defaultdict(Counter)
+            # READY
+            if tag == 1:
+                comm.send(list(paths), dest=source)
 
-    for path in paths:
+            # DONE
+            elif tag == 2:
+                print(data)
 
-        try:
+    else:
+        while True:
 
-            vol = Volume.from_path(path)
+            # Request a path segment.
+            comm.send(None, dest=0, tag=1)
+            paths = comm.recv(source=0)
 
-            if vol.is_english:
-                page[vol.year] += vol.token_counts()
+            print(paths)
 
-            print(path)
+            # Extract the counts.
+            page = defaultdict(Counter)
+            for path in paths:
 
-        except Exception as e:
-            print(e)
+                try:
 
-    # Wait for all slots to finish, flush to disk.
+                    vol = Volume.from_path(path)
 
-    for i in range(size):
+                    if vol.is_english:
+                        page[vol.year] += vol.token_counts()
 
-        if rank == i:
-            Count.flush(page)
-            print(i)
+                    print(path)
 
-        comm.barrier()
+                except Exception as e:
+                    print(e)
 
-    # pages = comm.gather(page, root=0)
-
-    # if rank == 0:
-
-        # merged = defaultdict(Counter)
-
-        # for page in pages:
-            # for year, counts in page.items():
-                # merged[year] += counts
-
-        # print('flush')
-
-        # Count.flush(merged)
+            # Return the counts.
+            comm.send(page, dest=0, tag=2)
 
 
 if __name__ == '__main__':
