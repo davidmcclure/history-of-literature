@@ -17,7 +17,7 @@ class Job:
         raise NotImplementedError
 
 
-    def __init__(self, group_size):
+    def __init__(self, group_size=1000):
 
         """
         Set the path group size.
