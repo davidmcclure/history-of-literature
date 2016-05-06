@@ -73,9 +73,6 @@ class IndexCountJob(Job):
 
         """
         Increment database counters.
-
-        Args:
-            data (dict)
         """
 
         Count.flush(self.data)

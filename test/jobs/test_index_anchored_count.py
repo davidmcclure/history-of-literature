@@ -9,7 +9,6 @@ from hol.models import AnchoredCount
 
 
 pytestmark = pytest.mark.usefixtures('db', 'mpi')
-pytestmark = pytest.mark.skip()
 
 
 def test_index_year_token_counts(mock_corpus):

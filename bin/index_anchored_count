@@ -27,11 +27,12 @@ class IndexAnchoredCountJob(Job):
         super().__init__(*args, **kwargs)
 
         self.anchor = anchor
-
         self.page_size = page_size
 
+        self.data = defaultdict(lambda: defaultdict(Counter))
 
-    def process_paths(self, paths):
+
+    def process(self, paths):
 
         """
         Accumulate counts for a set of paths.
@@ -66,16 +67,27 @@ class IndexAnchoredCountJob(Job):
         return dict(result)
 
 
-    def flush_result(self, data):
+    def merge(self, result):
+
+        """
+        Merge in a batch of counts from a rank.
+
+        Args:
+            result (dict)
+        """
+
+        for year, level_counts in result.items():
+            for level, counts in level_counts.items():
+                self.data[year][level] += counts
+
+
+    def flush(self):
 
         """
         Increment database counters.
-
-        Args:
-            data (dict)
         """
 
-        AnchoredCount.flush(data)
+        AnchoredCount.flush(self.data)
 
 
 
@@ -98,7 +110,7 @@ class IndexAnchoredCountJob(Job):
 def index_anchored_count(anchor, group_size, page_size):
 
     """
-    Index year -> token -> count.
+    Index year -> level -> token -> count.
     """
 
     job = IndexAnchoredCountJob(anchor, page_size, group_size)
