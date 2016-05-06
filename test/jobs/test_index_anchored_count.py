@@ -69,9 +69,63 @@ def test_index_year_token_counts(mock_corpus):
         }),
     ])
 
+    v4 = make_vol(year=1904, pages=[
+        make_page(counts={
+
+            'anchor': {
+                'POS': 4
+            },
+
+            'four': {
+                'POS': 7
+            },
+            'five': {
+                'POS': 8
+            },
+
+        }),
+    ])
+
+    v5 = make_vol(year=1905, pages=[
+        make_page(counts={
+
+            'anchor': {
+                'POS': 5
+            },
+
+            'five': {
+                'POS': 9
+            },
+            'six': {
+                'POS': 10
+            },
+
+        }),
+    ])
+
+    v6 = make_vol(year=1906, pages=[
+        make_page(counts={
+
+            'anchor': {
+                'POS': 6
+            },
+
+            'six': {
+                'POS': 11
+            },
+            'seven': {
+                'POS': 12
+            },
+
+        }),
+    ])
+
     mock_corpus.add_vol(v1)
     mock_corpus.add_vol(v2)
     mock_corpus.add_vol(v3)
+    mock_corpus.add_vol(v4)
+    mock_corpus.add_vol(v5)
+    mock_corpus.add_vol(v6)
 
     call([
         'mpirun',
@@ -80,12 +134,18 @@ def test_index_year_token_counts(mock_corpus):
         '--group_size=2',
     ])
 
-    assert AnchoredCount.token_year_level_count('one',   1901, 1) == 1
-    assert AnchoredCount.token_year_level_count('two',   1901, 1) == 2
-    assert AnchoredCount.token_year_level_count('two',   1902, 2) == 3
-    assert AnchoredCount.token_year_level_count('three', 1902, 2) == 4
-    assert AnchoredCount.token_year_level_count('three', 1903, 3) == 5
-    assert AnchoredCount.token_year_level_count('four',  1903, 3) == 6
+    assert AnchoredCount.token_year_level_count('one',      1901, 1) == 1
+    assert AnchoredCount.token_year_level_count('two',      1901, 1) == 2
+    assert AnchoredCount.token_year_level_count('two',      1902, 2) == 3
+    assert AnchoredCount.token_year_level_count('three',    1902, 2) == 4
+    assert AnchoredCount.token_year_level_count('three',    1903, 3) == 5
+    assert AnchoredCount.token_year_level_count('four',     1903, 3) == 6
+    assert AnchoredCount.token_year_level_count('four',     1904, 4) == 7
+    assert AnchoredCount.token_year_level_count('five',     1904, 4) == 8
+    assert AnchoredCount.token_year_level_count('five',     1905, 5) == 9
+    assert AnchoredCount.token_year_level_count('six',      1905, 5) == 10
+    assert AnchoredCount.token_year_level_count('six',      1906, 6) == 11
+    assert AnchoredCount.token_year_level_count('seven',    1906, 6) == 12
 
 
 def test_merge_year_level_counts(mock_corpus):
