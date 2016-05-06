@@ -1,6 +1,8 @@
 
 
+import os
 import pytest
+import yaml
 
 from hol import config as _config
 from hol.models import Base
@@ -71,3 +73,25 @@ def db(config):
     # Clear and recreate all tables.
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+
+@pytest.yield_fixture()
+def mpi(mock_corpus):
+
+    """
+    Inject the mock corpus path into the MPI config file.
+    """
+
+    # Write the MPI config file.
+    with open('/tmp/.hol.mpi.yml', 'w') as fh:
+
+        content = yaml.dump({
+            'corpus': mock_corpus.path,
+        })
+
+        fh.write(content)
+
+    yield
+
+    # Remove the file.
+    os.remove('/tmp/.hol.mpi.yml')
