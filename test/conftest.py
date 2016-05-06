@@ -14,10 +14,9 @@ from test.mock_corpus import MockCorpus
 def test_env():
 
     """
-    Merge the testing parameters into the configuration.
+    Register the testing config file.
     """
 
-    # Inject the testing config.
     _config.paths.append('~/.hol.test.yml')
     _config.read()
 
@@ -54,6 +53,7 @@ def mock_corpus(config):
     })
 
     yield corpus
+
     corpus.teardown()
 
 
@@ -75,7 +75,7 @@ def db(config):
 def mpi(config, mock_corpus):
 
     """
-    Inject the mock corpus path into the MPI config file.
+    Write the current configuration into the /tmp/.hol.yml file.
     """
 
     config.sync_tmp()
