@@ -35,6 +35,8 @@ class Job:
     def run(self):
 
         """
+        Pipe all paths through `process_paths` and flush the results.
+
         - Generate path groups from the corpus.
         - Dispatch each group to a MPI rank.
         - The rank processes the paths, sends back a result object.
