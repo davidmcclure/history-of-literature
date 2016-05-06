@@ -84,9 +84,11 @@ class Job:
                     # If finished, close the worker.
                     except StopIteration:
                         comm.send(None, dest=source, tag=Tags.EXIT)
+                        print(source, 'exit')
 
                     # Otherwise, send the paths.
                     comm.send(list(paths), dest=source, tag=Tags.WORK)
+                    print(source, 'work')
 
                 # RESULT
                 elif tag == Tags.RESULT:
@@ -109,6 +111,7 @@ class Job:
 
                 # Notify ready.
                 comm.send(None, dest=0, tag=Tags.READY)
+                print(rank, 'ready')
 
                 # Request paths.
                 paths = comm.recv(
@@ -123,6 +126,7 @@ class Job:
                 if tag == Tags.WORK:
                     result = self.process(paths)
                     comm.send(result, dest=0, tag=Tags.RESULT)
+                    print(rank, 'result')
 
                 # Or, no paths, exit.
                 elif tag == Tags.EXIT:
