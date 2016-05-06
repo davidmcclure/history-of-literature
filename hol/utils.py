@@ -114,3 +114,15 @@ def group_counts(counts, size=1000):
             tsum += s0
 
     return groups
+
+
+def enum(*seq, **named):
+
+    """
+    Make an enumerated type.
+
+    Returns: type
+    """
+
+    enums = dict(zip(seq, range(len(seq))), **named)
+    return type('Enum', (), enums)

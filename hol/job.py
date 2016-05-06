@@ -3,12 +3,15 @@
 from mpi4py import MPI
 
 from hol.corpus import Corpus
+from hol.utils import enum
+
+
+Tags = enum('READY', 'WORK', 'RESULT', 'EXIT')
 
 
 class Job:
 
 
-    @staticmethod
     def process_paths(self, paths):
         raise NotImplementedError
 
@@ -65,7 +68,7 @@ class Job:
                 tag = status.Get_tag()
 
                 # READY
-                if tag == 1:
+                if tag == Tags.READY:
 
                     # Get a path group.
                     try:
@@ -73,17 +76,17 @@ class Job:
 
                     # If finished, close the worker.
                     except StopIteration:
-                        comm.send(None, dest=source, tag=3)
+                        comm.send(None, dest=source, tag=Tags.EXIT)
 
                     # Otherwise, send the paths.
-                    comm.send(list(paths), dest=source, tag=1)
+                    comm.send(list(paths), dest=source, tag=Tags.WORK)
 
                 # RESULT
-                elif tag == 2:
+                elif tag == Tags.RESULT:
                     self.flush_result(data)
 
                 # EXIT
-                elif tag == 3:
+                elif tag == Tags.EXIT:
                     closed += 1
 
         else:
@@ -91,7 +94,7 @@ class Job:
             while True:
 
                 # Notify ready.
-                comm.send(None, dest=0, tag=1)
+                comm.send(None, dest=0, tag=Tags.READY)
 
                 # Request paths.
                 paths = comm.recv(
@@ -103,12 +106,12 @@ class Job:
                 tag = status.Get_tag()
 
                 # Extract counts.
-                if tag == 1:
+                if tag == Tags.WORK:
                     result = self.process_paths(paths)
-                    comm.send(result, dest=0, tag=2)
+                    comm.send(result, dest=0, tag=Tags.RESULT)
 
                 # Or, no paths, exit.
-                elif tag == 3:
+                elif tag == Tags.EXIT:
                     break
 
             comm.send(None, dest=0, tag=3)

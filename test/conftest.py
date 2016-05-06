@@ -54,7 +54,7 @@ def mock_corpus(config):
 
     yield corpus
 
-    corpus.teardown()
+    # corpus.teardown()
 
 
 @pytest.fixture()
@@ -82,4 +82,4 @@ def mpi(config, mock_corpus):
 
     yield
 
-    os.remove('/tmp/.hol.yml')
+    # os.remove('/tmp/.hol.yml')
