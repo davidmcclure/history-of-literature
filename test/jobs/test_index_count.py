@@ -90,11 +90,7 @@ def test_index_year_token_counts(mock_corpus):
     mock_corpus.add_vol(v5)
     mock_corpus.add_vol(v6)
 
-    call([
-        'mpirun',
-        'bin/index_count',
-        '--group_size=2',
-    ])
+    call(['mpirun', 'bin/index_count', '--group_size=2'])
 
     assert Count.token_year_count('one',    1901) == 1
     assert Count.token_year_count('two',    1901) == 2
@@ -110,7 +106,7 @@ def test_index_year_token_counts(mock_corpus):
     assert Count.token_year_count('seven',  1906) == 12
 
 
-def test_merge_year_counts(mock_corpus, config):
+def test_merge_year_counts(mock_corpus):
 
     """
     Token counts for the same years should be merged.
