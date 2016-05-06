@@ -50,6 +50,7 @@ class Job:
 
         status = MPI.Status()
 
+        i = 0
         if rank == 0:
 
             corpus = Corpus.from_env()
@@ -79,15 +80,14 @@ class Job:
                     # If finished, close the worker.
                     except StopIteration:
                         comm.send(None, dest=source, tag=Tags.EXIT)
-                        print('exit', source)
 
                     # Otherwise, send the paths.
                     comm.send(list(paths), dest=source, tag=Tags.WORK)
-                    print('work', source)
 
                 # RESULT
                 elif tag == Tags.RESULT:
                     self.flush_result(data)
+                    print((i+1)*self.group_size)
 
                 # EXIT
                 elif tag == Tags.EXIT:
