@@ -11,7 +11,7 @@ from hol.volume import Volume
 from hol.models import Count
 
 
-@click.command()
+# @click.command()
 def index_count():
 
     """
@@ -60,14 +60,11 @@ def index_count():
 
             # RESULT
             elif tag == 2:
-                # TODO: merge
-                print(data)
+                Count.flush(data)
 
             # EXIT
             elif tag == 3:
                 closed += 1
-
-        # TODO: flush
 
     else:
 
