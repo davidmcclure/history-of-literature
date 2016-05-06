@@ -113,8 +113,6 @@ def extract_counts(paths):
     Returns: defaultdict(Counter)
     """
 
-    print(paths)
-
     counts = defaultdict(Counter)
 
     for path in paths:

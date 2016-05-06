@@ -141,3 +141,40 @@ def test_merge_year_counts(mock_corpus):
 
     assert Count.token_year_count('one', 1901) == 1+11
     assert Count.token_year_count('two', 1901) == 2+12
+
+
+def test_ignore_non_english_volumes(mock_corpus):
+
+    """
+    Non-English volumes should be skipped.
+    """
+
+    v1 = make_vol(year=1900, pages=[
+        make_page(counts={
+            'one': {
+                'POS': 1
+            },
+            'two': {
+                'POS': 2
+            },
+        }),
+    ])
+
+    v2 = make_vol(year=1900, language='ger', pages=[
+        make_page(counts={
+            'one': {
+                'POS': 11
+            },
+            'two': {
+                'POS': 12
+            },
+        }),
+    ])
+
+    mock_corpus.add_vol(v1)
+    mock_corpus.add_vol(v2)
+
+    call(['mpirun', 'bin/index_count'])
+
+    assert Count.token_year_count('one', 1900) == 1
+    assert Count.token_year_count('two', 1900) == 2
