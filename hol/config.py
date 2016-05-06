@@ -2,6 +2,7 @@
 
 import os
 import anyconfig
+import yaml
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,7 +23,6 @@ class Config:
         return cls([
             os.path.join(os.path.dirname(__file__), 'hol.yml'),
             '~/.hol.yml',
-            '~/.hol.test.yml',
             '/tmp/.hol.yml',
         ])
 
@@ -127,3 +127,13 @@ class Config:
 
         finally:
             session.close()
+
+
+    def sync_tmp(self):
+
+        """
+        Bake the current configuration into the /tmp file.
+        """
+
+        with open('/tmp/.hol.yml', 'w') as fh:
+            fh.write(yaml.dump(self.config))

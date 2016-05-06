@@ -72,22 +72,14 @@ def db(config):
 
 
 @pytest.yield_fixture()
-def mpi(mock_corpus):
+def mpi(config, mock_corpus):
 
     """
     Inject the mock corpus path into the MPI config file.
     """
 
-    # Write the MPI config file.
-    with open('/tmp/.hol.yml', 'w') as fh:
-
-        content = yaml.dump({
-            'corpus': mock_corpus.path,
-        })
-
-        fh.write(content)
+    config.sync_tmp()
 
     yield
 
-    # Remove the file.
     os.remove('/tmp/.hol.yml')
