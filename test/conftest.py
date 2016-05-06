@@ -15,8 +15,12 @@ def test_env():
     Merge the testing parameters into the configuration.
     """
 
-    # Inject the testing config.
-    _config.paths.append('~/.hol.test.yml')
+    # Inject the testing + MPI config.
+    _config.paths += [
+        '~/.hol.test.yml',
+        '/tmp/.hol.mpi.yml',
+    ]
+
     _config.read()
 
 
