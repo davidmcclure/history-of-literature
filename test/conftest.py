@@ -17,12 +17,8 @@ def test_env():
     Merge the testing parameters into the configuration.
     """
 
-    # Inject the testing + MPI config.
-    _config.paths += [
-        '~/.hol.test.yml',
-        '/tmp/.hol.mpi.yml',
-    ]
-
+    # Inject the testing config.
+    _config.paths.append('~/.hol.test.yml')
     _config.read()
 
 
@@ -83,7 +79,7 @@ def mpi(mock_corpus):
     """
 
     # Write the MPI config file.
-    with open('/tmp/.hol.mpi.yml', 'w') as fh:
+    with open('/tmp/.hol.yml', 'w') as fh:
 
         content = yaml.dump({
             'corpus': mock_corpus.path,
@@ -94,4 +90,4 @@ def mpi(mock_corpus):
     yield
 
     # Remove the file.
-    os.remove('/tmp/.hol.mpi.yml')
+    os.remove('/tmp/.hol.yml')
