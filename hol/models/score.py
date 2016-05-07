@@ -9,10 +9,10 @@ from scipy.signal import savgol_filter
 from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
 from hol import config
-from hol.models import Base, Count, AnchoredCount
+from hol.models import BaseModel, Count, AnchoredCount
 
 
-class Score(Base):
+class Score(BaseModel):
 
 
     __tablename__ = 'score'

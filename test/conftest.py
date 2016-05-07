@@ -5,7 +5,7 @@ import pytest
 import yaml
 
 from hol import config as _config
-from hol.models import Base
+from hol.models import BaseModel
 
 from test.mock_corpus import MockCorpus
 
@@ -67,8 +67,8 @@ def db(config):
     engine = config.build_engine()
 
     # Clear and recreate all tables.
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    BaseModel.metadata.drop_all(engine)
+    BaseModel.metadata.create_all(engine)
 
 
 @pytest.yield_fixture()

@@ -8,13 +8,13 @@ from sqlalchemy.sql import text, func
 
 from hol import config
 from hol.utils import flatten_dict
-from hol.models import Base
+from hol.models import BaseModel
 from hol.corpus import Corpus
 from hol.volume import Volume
 
 
 
-class AnchoredCount(Base):
+class AnchoredCount(BaseModel):
 
 
     __tablename__ = 'anchored_count'

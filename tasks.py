@@ -2,7 +2,7 @@
 
 from invoke import task
 
-from hol.models import Base
+from hol.models import BaseModel
 from hol import config
 
 
@@ -16,4 +16,4 @@ def init_db():
     engine = config.build_engine()
 
     # Create all tables.
-    Base.metadata.create_all(engine)
+    BaseModel.metadata.create_all(engine)
