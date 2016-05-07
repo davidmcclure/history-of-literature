@@ -138,4 +138,4 @@ class Job:
                 elif tag == Tags.EXIT:
                     break
 
-            comm.send(None, dest=0, tag=3)
+            comm.send(None, dest=0, tag=Tags.EXIT)
