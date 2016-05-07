@@ -86,7 +86,7 @@ class IndexCountJob(Job):
 @click.option(
     '--group_size',
     help='Process the corpus in groups of N paths.',
-    default=1000,
+    default=10000,
 )
 
 def index_count(group_size):

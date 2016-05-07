@@ -94,7 +94,7 @@ class Job:
                 # RESULT
                 elif tag == Tags.RESULT:
 
-                    # self.merge(data)
+                    self.merge(data)
 
                     # Log progress.
                     print((i+1) * self.group_size, 'merge')
