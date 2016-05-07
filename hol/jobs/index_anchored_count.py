@@ -70,13 +70,24 @@ class IndexAnchoredCount(BaseJob):
         return dict(self.data)
 
 
-    def flush(self, data):
+    def merge(self, data):
 
         """
-        Increment database counters.
+        Merge in a batch of counts from a rank.
 
         Args:
             data (dict)
         """
 
-        AnchoredCount.flush(data)
+        for year, level_counts in data.items():
+            for level, counts in level_counts.items():
+                self.data[year][level] += counts
+
+
+    def flush(self):
+
+        """
+        Increment database counters.
+        """
+
+        AnchoredCount.flush(self.data)

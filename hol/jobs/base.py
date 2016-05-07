@@ -25,7 +25,12 @@ class BaseJob(metaclass=ABCMeta):
 
 
     @abstractmethod
-    def flush(self, data):
+    def merge(self, result):
+        pass
+
+
+    @abstractmethod
+    def flush(self):
         pass
 
 
@@ -102,14 +107,12 @@ class BaseJob(metaclass=ABCMeta):
 
                 # EXIT
                 elif tag == Tags.EXIT:
-
-                    t1 = dt.now()
-                    self.flush(data)
-                    t2 = dt.now()
-
-                    # TODO|dev
-                    print(source, 'flush', t2-t1)
+                    self.merge(data)
+                    print(source, 'merge')
                     closed += 1
+
+            # Flush to disk.
+            self.flush()
 
         else:
 

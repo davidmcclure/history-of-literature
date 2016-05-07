@@ -56,13 +56,23 @@ class IndexCount(BaseJob):
         return dict(self.data)
 
 
-    def flush(self, data):
+    def merge(self, data):
 
         """
-        Increment database counters.
+        Merge in a batch of counts from a rank.
 
         Args:
             data (dict)
         """
 
-        Count.flush(data)
+        for year, counts in data.items():
+            self.data[year] += counts
+
+
+    def flush(self):
+
+        """
+        Increment database counters.
+        """
+
+        Count.flush(self.data)

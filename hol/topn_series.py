@@ -105,7 +105,8 @@ class TopnSeries:
 
         series = []
         for t in self.tokens():
-            s = self.rank_series_smooth(t, width)
+            # s = self.rank_series_smooth(t, width)
+            s = self.rank_series(t, width)
             series.append((t, s, rank(s)))
 
         # Sort descending.
