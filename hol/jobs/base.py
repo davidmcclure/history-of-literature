@@ -111,7 +111,7 @@ class BaseJob(metaclass=ABCMeta):
                     print(source, 'merge', mem_pct())
                     closed += 1
 
-            # Flush to disk.
+            print('flush')
             self.flush()
 
         else:
