@@ -20,7 +20,9 @@ def index_count(group_size):
     Index year -> token -> count.
     """
 
-    job = IndexCount(group_size)
+    job = IndexCount(
+        group_size=group_size,
+    )
 
     job.run()
 

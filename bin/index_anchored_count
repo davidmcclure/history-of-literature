@@ -28,7 +28,11 @@ def index_anchored_count(anchor, group_size, page_size):
     Index year -> level -> token -> count.
     """
 
-    job = IndexAnchoredCount(anchor, page_size, group_size)
+    job = IndexAnchoredCount(
+        anchor=anchor,
+        group_size=group_size,
+        page_size=page_size,
+    )
 
     job.run()
 
