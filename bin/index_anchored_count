@@ -29,7 +29,7 @@ class IndexAnchoredCountJob(Job):
         self.anchor = anchor
         self.page_size = page_size
 
-        self.data = defaultdict(lambda: defaultdict(Counter))
+        self.cache = defaultdict(lambda: defaultdict(Counter))
 
 
     def process(self, paths):
@@ -78,7 +78,7 @@ class IndexAnchoredCountJob(Job):
 
         for year, level_counts in result.items():
             for level, counts in level_counts.items():
-                self.data[year][level] += counts
+                self.cache[year][level] += counts
 
 
     def flush(self):
@@ -87,7 +87,7 @@ class IndexAnchoredCountJob(Job):
         Increment database counters.
         """
 
-        AnchoredCount.flush(self.data)
+        AnchoredCount.flush(self.cache)
 
 
 
