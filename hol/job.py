@@ -94,17 +94,15 @@ class Job:
                 # RESULT
                 elif tag == Tags.RESULT:
 
-                    self.merge(data)
-
                     # Log progress.
                     print((i+1) * self.group_size, 'merge')
                     i += 1
 
                 # EXIT
                 elif tag == Tags.EXIT:
+                    self.merge(data)
                     closed += 1
 
-            # Write to disk.
             self.flush()
 
             # Log total duration.
@@ -130,12 +128,12 @@ class Job:
 
                 # Extract counts.
                 if tag == Tags.WORK:
-                    result = self.process(paths)
-                    comm.send(result, dest=0, tag=Tags.RESULT)
+                    self.merge(self.process(paths))
+                    comm.send(None, dest=0, tag=Tags.RESULT)
                     print(rank, 'result')
 
                 # Or, no paths, exit.
                 elif tag == Tags.EXIT:
                     break
 
-            comm.send(None, dest=0, tag=Tags.EXIT)
+            comm.send(dict(self.cache), dest=0, tag=Tags.EXIT)
