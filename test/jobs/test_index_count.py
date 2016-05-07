@@ -178,3 +178,32 @@ def test_ignore_non_english_volumes(mock_corpus):
 
     assert Count.token_year_count('one', 1900) == 1
     assert Count.token_year_count('two', 1900) == 2
+
+
+def test_apply_token_whitelist(mock_corpus):
+
+    """
+    Non-whitelisted tokens should be ignored.
+    """
+
+    vol = make_vol(year=1900, pages=[
+        make_page(counts={
+
+            'one': {
+                'POS': 1
+            },
+
+            # Invalid
+            'aaa': {
+                'POS': 1
+            },
+
+        }),
+    ])
+
+    mock_corpus.add_vol(vol)
+
+    call(['mpirun', 'bin/index_count'])
+
+    assert Count.token_year_count('one', 1900) == 1
+    assert Count.token_year_count('aaa', 1900) == 0
