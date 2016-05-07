@@ -25,7 +25,7 @@ class IndexAnchoredCount(BaseJob):
         self.anchor = anchor
         self.page_size = page_size
 
-        self.cache = defaultdict(lambda: defaultdict(Counter))
+        self.data = defaultdict(lambda: defaultdict(Counter))
 
 
     def process(self, paths):
@@ -38,8 +38,6 @@ class IndexAnchoredCount(BaseJob):
 
         Returns: defaultdict(Counter)
         """
-
-        result = defaultdict(lambda: defaultdict(Counter))
 
         for path in paths:
 
@@ -55,26 +53,35 @@ class IndexAnchoredCount(BaseJob):
                     )
 
                     for level, counts in counts.items():
-                        result[vol.year][level] += counts
+                        self.data[vol.year][level] += counts
 
             except Exception as e:
                 print(e)
 
-        return dict(result)
+
+    def shrinkwrap(self):
+
+        """
+        Format the counters for MPI.
+
+        Returns: dict
+        """
+
+        return dict(self.data)
 
 
-    def merge(self, result):
+    def merge(self, data):
 
         """
         Merge in a batch of counts from a rank.
 
         Args:
-            result (dict)
+            data (dict)
         """
 
-        for year, level_counts in result.items():
+        for year, level_counts in data.items():
             for level, counts in level_counts.items():
-                self.cache[year][level] += counts
+                self.data[year][level] += counts
 
 
     def flush(self):
@@ -83,4 +90,4 @@ class IndexAnchoredCount(BaseJob):
         Increment database counters.
         """
 
-        AnchoredCount.flush(self.cache)
+        AnchoredCount.flush(self.data)

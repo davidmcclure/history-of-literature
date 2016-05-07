@@ -20,6 +20,11 @@ class BaseJob(metaclass=ABCMeta):
 
 
     @abstractmethod
+    def shrinkwrap(self, paths):
+        pass
+
+
+    @abstractmethod
     def merge(self, result):
         pass
 
@@ -132,7 +137,7 @@ class BaseJob(metaclass=ABCMeta):
 
                 # Extract counts.
                 if tag == Tags.WORK:
-                    self.merge(self.process(paths))
+                    self.process(paths)
                     comm.send(None, dest=0, tag=Tags.RESULT)
                     print(rank, 'result')
 
@@ -140,4 +145,7 @@ class BaseJob(metaclass=ABCMeta):
                 elif tag == Tags.EXIT:
                     break
 
-            comm.send(dict(self.cache), dest=0, tag=Tags.EXIT)
+            data = self.shrinkwrap()
+
+            # Send data back to 0.
+            comm.send(data, dest=0, tag=Tags.EXIT)

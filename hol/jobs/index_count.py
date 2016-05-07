@@ -18,7 +18,7 @@ class IndexCount(BaseJob):
 
         super().__init__(*args, **kwargs)
 
-        self.cache = defaultdict(Counter)
+        self.data = defaultdict(Counter)
 
 
     def process(self, paths):
@@ -32,8 +32,6 @@ class IndexCount(BaseJob):
         Returns: defaultdict(Counter)
         """
 
-        result = defaultdict(Counter)
-
         for i, path in enumerate(paths):
 
             try:
@@ -41,25 +39,34 @@ class IndexCount(BaseJob):
                 vol = Volume.from_path(path)
 
                 if vol.is_english:
-                    result[vol.year] += vol.token_counts()
+                    self.data[vol.year] += vol.token_counts()
 
             except Exception as e:
                 print(e)
 
-        return result
+
+    def shrinkwrap(self):
+
+        """
+        Format the counters for MPI.
+
+        Returns: dict
+        """
+
+        return dict(self.data)
 
 
-    def merge(self, result):
+    def merge(self, data):
 
         """
         Merge in a batch of counts from a rank.
 
         Args:
-            result (dict)
+            data (dict)
         """
 
-        for year, counts in result.items():
-            self.cache[year] += counts
+        for year, counts in data.items():
+            self.data[year] += counts
 
 
     def flush(self):
@@ -68,6 +75,4 @@ class IndexCount(BaseJob):
         Increment database counters.
         """
 
-        Count.flush(self.cache)
-
-        self.cache.clear()
+        Count.flush(self.data)
