@@ -74,15 +74,12 @@ class AnchoredCount(BaseModel):
 
         for year, level, token, count in flatten_dict(counts):
 
-            # Whitelist tokens.
-            if token in config.tokens:
-
-                session.execute(query, dict(
-                    token=token,
-                    year=year,
-                    anchor_count=level,
-                    count=count,
-                ))
+            session.execute(query, dict(
+                token=token,
+                year=year,
+                anchor_count=level,
+                count=count,
+            ))
 
         session.commit()
 

@@ -65,14 +65,11 @@ class Count(BaseModel):
 
         for year, token, count in flatten_dict(counts):
 
-            # Whitelist tokens.
-            if token in config.tokens:
-
-                session.execute(query, dict(
-                    token=token,
-                    year=year,
-                    count=count,
-                ))
+            session.execute(query, dict(
+                token=token,
+                year=year,
+                count=count,
+            ))
 
         session.commit()
 

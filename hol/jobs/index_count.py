@@ -2,6 +2,8 @@
 
 from collections import defaultdict, Counter
 
+from hol import config
+from hol.utils import flatten_dict
 from hol.jobs import BaseJob
 from hol.volume import Volume
 from hol.models import Count
@@ -65,8 +67,11 @@ class IndexCount(BaseJob):
             data (dict)
         """
 
-        for year, counts in data.items():
-            self.data[year] += counts
+        for year, token, count in flatten_dict(data):
+
+            # Apply the token whitelist.
+            if token in config.tokens:
+                self.data[year][token] += count
 
 
     def flush(self):
