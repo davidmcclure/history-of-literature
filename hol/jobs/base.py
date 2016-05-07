@@ -10,7 +10,7 @@ from hol.utils import enum
 Tags = enum('READY', 'WORK', 'RESULT', 'EXIT')
 
 
-class Job:
+class BaseJob:
 
 
     def process(self, paths):
