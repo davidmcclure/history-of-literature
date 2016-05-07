@@ -129,7 +129,7 @@ class BaseJob(metaclass=ABCMeta):
                 # Request paths.
                 paths = comm.recv(
                     source=0,
-                    tag=MPI.ANY_SOURCE,
+                    tag=MPI.ANY_TAG,
                     status=status,
                 )
 
