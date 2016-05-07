@@ -16,3 +16,4 @@ pytest
 jupyter
 mpi4py
 click
+psutil

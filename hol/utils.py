@@ -1,6 +1,8 @@
 
 
+import os
 import numpy as np
+import psutil
 
 from itertools import islice, chain
 from sklearn import preprocessing
@@ -126,3 +128,16 @@ def enum(*seq, **named):
 
     enums = dict(zip(seq, range(len(seq))), **named)
     return type('Enum', (), enums)
+
+
+def mem_pct():
+
+    """
+    Get the percentage of available memory used by the process.
+
+    Returns: float
+    """
+
+    proc = psutil.Process(os.getpid())
+
+    return proc.memory_percent()

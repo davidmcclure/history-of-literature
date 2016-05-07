@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 from mpi4py import MPI
 
 from hol.corpus import Corpus
-from hol.utils import enum
+from hol.utils import enum, mem_pct
 
 
 Tags = enum('READY', 'WORK', 'RESULT', 'EXIT')
@@ -108,7 +108,7 @@ class BaseJob(metaclass=ABCMeta):
                 # EXIT
                 elif tag == Tags.EXIT:
                     self.merge(data)
-                    print(source, 'merge')
+                    print(source, 'merge', mem_pct())
                     closed += 1
 
             # Flush to disk.
@@ -135,7 +135,7 @@ class BaseJob(metaclass=ABCMeta):
                 if tag == Tags.WORK:
                     self.process(paths)
                     comm.send(None, dest=0, tag=Tags.RESULT)
-                    print(rank, 'result')
+                    print(rank, 'result', mem_pct())
 
                 # Or, no paths, exit.
                 elif tag == Tags.EXIT:
