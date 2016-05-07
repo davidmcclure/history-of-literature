@@ -62,8 +62,6 @@ class BaseJob(metaclass=ABCMeta):
         i = 0
         if rank == 0:
 
-            t1 = dt.now()
-
             corpus = Corpus.from_env()
 
             path_groups = corpus.path_groups(self.group_size)
@@ -104,13 +102,14 @@ class BaseJob(metaclass=ABCMeta):
 
                 # EXIT
                 elif tag == Tags.EXIT:
-                    self.flush(data)
-                    print(source, 'flush')
-                    closed += 1
 
-            # Log total duration.
-            t2 = dt.now()
-            print(t2-t1)
+                    t1 = dt.now()
+                    self.flush(data)
+                    t2 = dt.now()
+
+                    # TODO|dev
+                    print(source, 'flush', t2-t1)
+                    closed += 1
 
         else:
 
