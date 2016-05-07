@@ -13,16 +13,16 @@
 #################
 #time you think you need; default is one hour
 #in minutes in this case, hh:mm:ss
-#SBATCH --time=05:00:00
+#SBATCH --time=01:00:00
 #################
 #quality of service; think of it as job priority
 #SBATCH --qos=normal
 #################
 #number of nodes you are requesting
-#SBATCH --nodes=16
+#SBATCH --nodes=10
 #################
 #memory per node; default is 4000 MB per CPU
-#SBATCH --mem=8000
+#SBATCH --mem=32000
 #you could use --mem-per-cpu; they mean what we are calling cores
 #################
 #tasks to run per node; a "task" is usually mapped to a MPI processes.
