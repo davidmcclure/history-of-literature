@@ -1,7 +1,8 @@
 
 
-from mpi4py import MPI
 from datetime import datetime as dt
+from abc import ABCMeta, abstractmethod
+from mpi4py import MPI
 
 from hol.corpus import Corpus
 from hol.utils import enum
@@ -10,19 +11,22 @@ from hol.utils import enum
 Tags = enum('READY', 'WORK', 'RESULT', 'EXIT')
 
 
-class BaseJob:
+class BaseJob(metaclass=ABCMeta):
 
 
+    @abstractmethod
     def process(self, paths):
-        raise NotImplementedError
+        pass
 
 
+    @abstractmethod
     def merge(self, result):
-        raise NotImplementedError
+        pass
 
 
+    @abstractmethod
     def flush(self):
-        raise NotImplementedError
+        pass
 
 
     def __init__(self, group_size=1000):
