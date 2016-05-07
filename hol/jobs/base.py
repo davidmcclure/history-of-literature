@@ -99,7 +99,7 @@ class BaseJob(metaclass=ABCMeta):
                 elif tag == Tags.RESULT:
 
                     # Log progress.
-                    print((i+1) * self.group_size, 'merge')
+                    print((i+1) * self.group_size, 'paths')
                     i += 1
 
                 # EXIT
