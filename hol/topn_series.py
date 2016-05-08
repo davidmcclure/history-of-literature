@@ -60,7 +60,11 @@ class TopnSeries:
         series = OrderedDict()
 
         for year, topn in self.topns.items():
-            series[year] = topn.get(token, 0)
+
+            rank = topn.get(token)
+
+            if rank:
+                series[year] = rank
 
         return series
 
