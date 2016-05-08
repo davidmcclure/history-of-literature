@@ -90,13 +90,12 @@ class TopnSeries:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def sort_series(self, years, score, width=10):
+    def query(self, score, width=10):
 
         """
         Compute series for all tokens, sort on a callback.
 
         Args:
-            years (iter)
             score (function)
             width (int)
 
