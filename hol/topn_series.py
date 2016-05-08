@@ -3,6 +3,7 @@
 import numpy as np
 
 from collections import OrderedDict
+from scipy.signal import wiener
 
 from hol.models import Score
 
@@ -69,7 +70,7 @@ class TopnSeries:
         return series
 
 
-    def rank_series_smooth(self, token, width=10):
+    def rank_series_smooth(self, token, width=11):
 
         """
         Smooth the rank series for a token.
@@ -84,17 +85,14 @@ class TopnSeries:
 
         series = self.rank_series(token)
 
-        ranks = series.values()
+        ranks = list(series.values())
 
-        smooth = np.convolve(
-            list(ranks),
-            np.ones(width) / width,
-        )
+        smooth = wiener(ranks, width)
 
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def query(self, score, width=10):
+    def query(self, score, width=11):
 
         """
         Compute series for all tokens, sort on a callback.
