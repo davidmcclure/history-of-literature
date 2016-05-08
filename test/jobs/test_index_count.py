@@ -194,7 +194,7 @@ def test_apply_token_whitelist(mock_corpus):
             },
 
             # Invalid
-            'aaa': {
+            'zxcvb': {
                 'POS': 1
             },
 
