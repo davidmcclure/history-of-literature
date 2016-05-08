@@ -2,6 +2,6 @@
 
 corpus: /path/to/corpus
 
-token_depth: 10000
+token_depth: 20000
 
 database: sqlite:////path/to/db

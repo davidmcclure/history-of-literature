@@ -1,7 +1,12 @@
 
 
+import pytest
+
 from hol.page import Page
 from test.helpers import make_page
+
+
+pytestmark = pytest.mark.usefixtures('tokens')
 
 
 def test_add_pos_counts():
@@ -71,6 +76,30 @@ def test_ignore_irregular_tokens():
 
         # Punctuation
         '...': {
+            'POS': 1,
+        },
+
+    })
+
+    assert p.token_counts() == {
+        'token': 1,
+    }
+
+
+def test_apply_token_whitelist():
+
+    """
+    Non-whitelisted tokens should be ignored.
+    """
+
+    p = make_page({
+
+        'token': {
+            'POS': 1,
+        },
+
+        # Not on whitelist
+        'zxcvb': {
             'POS': 1,
         },
 

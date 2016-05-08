@@ -3,6 +3,7 @@
 import os
 import pytest
 import yaml
+import string
 
 from hol import config as _config
 from hol.models import BaseModel
@@ -83,3 +84,14 @@ def mpi(config, mock_corpus):
     yield
 
     os.remove('/tmp/.hol.yml')
+
+
+@pytest.fixture()
+def tokens(config):
+
+    """
+    Inject testing tokens ("aaa", "bbb", "ccc", etc) into the whitelist.
+    """
+
+    for letter in string.ascii_lowercase:
+        config.tokens.add(letter*3)

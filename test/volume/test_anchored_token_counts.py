@@ -1,7 +1,12 @@
 
 
+import pytest
+
 from hol.volume import Volume
 from test.helpers import make_page, make_vol
+
+
+pytestmark = pytest.mark.usefixtures('tokens')
 
 
 def test_anchored_token_counts():
