@@ -3,7 +3,6 @@
 from collections import defaultdict, Counter
 
 from hol import config
-from hol.utils import flatten_dict
 from hol.jobs import BaseJob
 from hol.models import AnchoredCount
 from hol.volume import Volume
@@ -81,11 +80,9 @@ class IndexAnchoredCount(BaseJob):
             data (dict)
         """
 
-        for year, level, token, count in flatten_dict(data):
-
-            # Apply the token whitelist.
-            if token in config.tokens:
-                self.data[year][level][token] += count
+        for year, level_counts in data.items():
+            for level, counts in level_counts.items():
+                self.data[year][level] += counts
 
 
     def flush(self):
