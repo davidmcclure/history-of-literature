@@ -3,7 +3,7 @@
 import numpy as np
 
 from collections import OrderedDict
-from scipy.signal import wiener
+from scipy.signal import wiener, savgol_filter
 
 from hol.models import Score
 
@@ -70,7 +70,7 @@ class TopnSeries:
         return series
 
 
-    def rank_series_smooth(self, token, width=11):
+    def rank_series_smooth(self, token, width=11, order=2):
 
         """
         Smooth the rank series for a token.
@@ -87,27 +87,32 @@ class TopnSeries:
 
         ranks = list(series.values())
 
-        smooth = wiener(ranks, width)
+        smooth = savgol_filter(ranks, width, order)
 
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def query(self, score, width=11):
+    def query(self, score, *args, **kwargs):
 
         """
         Compute series for all tokens, sort on a callback.
 
         Args:
             score (function)
-            width (int)
 
         Returns: OrderedDict {token: series, ...}
         """
 
         series = []
         for t in self.tokens():
-            s = self.rank_series_smooth(t, width)
-            series.append((t, s, score(s)))
+
+            try:
+                s = self.rank_series_smooth(t, *args, **kwargs)
+                series.append((t, s, score(s)))
+
+            # Ignore series with N < savgol width.
+            except TypeError:
+                pass
 
         # Sort descending.
         tsv = sorted(series, key=lambda x: x[2], reverse=True)
