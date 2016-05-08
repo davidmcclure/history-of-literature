@@ -39,16 +39,16 @@ def test_combine_casing_variants():
     """
 
     p = make_page({
-        'token': {
+        'word': {
             'POS': 1,
         },
-        'Token': {
+        'Word': {
             'POS': 2,
         },
     })
 
     assert p.token_counts() == {
-        'token': 1+2,
+        'word': 1+2,
     }
 
 
@@ -60,12 +60,12 @@ def test_ignore_irregular_tokens():
 
     p = make_page({
 
-        'token': {
+        'word': {
             'POS': 1,
         },
 
         # Number
-        'token1': {
+        'word1': {
             'POS': 1,
         },
 
@@ -77,7 +77,7 @@ def test_ignore_irregular_tokens():
     })
 
     assert p.token_counts() == {
-        'token': 1,
+        'word': 1,
     }
 
 
@@ -89,7 +89,7 @@ def test_apply_token_whitelist():
 
     p = make_page({
 
-        'token': {
+        'word': {
             'POS': 1,
         },
 
@@ -101,5 +101,5 @@ def test_apply_token_whitelist():
     })
 
     assert p.token_counts() == {
-        'token': 1,
+        'word': 1,
     }
