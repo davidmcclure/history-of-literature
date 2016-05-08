@@ -90,7 +90,7 @@ class TopnSeries:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def ranked_series(self, years, rank, width=10):
+    def sort_series(self, years, rank, width=10):
 
         """
         Compute series for all tokens, sort on a callback.
