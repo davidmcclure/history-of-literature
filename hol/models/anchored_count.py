@@ -1,14 +1,17 @@
 
 
-from collections import OrderedDict
+import numpy as np
+
 from functools import partial
+from scipy.stats import chi2_contingency
+from collections import OrderedDict
 
 from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.sql import text, func
 
 from hol import config
-from hol.utils import flatten_dict
-from hol.models import BaseModel
+from hol.models import BaseModel, Count
+from hol.utils import flatten_dict, sort_dict
 from hol.corpus import Corpus
 from hol.volume import Volume
 
@@ -233,4 +236,66 @@ class AnchoredCount(BaseModel):
         Returns: OrderedDict {token: score, ...}
         """
 
-        pass
+        # a - number of times each token in anchored_count, filtered by year / level
+        # b - number of times each token appears in count, filtered by year
+        # c - total count from anchored_count, filtered by year / level
+        # d - total count from count, filtered by year
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.token, func.sum(cls.count))
+                .filter(
+                    cls.anchor_count.in_(levels),
+                    cls.year.in_(years)
+                )
+                .group_by(cls.token)
+                .order_by(cls.token.asc())
+            )
+
+            a = dict(res.all())
+
+            res = (
+                session
+                .query(Count.token, func.sum(Count.count))
+                .filter(
+                    Count.year.in_(years)
+                )
+                .group_by(Count.token)
+                .order_by(Count.token.asc())
+            )
+
+            b = dict(res.all())
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(
+                    cls.anchor_count.in_(levels),
+                    cls.year.in_(years)
+                )
+            )
+
+            c = res.scalar()
+
+            res = (
+                session
+                .query(func.sum(Count.count))
+                .filter(Count.year.in_(years))
+            )
+
+            d = res.scalar()
+
+            topn = dict()
+
+            for token in a.keys():
+
+                g, p, dof, exp = chi2_contingency(
+                    np.array([[a[token], b[token]], [c, d]]),
+                    lambda_='log-likelihood',
+                )
+
+                topn[token] = g
+
+            return sort_dict(topn)

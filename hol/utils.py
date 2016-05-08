@@ -54,6 +54,24 @@ def window(seq, n):
         yield result
 
 
+def sort_dict(d, desc=True):
+
+    """
+    Sort an ordered dictionary by value, descending.
+
+    Args:
+        d (dict)
+        desc (bool)
+
+    Returns:
+        OrderedDict: The sorted dictionary.
+    """
+
+    sort = sorted(d.items(), key=lambda x: x[1], reverse=desc)
+
+    return OrderedDict(sort)
+
+
 def flatten_dict(d):
 
     """
@@ -127,6 +145,7 @@ def enum(*seq, **named):
     """
 
     enums = dict(zip(seq, range(len(seq))), **named)
+
     return type('Enum', (), enums)
 
 
