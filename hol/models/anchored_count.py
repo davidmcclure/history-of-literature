@@ -216,3 +216,21 @@ class AnchoredCount(BaseModel):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def topn(cls, years, levels, n=100):
+
+        """
+        Given a range of years and anchor levels, get a list of the top N most
+        distinctive words around the anchor.
+
+        Args:
+            years (iter)
+            levels (iter)
+            n (int)
+
+        Returns: OrderedDict {token: score, ...}
+        """
+
+        pass
