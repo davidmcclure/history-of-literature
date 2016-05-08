@@ -138,6 +138,6 @@ def mem_pct():
     Returns: float
     """
 
-    proc = psutil.Process(os.getpid())
+    mem = psutil.virtual_memory()
 
-    return proc.memory_percent()
+    return mem.percent
