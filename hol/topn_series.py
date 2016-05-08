@@ -3,7 +3,7 @@
 import numpy as np
 
 from collections import OrderedDict
-from scipy.signal import wiener, savgol_filter
+from scipy.signal import savgol_filter
 
 from hol.models import Score
 
@@ -77,10 +77,10 @@ class TopnSeries:
 
         Args:
             token (str)
-            years (iter)
             width (int)
+            order (int)
 
-        Returns: OrderedDict {year: wpm, ...}
+        Returns: OrderedDict {year: rank, ...}
         """
 
         series = self.rank_series(token)
