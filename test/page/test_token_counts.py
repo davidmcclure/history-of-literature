@@ -1,12 +1,7 @@
 
 
-import pytest
-
 from hol.page import Page
 from test.helpers import make_page
-
-
-pytestmark = pytest.mark.usefixtures('tokens')
 
 
 def test_add_pos_counts():
@@ -16,24 +11,24 @@ def test_add_pos_counts():
     """
 
     p = make_page({
-        'aaa': {
+        'a': {
             'POS1': 1,
             'POS2': 2,
         },
-        'bbb': {
+        'b': {
             'POS1': 3,
             'POS2': 4,
         },
-        'ccc': {
+        'c': {
             'POS1': 5,
             'POS2': 6,
         },
     })
 
     assert p.token_counts() == {
-        'aaa': 1+2,
-        'bbb': 3+4,
-        'ccc': 5+6,
+        'a': 1+2,
+        'b': 3+4,
+        'c': 5+6,
     }
 
 

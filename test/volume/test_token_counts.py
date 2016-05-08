@@ -1,12 +1,7 @@
 
 
-import pytest
-
 from hol.volume import Volume
 from test.helpers import make_page, make_vol
-
-
-pytestmark = pytest.mark.usefixtures('tokens')
 
 
 def test_combine_page_counts():
@@ -18,25 +13,25 @@ def test_combine_page_counts():
     v = make_vol(pages=[
 
         make_page(counts={
-            'aaa': {
+            'a': {
                 'POS': 1,
             },
-            'bbb': {
+            'b': {
                 'POS': 2,
             },
-            'ccc': {
+            'c': {
                 'POS': 3,
             },
         }),
 
         make_page(counts={
-            'bbb': {
+            'b': {
                 'POS': 4,
             },
-            'ccc': {
+            'c': {
                 'POS': 5,
             },
-            'ddd': {
+            'd': {
                 'POS': 6,
             },
         }),
@@ -44,8 +39,8 @@ def test_combine_page_counts():
     ])
 
     assert v.token_counts() == {
-        'aaa': 1,
-        'bbb': 2+4,
-        'ccc': 3+5,
-        'ddd': 6,
+        'a': 1,
+        'b': 2+4,
+        'c': 3+5,
+        'd': 6,
     }

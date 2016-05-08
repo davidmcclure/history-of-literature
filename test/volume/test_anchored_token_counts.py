@@ -1,12 +1,7 @@
 
 
-import pytest
-
 from hol.volume import Volume
 from test.helpers import make_page, make_vol
-
-
-pytestmark = pytest.mark.usefixtures('tokens')
 
 
 def test_anchored_token_counts():
@@ -24,13 +19,13 @@ def test_anchored_token_counts():
                 'POS': 1,
             },
 
-            'aaa': {
+            'a': {
                 'POS': 1,
             },
-            'bbb': {
+            'b': {
                 'POS': 1,
             },
-            'ccc': {
+            'c': {
                 'POS': 1,
             },
 
@@ -42,13 +37,13 @@ def test_anchored_token_counts():
                 'POS': 2,
             },
 
-            'aaa': {
+            'a': {
                 'POS': 2,
             },
-            'bbb': {
+            'b': {
                 'POS': 2,
             },
-            'ccc': {
+            'c': {
                 'POS': 2,
             },
 
@@ -60,13 +55,13 @@ def test_anchored_token_counts():
                 'POS': 2,
             },
 
-            'aaa': {
+            'a': {
                 'POS': 3,
             },
-            'bbb': {
+            'b': {
                 'POS': 3,
             },
-            'ccc': {
+            'c': {
                 'POS': 3,
             },
 
@@ -78,13 +73,13 @@ def test_anchored_token_counts():
                 'POS': 3,
             },
 
-            'aaa': {
+            'a': {
                 'POS': 4,
             },
-            'bbb': {
+            'b': {
                 'POS': 4,
             },
-            'ccc': {
+            'c': {
                 'POS': 4,
             },
 
@@ -94,19 +89,19 @@ def test_anchored_token_counts():
 
     assert v.anchored_token_counts('anchor', 100) == {
         1: {
-            'aaa': 1,
-            'bbb': 1,
-            'ccc': 1,
+            'a': 1,
+            'b': 1,
+            'c': 1,
         },
         2: {
-            'aaa': 2+3,
-            'bbb': 2+3,
-            'ccc': 2+3,
+            'a': 2+3,
+            'b': 2+3,
+            'c': 2+3,
         },
         3: {
-            'aaa': 4,
-            'bbb': 4,
-            'ccc': 4,
+            'a': 4,
+            'b': 4,
+            'c': 4,
         }
     }
 
@@ -125,13 +120,13 @@ def test_ignore_pages_without_anchor_token():
                 'POS': 1,
             },
 
-            'aaa': {
+            'a': {
                 'POS': 1,
             },
-            'bbb': {
+            'b': {
                 'POS': 1,
             },
-            'ccc': {
+            'c': {
                 'POS': 1,
             },
 
@@ -139,13 +134,13 @@ def test_ignore_pages_without_anchor_token():
 
         # No anchor token.
         make_page(token_count=100, counts={
-            'aaa': {
+            'a': {
                 'POS': 2,
             },
-            'bbb': {
+            'b': {
                 'POS': 2,
             },
-            'ccc': {
+            'c': {
                 'POS': 2,
             },
         }),
@@ -154,9 +149,9 @@ def test_ignore_pages_without_anchor_token():
 
     assert v.anchored_token_counts('anchor', 100) == {
         1: {
-            'aaa': 1,
-            'bbb': 1,
-            'ccc': 1,
+            'a': 1,
+            'b': 1,
+            'c': 1,
         },
     }
 
@@ -174,7 +169,7 @@ def test_combine_counts_for_grouped_pages():
             'anchor': {
                 'POS': 1,
             },
-            'aaa': {
+            'a': {
                 'POS': 1,
             },
         }),
@@ -183,7 +178,7 @@ def test_combine_counts_for_grouped_pages():
             'anchor': {
                 'POS': 2,
             },
-            'aaa': {
+            'a': {
                 'POS': 2,
             },
         }),
@@ -192,7 +187,7 @@ def test_combine_counts_for_grouped_pages():
             'anchor': {
                 'POS': 3,
             },
-            'aaa': {
+            'a': {
                 'POS': 3,
             },
         }),
@@ -201,7 +196,7 @@ def test_combine_counts_for_grouped_pages():
             'anchor': {
                 'POS': 4,
             },
-            'aaa': {
+            'a': {
                 'POS': 4,
             },
         }),
@@ -210,9 +205,9 @@ def test_combine_counts_for_grouped_pages():
 
     assert v.anchored_token_counts('anchor', 200) == {
         1+2: {
-            'aaa': 1+2,
+            'a': 1+2,
         },
         3+4: {
-            'aaa': 3+4,
+            'a': 3+4,
         },
     }

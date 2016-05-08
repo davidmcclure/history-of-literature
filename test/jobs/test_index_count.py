@@ -19,10 +19,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v1 = make_vol(year=1901, pages=[
         make_page(counts={
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
         }),
@@ -30,10 +30,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v2 = make_vol(year=1902, pages=[
         make_page(counts={
-            'two': {
+            'b': {
                 'POS': 3
             },
-            'three': {
+            'c': {
                 'POS': 4
             },
         }),
@@ -41,10 +41,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v3 = make_vol(year=1903, pages=[
         make_page(counts={
-            'three': {
+            'c': {
                 'POS': 5
             },
-            'four': {
+            'd': {
                 'POS': 6
             },
         }),
@@ -52,10 +52,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v4 = make_vol(year=1904, pages=[
         make_page(counts={
-            'four': {
+            'd': {
                 'POS': 7
             },
-            'five': {
+            'e': {
                 'POS': 8
             },
         }),
@@ -63,10 +63,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v5 = make_vol(year=1905, pages=[
         make_page(counts={
-            'five': {
+            'e': {
                 'POS': 9
             },
-            'six': {
+            'f': {
                 'POS': 10
             },
         }),
@@ -74,10 +74,10 @@ def test_index_year_token_counts(mock_corpus):
 
     v6 = make_vol(year=1906, pages=[
         make_page(counts={
-            'six': {
+            'f': {
                 'POS': 11
             },
-            'seven': {
+            'g': {
                 'POS': 12
             },
         }),
@@ -92,18 +92,18 @@ def test_index_year_token_counts(mock_corpus):
 
     call(['mpirun', 'bin/index_count', '--group_size=2'])
 
-    assert Count.token_year_count('one',    1901) == 1
-    assert Count.token_year_count('two',    1901) == 2
-    assert Count.token_year_count('two',    1902) == 3
-    assert Count.token_year_count('three',  1902) == 4
-    assert Count.token_year_count('three',  1903) == 5
-    assert Count.token_year_count('four',   1903) == 6
-    assert Count.token_year_count('four',   1904) == 7
-    assert Count.token_year_count('five',   1904) == 8
-    assert Count.token_year_count('five',   1905) == 9
-    assert Count.token_year_count('six',    1905) == 10
-    assert Count.token_year_count('six',    1906) == 11
-    assert Count.token_year_count('seven',  1906) == 12
+    assert Count.token_year_count('a',    1901) == 1
+    assert Count.token_year_count('b',    1901) == 2
+    assert Count.token_year_count('b',    1902) == 3
+    assert Count.token_year_count('c',  1902) == 4
+    assert Count.token_year_count('c',  1903) == 5
+    assert Count.token_year_count('d',   1903) == 6
+    assert Count.token_year_count('d',   1904) == 7
+    assert Count.token_year_count('e',   1904) == 8
+    assert Count.token_year_count('e',   1905) == 9
+    assert Count.token_year_count('f',    1905) == 10
+    assert Count.token_year_count('f',    1906) == 11
+    assert Count.token_year_count('g',  1906) == 12
 
 
 def test_merge_year_counts(mock_corpus):
@@ -114,10 +114,10 @@ def test_merge_year_counts(mock_corpus):
 
     v1 = make_vol(year=1901, pages=[
         make_page(counts={
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
         }),
@@ -125,10 +125,10 @@ def test_merge_year_counts(mock_corpus):
 
     v2 = make_vol(year=1901, pages=[
         make_page(counts={
-            'one': {
+            'a': {
                 'POS': 11
             },
-            'two': {
+            'b': {
                 'POS': 12
             },
         }),
@@ -139,8 +139,8 @@ def test_merge_year_counts(mock_corpus):
 
     call(['mpirun', 'bin/index_count'])
 
-    assert Count.token_year_count('one', 1901) == 1+11
-    assert Count.token_year_count('two', 1901) == 2+12
+    assert Count.token_year_count('a', 1901) == 1+11
+    assert Count.token_year_count('b', 1901) == 2+12
 
 
 def test_ignore_non_english_volumes(mock_corpus):
@@ -151,10 +151,10 @@ def test_ignore_non_english_volumes(mock_corpus):
 
     v1 = make_vol(year=1900, pages=[
         make_page(counts={
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
         }),
@@ -162,10 +162,10 @@ def test_ignore_non_english_volumes(mock_corpus):
 
     v2 = make_vol(year=1900, language='ger', pages=[
         make_page(counts={
-            'one': {
+            'a': {
                 'POS': 11
             },
-            'two': {
+            'b': {
                 'POS': 12
             },
         }),
@@ -176,5 +176,5 @@ def test_ignore_non_english_volumes(mock_corpus):
 
     call(['mpirun', 'bin/index_count'])
 
-    assert Count.token_year_count('one', 1900) == 1
-    assert Count.token_year_count('two', 1900) == 2
+    assert Count.token_year_count('a', 1900) == 1
+    assert Count.token_year_count('b', 1900) == 2

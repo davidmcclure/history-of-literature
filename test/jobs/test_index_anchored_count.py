@@ -25,10 +25,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 1
             },
 
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
 
@@ -42,10 +42,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 2
             },
 
-            'two': {
+            'b': {
                 'POS': 3
             },
-            'three': {
+            'c': {
                 'POS': 4
             },
 
@@ -59,10 +59,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 3
             },
 
-            'three': {
+            'c': {
                 'POS': 5
             },
-            'four': {
+            'd': {
                 'POS': 6
             },
 
@@ -76,10 +76,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 4
             },
 
-            'four': {
+            'd': {
                 'POS': 7
             },
-            'five': {
+            'e': {
                 'POS': 8
             },
 
@@ -93,10 +93,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 5
             },
 
-            'five': {
+            'e': {
                 'POS': 9
             },
-            'six': {
+            'f': {
                 'POS': 10
             },
 
@@ -110,10 +110,10 @@ def test_index_year_token_counts(mock_corpus):
                 'POS': 6
             },
 
-            'six': {
+            'f': {
                 'POS': 11
             },
-            'seven': {
+            'g': {
                 'POS': 12
             },
 
@@ -134,18 +134,18 @@ def test_index_year_token_counts(mock_corpus):
         '--group_size=2',
     ])
 
-    assert AnchoredCount.token_year_level_count('one',      1901, 1) == 1
-    assert AnchoredCount.token_year_level_count('two',      1901, 1) == 2
-    assert AnchoredCount.token_year_level_count('two',      1902, 2) == 3
-    assert AnchoredCount.token_year_level_count('three',    1902, 2) == 4
-    assert AnchoredCount.token_year_level_count('three',    1903, 3) == 5
-    assert AnchoredCount.token_year_level_count('four',     1903, 3) == 6
-    assert AnchoredCount.token_year_level_count('four',     1904, 4) == 7
-    assert AnchoredCount.token_year_level_count('five',     1904, 4) == 8
-    assert AnchoredCount.token_year_level_count('five',     1905, 5) == 9
-    assert AnchoredCount.token_year_level_count('six',      1905, 5) == 10
-    assert AnchoredCount.token_year_level_count('six',      1906, 6) == 11
-    assert AnchoredCount.token_year_level_count('seven',    1906, 6) == 12
+    assert AnchoredCount.token_year_level_count('a', 1901, 1) == 1
+    assert AnchoredCount.token_year_level_count('b', 1901, 1) == 2
+    assert AnchoredCount.token_year_level_count('b', 1902, 2) == 3
+    assert AnchoredCount.token_year_level_count('c', 1902, 2) == 4
+    assert AnchoredCount.token_year_level_count('c', 1903, 3) == 5
+    assert AnchoredCount.token_year_level_count('d', 1903, 3) == 6
+    assert AnchoredCount.token_year_level_count('d', 1904, 4) == 7
+    assert AnchoredCount.token_year_level_count('e', 1904, 4) == 8
+    assert AnchoredCount.token_year_level_count('e', 1905, 5) == 9
+    assert AnchoredCount.token_year_level_count('f', 1905, 5) == 10
+    assert AnchoredCount.token_year_level_count('f', 1906, 6) == 11
+    assert AnchoredCount.token_year_level_count('g', 1906, 6) == 12
 
 
 def test_merge_year_level_counts(mock_corpus):
@@ -161,10 +161,10 @@ def test_merge_year_level_counts(mock_corpus):
                 'POS': 1
             },
 
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
 
@@ -178,10 +178,10 @@ def test_merge_year_level_counts(mock_corpus):
                 'POS': 1
             },
 
-            'one': {
+            'a': {
                 'POS': 11
             },
-            'two': {
+            'b': {
                 'POS': 12
             },
 
@@ -197,8 +197,8 @@ def test_merge_year_level_counts(mock_corpus):
         'anchor',
     ])
 
-    assert AnchoredCount.token_year_level_count('one', 1901, 1) == 1+11
-    assert AnchoredCount.token_year_level_count('two', 1901, 1) == 2+12
+    assert AnchoredCount.token_year_level_count('a', 1901, 1) == 1+11
+    assert AnchoredCount.token_year_level_count('b', 1901, 1) == 2+12
 
 
 def test_ignore_non_english_volumes(mock_corpus):
@@ -214,10 +214,10 @@ def test_ignore_non_english_volumes(mock_corpus):
                 'POS': 1
             },
 
-            'one': {
+            'a': {
                 'POS': 1
             },
-            'two': {
+            'b': {
                 'POS': 2
             },
 
@@ -231,10 +231,10 @@ def test_ignore_non_english_volumes(mock_corpus):
                 'POS': 1
             },
 
-            'one': {
+            'a': {
                 'POS': 11
             },
-            'two': {
+            'b': {
                 'POS': 12
             },
 
@@ -250,8 +250,8 @@ def test_ignore_non_english_volumes(mock_corpus):
         'anchor',
     ])
 
-    assert AnchoredCount.token_year_level_count('one', 1900, 1) == 1
-    assert AnchoredCount.token_year_level_count('two', 1900, 1) == 2
+    assert AnchoredCount.token_year_level_count('a', 1900, 1) == 1
+    assert AnchoredCount.token_year_level_count('b', 1900, 1) == 2
 
 
 def test_combine_counts_for_grouped_pages(mock_corpus):
@@ -266,7 +266,7 @@ def test_combine_counts_for_grouped_pages(mock_corpus):
             'anchor': {
                 'POS': 1,
             },
-            'one': {
+            'a': {
                 'POS': 1,
             },
         }),
@@ -275,7 +275,7 @@ def test_combine_counts_for_grouped_pages(mock_corpus):
             'anchor': {
                 'POS': 2,
             },
-            'one': {
+            'a': {
                 'POS': 2,
             },
         }),
@@ -284,7 +284,7 @@ def test_combine_counts_for_grouped_pages(mock_corpus):
             'anchor': {
                 'POS': 3,
             },
-            'one': {
+            'a': {
                 'POS': 3,
             },
         }),
@@ -293,7 +293,7 @@ def test_combine_counts_for_grouped_pages(mock_corpus):
             'anchor': {
                 'POS': 4,
             },
-            'one': {
+            'a': {
                 'POS': 4,
             },
         }),
@@ -309,5 +309,5 @@ def test_combine_counts_for_grouped_pages(mock_corpus):
         '--page_size=200',
     ])
 
-    assert AnchoredCount.token_year_level_count('one', 1900, 1+2) == 1+2
-    assert AnchoredCount.token_year_level_count('one', 1900, 3+4) == 3+4
+    assert AnchoredCount.token_year_level_count('a', 1900, 1+2) == 1+2
+    assert AnchoredCount.token_year_level_count('a', 1900, 3+4) == 3+4
