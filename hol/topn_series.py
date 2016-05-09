@@ -76,7 +76,7 @@ class TopnSeries:
         return series
 
 
-    def rank_series_smooth(self, token, width=11, order=2):
+    def rank_series_smooth(self, token, width=21, order=2):
 
         """
         Smooth the rank series for a token.
@@ -98,15 +98,15 @@ class TopnSeries:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def query(self, score, *args, **kwargs):
+    def sort(self, _lambda, *args, **kwargs):
 
         """
         Compute series for all tokens, sort on a callback.
 
         Args:
-            score (function)
+            _lambda (function)
 
-        Returns: OrderedDict {token: series, ...}
+        Returns: OrderedDict {token: (series, score), ...}
         """
 
         series = []
@@ -114,7 +114,7 @@ class TopnSeries:
 
             try:
                 s = self.rank_series_smooth(t, *args, **kwargs)
-                series.append((t, s, score(s)))
+                series.append((t, s, _lambda(s)))
 
             # Ignore series with N < savgol width.
             except TypeError:
