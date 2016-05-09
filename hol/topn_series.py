@@ -5,7 +5,8 @@ import numpy as np
 from collections import OrderedDict
 from scipy.signal import savgol_filter
 
-from hol.models import Score
+from hol import config
+from hol.models import AnchoredCount
 
 
 class TopnSeries:
@@ -20,15 +21,20 @@ class TopnSeries:
             years (iter)
         """
 
+        # Get a MDW cache.
+        mdw_cache = config.mem.cache(AnchoredCount.mdw)
+
         self.topns = OrderedDict()
 
         for year in years:
 
-            topn = Score.topn_by_year(year, n)
+            mdw = mdw_cache(year1=year, year2=year)
+
+            topn = list(mdw.items())[:n]
 
             ranks = OrderedDict()
 
-            for i, (token, _) in enumerate(topn.items()):
+            for i, (token, _) in enumerate(topn):
                 ranks[token] = n-i
 
             self.topns[year] = ranks
