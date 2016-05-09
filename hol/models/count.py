@@ -290,3 +290,28 @@ class Count(BaseModel):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_counts_by_years(cls, years):
+
+        """
+        Get token counts for a range of years
+
+        Args:
+            years (iter)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.token, func.sum(cls.count))
+                .filter(cls.year.in_(years))
+                .group_by(cls.token)
+                .order_by(cls.token.asc())
+            )
+
+            return OrderedDict(res.all())

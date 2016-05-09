@@ -231,7 +231,7 @@ class AnchoredCount(BaseModel):
             years (iter)
             levels (iter)
 
-        Returns: dict {token: count, ...}
+        Returns: OrderedDict {token: count, ...}
         """
 
         with config.get_session() as session:
@@ -247,7 +247,7 @@ class AnchoredCount(BaseModel):
                 .order_by(cls.token.asc())
             )
 
-            return dict(res.all())
+            return OrderedDict(res.all())
 
 
     @classmethod
@@ -275,19 +275,7 @@ class AnchoredCount(BaseModel):
 
             a = cls.token_counts_by_years_and_levels(years, levels)
 
-            # Count#token_counts()
-
-            res = (
-                session
-                .query(Count.token, func.sum(Count.count))
-                .filter(
-                    Count.year.in_(years)
-                )
-                .group_by(Count.token)
-                .order_by(Count.token.asc())
-            )
-
-            b = dict(res.all())
+            b = Count.token_counts_by_years(years)
 
             res = (
                 session
