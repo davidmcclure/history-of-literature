@@ -315,3 +315,26 @@ class Count(BaseModel):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def total_count_by_years(cls, years):
+
+        """
+        Get the total number of tokens that appear in a range of years.
+
+        Args:
+            years (iter)
+
+        Returns: int
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(cls.year.in_(years))
+            )
+
+            return res.scalar() or 0

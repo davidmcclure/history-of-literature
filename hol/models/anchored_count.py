@@ -254,14 +254,14 @@ class AnchoredCount(BaseModel):
     def total_count_by_years_and_levels(cls, years, levels):
 
         """
-        Get the total number of tokens that appears on pages with the anchor
-        token, given a rance of years and levels
+        Get the total number of tokens that appear on pages with the anchor
+        token, given a range of years and levels.
 
         Args:
             years (iter)
             levels (iter)
 
-        Returns: OrderedDict {token: count, ...}
+        Returns: int
         """
 
         with config.get_session() as session:
@@ -292,38 +292,23 @@ class AnchoredCount(BaseModel):
         Returns: OrderedDict {token: score, ...}
         """
 
-        # a - number of times each token in anchored_count, filtered by year / level
-        # b - number of times each token appears in count, filtered by year
-        # c - total count from anchored_count, filtered by year / level
-        # d - total count from count, filtered by year
+        a = cls.token_counts_by_years_and_levels(years, levels)
 
-        # AnchoredCount#token_counts()
+        b = Count.token_counts_by_years(years)
 
-        with config.get_session() as session:
+        c = cls.total_count_by_years_and_levels(years, levels)
 
-            a = cls.token_counts_by_years_and_levels(years, levels)
+        d = Count.total_count_by_years(years)
 
-            b = Count.token_counts_by_years(years)
+        topn = dict()
 
-            c = cls.total_count_by_years_and_levels()
+        for token in a.keys():
 
-            res = (
-                session
-                .query(func.sum(Count.count))
-                .filter(Count.year.in_(years))
+            g, p, dof, exp = chi2_contingency(
+                np.array([[a[token], b[token]], [c, d]]),
+                lambda_='log-likelihood',
             )
 
-            d = res.scalar()
+            topn[token] = g
 
-            topn = dict()
-
-            for token in a.keys():
-
-                g, p, dof, exp = chi2_contingency(
-                    np.array([[a[token], b[token]], [c, d]]),
-                    lambda_='log-likelihood',
-                )
-
-                topn[token] = g
-
-            return sort_dict(topn)
+        return sort_dict(topn)
