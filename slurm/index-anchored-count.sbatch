@@ -3,17 +3,17 @@
 #all commands that start with SBATCH contain commands that are just used by SLURM for scheduling
 #################
 #set a job name
-#SBATCH --job-name=index-count
+#SBATCH --job-name=index-anchored-count
 #################
 #a file for job output, you can check job progress
-#SBATCH --output=index-count.out
+#SBATCH --output=index-anchored-count.out
 #################
 # a file for errors from the job
-#SBATCH --error=index-count.err
+#SBATCH --error=index-anchored-count.err
 #################
 #time you think you need; default is one hour
 #in minutes in this case, hh:mm:ss
-#SBATCH --time=10:00:00
+#SBATCH --time=12:00:00
 #################
 #quality of service; think of it as job priority
 #SBATCH --qos=normal
