@@ -251,6 +251,34 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
+    def total_count_by_years_and_levels(cls, years, levels):
+
+        """
+        Get the total number of tokens that appears on pages with the anchor
+        token, given a rance of years and levels
+
+        Args:
+            years (iter)
+            levels (iter)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(func.sum(cls.count))
+                .filter(
+                    cls.anchor_count.in_(levels),
+                    cls.year.in_(years)
+                )
+            )
+
+            return res.scalar() or 0
+
+
+    @classmethod
     def topn(cls, years, levels):
 
         """
@@ -277,16 +305,7 @@ class AnchoredCount(BaseModel):
 
             b = Count.token_counts_by_years(years)
 
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(
-                    cls.anchor_count.in_(levels),
-                    cls.year.in_(years)
-                )
-            )
-
-            c = res.scalar()
+            c = cls.total_count_by_years_and_levels()
 
             res = (
                 session
