@@ -232,6 +232,8 @@ class AnchoredCount(BaseModel):
         Args:
             year1 (int)
             year2 (int)
+            level1 (int)
+            level2 (int)
 
         Returns: OrderedDict {token: count, ...}
         """
@@ -255,6 +257,43 @@ class AnchoredCount(BaseModel):
             res = query.group_by(cls.token)
 
             return dict(res.all())
+
+
+    @classmethod
+    def total_count_by_year_and_level(cls, year1=None, year2=None,
+        level1=None, level2=None):
+
+        """
+        Given a year and level (or a range of either), get the total number of
+        tokens that appeared on pages with the anchor.
+
+        Args:
+            year1 (int)
+            year2 (int)
+            level1 (int)
+            level2 (int)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            query = session.query(func.sum(cls.count))
+
+            if year1:
+                query = query.filter(cls.year >= year1)
+
+            if year2:
+                query = query.filter(cls.year <= year2)
+
+            if level1:
+                query = query.filter(cls.anchor_count >= level1)
+
+            if level2:
+                query = query.filter(cls.anchor_count <= level2)
+
+            return query.scalar() or 0
+
 
 
     @classmethod
