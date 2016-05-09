@@ -222,24 +222,17 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def topn(cls, years, levels, n=100):
+    def token_counts_by_years_and_levels(cls, years, levels):
 
         """
-        Given a range of years and anchor levels, get a list of the top N most
-        distinctive words around the anchor.
+        Get anchored counts for all tokens, filtered by years and levels.
 
         Args:
             years (iter)
             levels (iter)
-            n (int)
 
-        Returns: OrderedDict {token: score, ...}
+        Returns: dict {token: count, ...}
         """
-
-        # a - number of times each token in anchored_count, filtered by year / level
-        # b - number of times each token appears in count, filtered by year
-        # c - total count from anchored_count, filtered by year / level
-        # d - total count from count, filtered by year
 
         with config.get_session() as session:
 
@@ -254,7 +247,35 @@ class AnchoredCount(BaseModel):
                 .order_by(cls.token.asc())
             )
 
-            a = dict(res.all())
+            return dict(res.all())
+
+
+    @classmethod
+    def topn(cls, years, levels):
+
+        """
+        Given a range of years and anchor levels, get a list of the top N most
+        distinctive words around the anchor.
+
+        Args:
+            years (iter)
+            levels (iter)
+
+        Returns: OrderedDict {token: score, ...}
+        """
+
+        # a - number of times each token in anchored_count, filtered by year / level
+        # b - number of times each token appears in count, filtered by year
+        # c - total count from anchored_count, filtered by year / level
+        # d - total count from count, filtered by year
+
+        # AnchoredCount#token_counts()
+
+        with config.get_session() as session:
+
+            a = cls.token_counts_by_years_and_levels(years, levels)
+
+            # Count#token_counts()
 
             res = (
                 session
