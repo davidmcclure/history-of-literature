@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from wordfreq import top_n_list
 from contextlib import contextmanager
+from joblib import Memory
 
 
 class Config:
@@ -70,6 +71,9 @@ class Config:
         # SQLAlchemy session maker.
         self.Session = self.build_sessionmaker()
 
+        # Joblib memory instance.
+        self.mem = self.build_memory()
+
 
     def build_tokens(self):
 
@@ -104,6 +108,17 @@ class Config:
         """
 
         return sessionmaker(bind=self.build_engine())
+
+
+    def build_memory(self):
+
+        """
+        Build a joblib Memory instance.
+
+        Returns: Memory
+        """
+
+        return Memory(cachedir=self['cache_dir'])
 
 
     @contextmanager

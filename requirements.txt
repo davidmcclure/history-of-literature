@@ -17,3 +17,4 @@ jupyter
 mpi4py
 click
 psutil
+joblib
