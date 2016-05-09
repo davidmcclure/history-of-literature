@@ -319,3 +319,16 @@ class AnchoredCount(BaseModel):
         c = cls.total_count_by_year_and_level(year1, year2, level1, level2)
 
         d = Count.total_count_by_year(year1, year2)
+
+        topn = dict()
+
+        for token in a.keys():
+
+            g, _, _, _ = chi2_contingency(
+                np.array([[a[token], b[token]], [c, d]]),
+                lambda_='log-likelihood',
+            )
+
+            topn[token] = g
+
+        return sort_dict(topn)
