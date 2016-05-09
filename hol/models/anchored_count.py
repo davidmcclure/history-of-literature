@@ -264,12 +264,7 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def mdw(cls,
-        year1=None,
-        year2=None,
-        level1=None,
-        level2=None,
-    ):
+    def mdw(cls, year=None, level=None):
 
         """
         Given a range of years and levels, get a ranking of tokens in terms of
@@ -284,26 +279,10 @@ class AnchoredCount(BaseModel):
         Returns: OrderedDict {token: score, ...}
         """
 
-        a = cls.token_counts_by_years_and_levels(
-            year1,
-            year2,
-            level1,
-            level2,
-        )
+        a = cls.token_counts_by_years_and_levels(year, level)
 
-        b = Count.token_counts_by_years(
-            year1,
-            year2,
-        )
+        b = Count.token_counts_by_years(year)
 
-        c = cls.total_count_by_years_and_levels(
-            year1,
-            year2,
-            level1,
-            level2,
-        )
+        c = cls.total_count_by_years_and_levels(year, level)
 
-        d = Count.total_count_by_years(
-            year1,
-            year2,
-        )
+        d = Count.total_count_by_years(year)
