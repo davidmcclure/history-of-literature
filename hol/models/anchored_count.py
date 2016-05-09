@@ -219,3 +219,28 @@ class AnchoredCount(BaseModel):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def mdw(cls, years, levels):
+
+        """
+        Given a range of years and levels, get a ranking of tokens in terms of
+        their distinctiveness with the anchor.
+
+        Args:
+            years (iter)
+            levels (iter)
+
+        Returns: OrderedDict {token: score, ...}
+        """
+
+        a = cls.token_counts_by_years_and_levels(years, levels)
+
+        b = Count.token_counts_by_years(years)
+
+        c = cls.total_count_by_years_and_levels(years, levels)
+
+        d = Count.total_count_by_years(years)
+
+        # TODO
