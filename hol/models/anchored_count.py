@@ -222,7 +222,12 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def token_counts_by_year_and_level(cls, year1=None, year2=None):
+    def token_counts_by_year_and_level(cls,
+        year1=None,
+        year2=None,
+        level1=None,
+        level2=None,
+    ):
 
         """
         Given a year and level (or a range of either), map token -> count for
@@ -244,6 +249,12 @@ class AnchoredCount(BaseModel):
 
             if year2:
                 query = query.filter(cls.year <= year2)
+
+            if level1:
+                query = query.filter(cls.anchor_count >= level1)
+
+            if level2:
+                query = query.filter(cls.anchor_count <= level2)
 
             res = query.group_by(cls.token)
 
