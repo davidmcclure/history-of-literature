@@ -222,12 +222,8 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def token_counts_by_year_and_level(cls,
-        year1=None,
-        year2=None,
-        level1=None,
-        level2=None,
-    ):
+    def token_counts_by_year_and_level(cls, year1=None, year2=None,
+        level1=None, level2=None):
 
         """
         Given a year and level (or a range of either), map token -> count for
@@ -262,7 +258,7 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def mdw(cls, year=None, level=None):
+    def mdw(cls, year1=None, year2=None, level1=None, level2=None):
 
         """
         Given a range of years and levels, get a ranking of tokens in terms of
@@ -277,10 +273,10 @@ class AnchoredCount(BaseModel):
         Returns: OrderedDict {token: score, ...}
         """
 
-        a = cls.token_counts_by_years_and_levels(year, level)
+        a = cls.token_counts_by_year_and_level(year1, year2, level1, level2)
 
-        b = Count.token_counts_by_years(year)
+        b = Count.token_counts_by_year(year1, year2)
 
-        c = cls.total_count_by_years_and_levels(year, level)
+        c = cls.total_count_by_year_and_level(year1, year2, level1, level2)
 
-        d = Count.total_count_by_years(year)
+        d = Count.total_count_by_year(year1, year2)
