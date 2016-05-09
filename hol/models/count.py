@@ -294,3 +294,29 @@ class Count(BaseModel):
             res = query.group_by(cls.token)
 
             return dict(res.all())
+
+
+    @classmethod
+    def total_count_by_year(cls, year1=None, year2=None):
+
+        """
+        Get the total token count for a range of years.
+
+        Args:
+            year1 (int)
+            year2 (int)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            query = session.query(func.sum(cls.count))
+
+            if year1:
+                query = query.filter(cls.year >= year1)
+
+            if year2:
+                query = query.filter(cls.year <= year2)
+
+            return query.scalar() or 0

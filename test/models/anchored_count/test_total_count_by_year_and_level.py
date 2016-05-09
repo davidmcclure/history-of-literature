@@ -86,7 +86,6 @@ def test_filter_by_year(year1, year2, count, config):
             count=256,
         ))
 
-
     res = AnchoredCount.total_count_by_year_and_level(
         year1=year1,
         year2=year2,
@@ -172,7 +171,6 @@ def test_filter_by_year(level1, level2, count, config):
             anchor_count=7,
             count=256,
         ))
-
 
     res = AnchoredCount.total_count_by_year_and_level(
         level1=level1,
