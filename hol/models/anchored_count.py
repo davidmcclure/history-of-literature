@@ -235,7 +235,7 @@ class AnchoredCount(BaseModel):
             level1 (int)
             level2 (int)
 
-        Returns: OrderedDict {token: count, ...}
+        Returns: dict {token: count, ...}
         """
 
         with config.get_session() as session:
@@ -273,7 +273,7 @@ class AnchoredCount(BaseModel):
             level1 (int)
             level2 (int)
 
-        Returns: OrderedDict {token: count, ...}
+        Returns: int
         """
 
         with config.get_session() as session:

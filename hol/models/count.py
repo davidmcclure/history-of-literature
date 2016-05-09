@@ -278,7 +278,7 @@ class Count(BaseModel):
             year1 (int)
             year2 (int)
 
-        Returns: OrderedDict {token: count, ...}
+        Returns: dict {token: count, ...}
         """
 
         with config.get_session() as session:
@@ -306,7 +306,7 @@ class Count(BaseModel):
             year1 (int)
             year2 (int)
 
-        Returns: OrderedDict {token: count, ...}
+        Returns: int
         """
 
         with config.get_session() as session:
