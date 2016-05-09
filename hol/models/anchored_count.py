@@ -195,7 +195,7 @@ class AnchoredCount(BaseModel):
     def token_counts_by_year(cls, year, min_count=0):
 
         """
-        Get the counts for all tokens that appeared on pages with the anchor
+        Get the counts for all tokens that appear on pages with the anchor
         token in year X.
 
         Args:
@@ -219,6 +219,35 @@ class AnchoredCount(BaseModel):
             )
 
             return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_counts_by_years_and_levels(cls, y1=None, y2=None):
+
+        """
+        Given a range of years and levels, map token -> count for tokens that
+        appear on pages with the anchor token.
+
+        Args:
+            years (iter)
+            levels (iter)
+
+        Returns: OrderedDict {token: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            query = session.query(cls.token, func.sum(cls.count))
+
+            if y1:
+                query = query.filter(cls.year >= y1)
+
+            if y2:
+                query = query.filter(cls.year <= y2)
+
+            res = query.group_by(cls.token)
+
+            return dict(res.all())
 
 
     @classmethod
