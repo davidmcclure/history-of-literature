@@ -17,4 +17,5 @@ jupyter
 mpi4py
 click
 psutil
+distance
 joblib
