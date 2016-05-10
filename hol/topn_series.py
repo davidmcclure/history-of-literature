@@ -12,13 +12,14 @@ from hol.models import AnchoredCount
 class TopnSeries:
 
 
-    def __init__(self, years, n=1000):
+    def __init__(self, years, depth=1000):
 
         """
         Cache topn lists for a range of years.
 
         Args:
             years (iter)
+            depth (int)
         """
 
         # Get a MDW cache.
@@ -30,12 +31,12 @@ class TopnSeries:
 
             mdw = mdw_cache(year1=year, year2=year)
 
-            topn = list(mdw.items())[:n]
+            topn = list(mdw.items())[:depth]
 
             ranks = OrderedDict()
 
             for i, (token, _) in enumerate(topn):
-                ranks[token] = n-i
+                ranks[token] = depth-i
 
             self.topns[year] = ranks
 
