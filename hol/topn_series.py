@@ -12,7 +12,7 @@ from hol.models import AnchoredCount
 class TopnSeries:
 
 
-    def __init__(self, years, depth=1000):
+    def __init__(self, years, depth=1000, level1=None, level2=None):
 
         """
         Cache topn lists for a range of years.
@@ -20,6 +20,8 @@ class TopnSeries:
         Args:
             years (iter)
             depth (int)
+            level1 (int)
+            level2 (int)
         """
 
         # Get a MDW cache.
@@ -29,7 +31,12 @@ class TopnSeries:
 
         for year in years:
 
-            mdw = mdw_cache(year1=year, year2=year)
+            mdw = mdw_cache(
+                year1=year,
+                year2=year,
+                level1=level1,
+                level2=level2,
+            )
 
             topn = list(mdw.items())[:depth]
 
