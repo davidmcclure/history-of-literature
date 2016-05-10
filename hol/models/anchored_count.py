@@ -6,7 +6,9 @@ from functools import partial
 from scipy.stats import chi2_contingency
 from collections import OrderedDict
 
-from sqlalchemy import Column, Integer, String, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, \
+        PrimaryKeyConstraint, distinct
+
 from sqlalchemy.sql import text, func
 
 from hol import config
@@ -332,3 +334,23 @@ class AnchoredCount(BaseModel):
             topn[token] = g
 
         return sort_dict(topn)
+
+
+    @classmethod
+    def levels(cls):
+
+        """
+        Get an ordered list of all anchor_count levels.
+
+        Returns: list
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(distinct(cls.anchor_count))
+                .order_by(cls.anchor_count.asc())
+            )
+
+            return [i[0] for i in res.all()]
