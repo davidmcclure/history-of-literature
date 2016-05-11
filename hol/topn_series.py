@@ -8,6 +8,7 @@ from scipy.signal import savgol_filter
 
 from hol import config
 from hol.models import AnchoredCount
+from hol import cached
 
 
 class TopnSeries:
@@ -28,14 +29,11 @@ class TopnSeries:
         self.years = years
         self.depth = depth
 
-        # Get a MDW cache.
-        mdw_cache = config.mem.cache(AnchoredCount.mdw)
-
         self.topns = OrderedDict()
 
         for year in self.years:
 
-            mdw = mdw_cache(
+            mdw = cached.mdw(
                 year1=year,
                 year2=year,
                 level1=level1,
