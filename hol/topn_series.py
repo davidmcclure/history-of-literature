@@ -25,6 +25,9 @@ class TopnSeries:
             level2 (int)
         """
 
+        self.years = years
+        self.depth = depth
+
         # Get a MDW cache.
         mdw_cache = config.mem.cache(AnchoredCount.mdw)
 
