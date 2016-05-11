@@ -107,7 +107,7 @@ class TopnSeries:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def pdf(self, token):
+    def rank_pdf(self, token, *args, **kwargs):
 
         """
         Estimate a density function from a token's rank series.
@@ -126,7 +126,7 @@ class TopnSeries:
 
         data = np.array(years)[:, np.newaxis]
 
-        return KernelDensity().fit(data)
+        return KernelDensity(*args, **kwargs).fit(data)
 
 
     def sort(self, _lambda, *args, **kwargs):
