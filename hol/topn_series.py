@@ -164,3 +164,37 @@ class TopnSeries:
         density = KernelDensity(bandwidth=bandwidth)
 
         return density.fit(data)
+
+
+    # def sort_pdfs(self, years, _lambda):
+
+        # """
+        # Compute PDFs for all tokens, sort on a callback.
+
+        # Args:
+            # years (iter)
+            # _lambda (function)
+
+        # Returns: OrderedDict {token: (series, score), ...}
+        # """
+
+        # series = []
+        # for t in self.tokens():
+
+            # # Fit PDF.
+            # pds = self.pdf(t, *args, **kwargs)
+
+            # # Draw samples, apply sort func.
+            # s = [np.exp(pdf.score(y)) for y in years]
+            # series.append(t, s, _lambda(s))
+
+        # # Sort descending.
+        # tsv = sorted(series, key=lambda x: x[2], reverse=True)
+
+        # result = OrderedDict()
+
+        # # Index by token.
+        # for (t, s, v) in tsv:
+            # result[t] = (s, v)
+
+        # return result
