@@ -33,7 +33,7 @@ class TopnSeries:
 
         self.topns = OrderedDict()
 
-        for year in years:
+        for year in self.years:
 
             mdw = mdw_cache(
                 year1=year,
@@ -164,9 +164,14 @@ class TopnSeries:
 
         data = np.array(years)[:, np.newaxis]
 
-        density = KernelDensity(bandwidth=bandwidth)
+        pdf = KernelDensity(bandwidth=bandwidth).fit(data)
 
-        return density.fit(data)
+        samples = OrderedDict()
+
+        for year in self.years:
+            samples[year] = np.exp(pdf.score(year))
+
+        return samples
 
 
     def sort_pdfs(self, _lambda, *args, **kwargs):
@@ -183,11 +188,10 @@ class TopnSeries:
         series = []
         for t in self.tokens():
 
-            # Fit PDF.
-            pdf = self.pdf(t, *args, **kwargs)
+            # Get PDF samples.
+            s = self.pdf(t, *args, **kwargs)
 
-            # Draw samples, apply sort func.
-            s = [np.exp(pdf.score(y)) for y in self.years]
+            # Apply the sorting function.
             series.append((t, s, _lambda(s)))
 
         # Sort descending.
