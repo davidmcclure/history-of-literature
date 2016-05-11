@@ -107,32 +107,10 @@ class TopnSeries:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def rank_pdf(self, token, *args, **kwargs):
+    def sort_smoothed_rank_series(self, _lambda, *args, **kwargs):
 
         """
-        Estimate a density function from a token's rank series.
-
-        Args:
-            token (str)
-
-        Returns: KernelDensity
-        """
-
-        series = self.rank_series(token)
-
-        years = []
-        for year, rank in series.items():
-            years += [year] * rank
-
-        data = np.array(years)[:, np.newaxis]
-
-        return KernelDensity(*args, **kwargs).fit(data)
-
-
-    def sort(self, _lambda, *args, **kwargs):
-
-        """
-        Compute series for all tokens, sort on a callback.
+        Compute smoothed series for all tokens, sort on a callback.
 
         Args:
             _lambda (function)
@@ -161,3 +139,28 @@ class TopnSeries:
             result[t] = (s, v)
 
         return result
+
+
+    def pdf(self, token, bandwidth=5):
+
+        """
+        Estimate a density function from a token's rank series.
+
+        Args:
+            token (str)
+            bandwidth (int)
+
+        Returns: KernelDensity
+        """
+
+        series = self.rank_series(token)
+
+        years = []
+        for year, rank in series.items():
+            years += [year] * rank
+
+        data = np.array(years)[:, np.newaxis]
+
+        density = KernelDensity(bandwidth=bandwidth)
+
+        return density.fit(data)
