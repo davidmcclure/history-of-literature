@@ -3,6 +3,7 @@
 import numpy as np
 
 from collections import OrderedDict
+from sklearn.neighbors import KernelDensity
 from scipy.signal import savgol_filter
 
 from hol import config
@@ -114,7 +115,7 @@ class TopnSeries:
         Args:
             token (str)
 
-        Returns: np.array
+        Returns: KernelDensity
         """
 
         series = self.rank_series(token)
@@ -123,9 +124,9 @@ class TopnSeries:
         for year, rank in series.items():
             years += [year] * rank
 
-        # TODO
+        data = np.array(years)[:, np.newaxis]
 
-        return years
+        return KernelDensity().fit(data)
 
 
     def sort(self, _lambda, *args, **kwargs):
