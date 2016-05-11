@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from scipy.signal import savgol_filter
 
 from hol import config
@@ -49,7 +49,7 @@ class TopnSeries:
             self.topns[year] = ranks
 
 
-    def tokens(self):
+    def tokens(self, min_count=0):
 
         """
         Get a set of all unique tokens that appear in any year.
@@ -57,12 +57,16 @@ class TopnSeries:
         Returns: set
         """
 
-        tokens = set()
+        counts = Counter()
 
         for year, series in self.topns.items():
-            tokens.update(series.keys())
+            for token in series.keys():
+                counts[token] += 1
 
-        return tokens
+        return [
+            t for t, c in counts.items()
+            if c >= min_count
+        ]
 
 
     def rank_series(self, token):
@@ -157,19 +161,20 @@ class TopnSeries:
         return cached.pdf(series, self.years, *args, **kwargs)
 
 
-    def sort_pdfs(self, _lambda, *args, **kwargs):
+    def sort_pdfs(self, _lambda, min_count=20, *args, **kwargs):
 
         """
         Compute PDFs for all tokens, sort on a callback.
 
         Args:
             _lambda (function)
+            min_count (int)
 
         Returns: OrderedDict {token: (series, score), ...}
         """
 
         series = []
-        for t in self.tokens():
+        for t in self.tokens(min_count):
 
             # Get PDF samples.
             s = self.pdf(t, *args, **kwargs)
