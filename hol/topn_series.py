@@ -3,7 +3,6 @@
 import numpy as np
 
 from collections import OrderedDict
-from sklearn.neighbors import KernelDensity
 from scipy.signal import savgol_filter
 
 from hol import config
@@ -142,34 +141,20 @@ class TopnSeries:
         return result
 
 
-    def pdf(self, token, bandwidth=5):
+    def pdf(self, token, *args, **kwargs):
 
         """
         Estimate a density function from a token's rank series.
 
         Args:
             token (str)
-            bandwidth (int)
 
-        Returns: KernelDensity
+        Returns: OrderedDict {year: density, ...}
         """
 
         series = self.rank_series(token)
 
-        years = []
-        for year, rank in series.items():
-            years += [year] * rank
-
-        data = np.array(years)[:, np.newaxis]
-
-        pdf = KernelDensity(bandwidth=bandwidth).fit(data)
-
-        samples = OrderedDict()
-
-        for year in self.years:
-            samples[year] = np.exp(pdf.score(year))
-
-        return samples
+        return cached.pdf(series, self.years, *args, **kwargs)
 
 
     def sort_pdfs(self, _lambda, *args, **kwargs):
