@@ -3,11 +3,12 @@
 import numpy as np
 
 from collections import OrderedDict, Counter
+from scipy.spatial import distance
 from scipy.signal import savgol_filter
 
-from hol import config
+from hol import config, cached
 from hol.models import AnchoredCount
-from hol import cached
+from hol.utils import sort_dict
 
 
 class TopnSeries:
@@ -170,7 +171,7 @@ class TopnSeries:
             _lambda (function)
             min_count (int)
 
-        Returns: OrderedDict {token: (series, score), ...}
+        Returns: OrderedDict {token: (samples, score), ...}
         """
 
         series = []
@@ -192,3 +193,31 @@ class TopnSeries:
             result[t] = (s, v)
 
         return result
+
+
+    def pdfs_similar_to(self, token, min_count=20, *args, **kwargs):
+
+        """
+        Given a seed token, rank tokens by PDF similarity.
+
+        Args:
+            _lambda (function)
+            min_count (int)
+
+        Returns: OrderedDict {token: (samples, score), ...}
+        """
+
+        source_pdf = self.pdf(token, *args, **kwargs)
+
+        result = OrderedDict()
+
+        for t in self.tokens(min_count):
+
+            target_pdf = self.pdf(t, *args, **kwargs)
+
+            result[t] = 1 - distance.braycurtis(
+                list(source_pdf.values()),
+                list(target_pdf.values()),
+            )
+
+        return sort_dict(result)
