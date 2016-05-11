@@ -171,28 +171,18 @@ class TopnSeries:
             _lambda (function)
             min_count (int)
 
-        Returns: OrderedDict {token: (samples, score), ...}
+        Returns: OrderedDict {token: score, ...}
         """
-
-        series = []
-        for t in self.tokens(min_count):
-
-            # Get PDF samples.
-            s = self.pdf(t, *args, **kwargs)
-
-            # Apply the sorting function.
-            series.append((t, s, _lambda(s)))
-
-        # Sort descending.
-        tsv = sorted(series, key=lambda x: x[2], reverse=True)
 
         result = OrderedDict()
 
-        # Index by token.
-        for (t, s, v) in tsv:
-            result[t] = (s, v)
+        for t in self.tokens(min_count):
 
-        return result
+            s = self.pdf(t, *args, **kwargs)
+
+            result[t] = _lambda(s)
+
+        return sort_dict(result)
 
 
     def pdfs_similar_to(self, token, min_count=20, *args, **kwargs):
@@ -201,10 +191,10 @@ class TopnSeries:
         Given a seed token, rank tokens by PDF similarity.
 
         Args:
-            _lambda (function)
+            token (str)
             min_count (int)
 
-        Returns: OrderedDict {token: (samples, score), ...}
+        Returns: OrderedDict {token: score, ...}
         """
 
         source_pdf = self.pdf(token, *args, **kwargs)
