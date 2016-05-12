@@ -66,3 +66,23 @@ class LevelSeries:
             ds[level] = jaccard(topn_1, topn_n)
 
         return ds
+
+
+    def rank_series(self, token):
+
+        """
+        Get the rank series for a token.
+
+        Returns: OrderedDict {level: rank, ...}
+        """
+
+        series = OrderedDict()
+
+        for level, topn in self.topns.items():
+
+            rank = topn.get(token)
+
+            if rank:
+                series[level] = rank
+
+        return series
