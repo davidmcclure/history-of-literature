@@ -11,7 +11,7 @@ from hol.models import AnchoredCount
 from hol.utils import sort_dict
 
 
-class TopnSeries:
+class YearSeries:
 
 
     def __init__(self, years, depth=1000, level1=None, level2=None):
