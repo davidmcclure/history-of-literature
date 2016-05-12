@@ -19,3 +19,4 @@ click
 psutil
 distance
 joblib
+tabulate
