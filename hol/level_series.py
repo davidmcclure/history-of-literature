@@ -1,5 +1,6 @@
 
 
+from distance import jaccard
 from collections import OrderedDict
 
 from hol import cached
@@ -42,3 +43,26 @@ class LevelSeries:
                 ranks[token] = depth-i
 
             self.topns[level] = ranks
+
+
+    def jaccard_distances_from_1(self):
+
+        """
+        For each level 2 -> N, compute the Jaccard distance between the first
+        level and the Nth level.
+
+        Returns: dict
+        """
+
+        topn_1 = list(self.topns[1].keys())
+
+        ds = {}
+        for level, topn in self.topns.items():
+
+            # Get topn for level N.
+            topn_n = list(self.topns[level].keys())
+
+            # Jaccard distance from 1.
+            ds[level] = jaccard(topn_1, topn_n)
+
+        return ds
