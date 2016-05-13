@@ -3,28 +3,27 @@
 from collections import OrderedDict
 
 from hol.models import AnchoredCount
+from hol.wpm import WPM
 
 
-class AnchoredCountWPM:
+class AnchoredCountWPM(WPM):
 
 
-    def __init__(self, years):
+    def __init__(self, year1, year2):
 
         """
         Cache token -> WPM maps for anchored pages.
 
         Args:
-            years (iter)
+            year1 (int)
+            year2 (int)
         """
-
-        self.years = years
 
         self.wpms = OrderedDict()
 
-        # TODO: pass year1 / year2?
-        totals = AnchoredCount.year_count_series(years)
+        totals = AnchoredCount.year_count_series(year1, year2)
 
-        for year in self.years:
+        for year in totals.keys():
 
             counts = AnchoredCount.token_counts_by_year_and_level(year, year)
 

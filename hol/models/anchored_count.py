@@ -165,35 +165,6 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def year_count_series(cls, years, min_count=0):
-
-        """
-        Get total token counts for a set of years.
-
-        Args:
-            years (iter)
-            min_count (int)
-
-        Returns: OrderedDict {year: count, ...}
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.year, func.sum(cls.count))
-                .filter(
-                    cls.anchor_count > min_count,
-                    cls.year.in_(years),
-                )
-                .group_by(cls.year)
-                .order_by(cls.year)
-            )
-
-            return OrderedDict(res.all())
-
-
-    @classmethod
     def token_counts_by_year(cls, year, min_count=0):
 
         """
@@ -218,6 +189,35 @@ class AnchoredCount(BaseModel):
                 )
                 .group_by(cls.token)
                 .order_by(cls.token.asc())
+            )
+
+            return OrderedDict(res.all())
+
+
+    # ---
+
+
+    @classmethod
+    def year_count_series(cls, year1, year2):
+
+        """
+        Get total token counts for a range of years.
+
+        Args:
+            year1 (int)
+            year2 (int)
+
+        Returns: OrderedDict {year: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, func.sum(cls.count))
+                .filter(cls.year >= year1, cls.year <= year2)
+                .group_by(cls.year)
+                .order_by(cls.year)
             )
 
             return OrderedDict(res.all())

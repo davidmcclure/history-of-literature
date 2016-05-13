@@ -3,28 +3,27 @@
 from collections import OrderedDict
 
 from hol.models import Count
+from hol.wpm import WPM
 
 
-class CountWPM:
+class CountWPM(WPM):
 
 
-    def __init__(self, years):
+    def __init__(self, year1, year2):
 
         """
         Cache token -> WPM maps for all pages.
 
         Args:
-            years (iter)
+            year1 (int)
+            year2 (int)
         """
-
-        self.years = years
 
         self.wpms = OrderedDict()
 
-        # TODO: pass year1 / year2?
-        totals = Count.year_count_series(years)
+        totals = Count.year_count_series(year1, year2)
 
-        for year in self.years:
+        for year in totals.keys():
 
             counts = Count.token_counts_by_year(year, year)
 

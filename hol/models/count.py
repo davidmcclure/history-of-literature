@@ -141,31 +141,6 @@ class Count(BaseModel):
 
 
     @classmethod
-    def year_count_series(cls, years):
-
-        """
-        Get total token counts for a set of years.
-
-        Args:
-            years (iter)
-
-        Returns: OrderedDict {year: count, ...}
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.year, func.sum(cls.count))
-                .filter(cls.year.in_(years))
-                .group_by(cls.year)
-                .order_by(cls.year)
-            )
-
-            return OrderedDict(res.all())
-
-
-    @classmethod
     def token_count_series(cls, token, years):
 
         """
@@ -266,6 +241,34 @@ class Count(BaseModel):
         )
 
         return OrderedDict(zip(series.keys(), smooth))
+
+
+    # ---
+
+
+    @classmethod
+    def year_count_series(cls, year1, year2):
+
+        """
+        Get total token counts for a range of years.
+
+        Args:
+            years (iter)
+
+        Returns: OrderedDict {year: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, func.sum(cls.count))
+                .filter(cls.year >= year1, cls.year <= year2)
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
 
 
     @classmethod
