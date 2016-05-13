@@ -1,6 +1,9 @@
 
 
+import numpy as np
+
 from scipy.signal import savgol_filter
+from sklearn.neighbors import KernelDensity
 
 from collections import OrderedDict, Counter
 
@@ -69,3 +72,33 @@ class WPM:
         smooth = savgol_filter(list(series.values()), width, order)
 
         return OrderedDict(zip(series.keys(), smooth))
+
+
+    def pdf(self, token, years, bandwidth=5):
+
+        """
+        Estimate a density function from a token's rank series.
+
+        Args:
+            token (str)
+            years (range)
+
+        Returns: OrderedDict {year: density}
+        """
+
+        series = self.series(token)
+
+        data = []
+        for year, wpm in series.items():
+            data += [year] * round(wpm)
+
+        data = np.array(data)[:, np.newaxis]
+
+        pdf = KernelDensity(bandwidth=bandwidth).fit(data)
+
+        samples = OrderedDict()
+
+        for year in years:
+            samples[year] = np.exp(pdf.score(year))
+
+        return samples
