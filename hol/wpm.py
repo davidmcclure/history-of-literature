@@ -2,13 +2,13 @@
 
 from scipy.signal import savgol_filter
 
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 
 
 class WPM:
 
 
-    def tokens(self):
+    def tokens(self, min_count=0):
 
         """
         Get a set of all tokens.
@@ -16,12 +16,16 @@ class WPM:
         Returns: set
         """
 
-        tokens = set()
+        counts = Counter()
 
         for year, wpm in self.wpms.items():
-            tokens.update(wpm.keys())
+            for token in wpm.keys():
+                counts[token] += 1
 
-        return tokens
+        return [
+            t for t, c in counts.items()
+            if c >= min_count
+        ]
 
 
     def series(self, token):
