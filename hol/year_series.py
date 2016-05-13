@@ -33,7 +33,7 @@ class YearSeries:
 
         for year in self.years:
 
-            mdw = cached.mdw(
+            mdw = AnchoredCount.mdw(
                 year1=year,
                 year2=year,
                 level1=level1,

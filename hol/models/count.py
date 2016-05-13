@@ -234,10 +234,16 @@ class Count(BaseModel):
 
         token_counts = cls.token_count_series(token, years)
 
+        # series = OrderedDict()
+        # for year, count in token_counts.items():
+            # wpm = (1e6 * count) / baseline[year]
+            # series[year] = wpm
+
         series = OrderedDict()
-        for year, count in token_counts.items():
-            wpm = (1e6 * count) / baseline[year]
-            series[year] = wpm
+        for year in years:
+            b = baseline.get(year, 0)
+            t = token_counts.get(year, 0)
+            series[year] = (1e6 * t) / b
 
         return series
 

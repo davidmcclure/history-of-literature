@@ -165,35 +165,6 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def year_count_series(cls, years, min_count=0):
-
-        """
-        Get total token counts for a set of years.
-
-        Args:
-            years (iter)
-            min_count (int)
-
-        Returns: OrderedDict {year: count, ...}
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.year, func.sum(cls.count))
-                .filter(
-                    cls.anchor_count > min_count,
-                    cls.year.in_(years),
-                )
-                .group_by(cls.year)
-                .order_by(cls.year)
-            )
-
-            return OrderedDict(res.all())
-
-
-    @classmethod
     def token_counts_by_year(cls, year, min_count=0):
 
         """
@@ -319,9 +290,9 @@ class AnchoredCount(BaseModel):
         # c - total number of tokens on pages with lit
         # d - ** total number of tokens on pages _without_ lit
 
-        a = cls.token_counts_by_year_and_level(year1, year2, level1, level2)
+        _a = cls.token_counts_by_year_and_level(year1, year2, level1, level2)
 
-        b = Count.token_counts_by_year(year1, year2)
+        _b = Count.token_counts_by_year(year1, year2)
 
         c = cls.total_count_by_year_and_level(year1, year2, level1, level2)
 
@@ -329,14 +300,32 @@ class AnchoredCount(BaseModel):
 
         topn = dict()
 
-        for token in a.keys():
+        for token in _a.keys():
 
-            _a = (1e10/d) * a[token]
-            _b = (1e10/d) * b[token]
-            _c = (1e10/d) * c
+            a = _a[token]
+            b = _b[token]
+
+            total = a + b + c + d
+
+            # _a = a[token]
+            # _b = b[token]
+
+            # __a = (1e10/d) * _a
+            # __b = (1e10/d) * _b
+            # __c = (1e10/d) * c
+
+            # _a = (1e10/d) * a[token]
+            # _b = (1e10/d) * (b[token] - a[token])
+            # _d = d - c
+            # _c = (1e10/d) * c
+
+            table = np.array([
+                [(a/total)*1e10, (b/total)*1e10],
+                [(c/total)*1e10, (d/total)*1e10],
+            ]),
 
             g, _, _, _ = chi2_contingency(
-                np.array([[_a, _b], [_c, 1e10]]),
+                table,
                 lambda_='log-likelihood',
             )
 
@@ -363,3 +352,84 @@ class AnchoredCount(BaseModel):
             )
 
             return [i[0] for i in res.all()]
+
+
+    @classmethod
+    def year_count_series(cls, years):
+
+        """
+        Get total token counts for a set of years.
+
+        Args:
+            years (iter)
+
+        Returns: OrderedDict {year: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, func.sum(cls.count))
+                .filter(cls.year.in_(years))
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_count_series(cls, token, years):
+
+        """
+        Get counts for a specific token for a set of years.
+
+        Args:
+            token (str)
+            years (iter)
+
+        Returns: OrderedDict {year: count, ...}
+        """
+
+        with config.get_session() as session:
+
+            res = (
+                session
+                .query(cls.year, func.sum(cls.count))
+                .filter(cls.token==token, cls.year.in_(years))
+                .group_by(cls.year)
+                .order_by(cls.year)
+            )
+
+            return OrderedDict(res.all())
+
+
+    @classmethod
+    def token_wpm_series(cls, token, years):
+
+        """
+        Get a WMP series for a token.
+
+        Args:
+            token (str)
+            years (iter)
+
+        Returns: OrderedDict {year: wpm, ...}
+        """
+
+        baseline = cls.year_count_series(years)
+
+        token_counts = cls.token_count_series(token, years)
+
+        series = OrderedDict()
+        for year in years:
+            b = baseline.get(year, 0)
+            t = token_counts.get(year, 0)
+            series[year] = (1e6 * t) / b
+
+        # for year, count in token_counts.items():
+            # wpm = (1e6 * count) / baseline[year]
+            # series[year] = wpm
+
+        return series
