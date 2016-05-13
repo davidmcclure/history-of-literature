@@ -326,31 +326,13 @@ class AnchoredCount(BaseModel):
 
         for token in a.keys():
 
-            g, _, _, _ = chi2_contingency(
-                np.array([[a[token], b[token]], [c, d]]),
-                lambda_='log-likelihood',
-            )
+            rc = np.array([
+                [a[token], b[token]-a[token]],
+                [c, d-c],
+            ])
+
+            g, _, _, _ = chi2_contingency(rc, lambda_='log-likelihood')
 
             topn[token] = g
 
         return sort_dict(topn)
-
-
-    @classmethod
-    def levels(cls):
-
-        """
-        Get an ordered list of all anchor_count levels.
-
-        Returns: list
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(distinct(cls.anchor_count))
-                .order_by(cls.anchor_count.asc())
-            )
-
-            return [i[0] for i in res.all()]
