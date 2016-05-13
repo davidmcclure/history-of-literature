@@ -47,7 +47,8 @@ class YearSeries:
             for i, (token, _) in enumerate(topn):
                 ranks[token] = depth-i
 
-            self.topns[year] = ranks
+            # self.topns[year] = ranks
+            self.topns[year] = mdw
 
 
     def tokens(self, min_count=0):

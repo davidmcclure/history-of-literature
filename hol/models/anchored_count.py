@@ -314,6 +314,11 @@ class AnchoredCount(BaseModel):
         Returns: OrderedDict {token: score, ...}
         """
 
+        # a - count of "word" on pages with lit
+        # b - ** count of "word" on pages _without_ lit
+        # c - total number of tokens on pages with lit
+        # d - ** total number of tokens on pages _without_ lit
+
         a = cls.token_counts_by_year_and_level(year1, year2, level1, level2)
 
         b = Count.token_counts_by_year(year1, year2)
@@ -326,8 +331,12 @@ class AnchoredCount(BaseModel):
 
         for token in a.keys():
 
+            _a = (1e10/d) * a[token]
+            _b = (1e10/d) * b[token]
+            _c = (1e10/d) * c
+
             g, _, _, _ = chi2_contingency(
-                np.array([[a[token], b[token]], [c, d]]),
+                np.array([[_a, _b], [_c, 1e10]]),
                 lambda_='log-likelihood',
             )
 
