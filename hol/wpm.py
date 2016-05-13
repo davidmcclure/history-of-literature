@@ -8,6 +8,22 @@ from collections import OrderedDict
 class WPM:
 
 
+    def tokens(self):
+
+        """
+        Get a set of all tokens.
+
+        Returns: set
+        """
+
+        tokens = set()
+
+        for year, wpm in self.wpms.items():
+            tokens.update(wpm.keys())
+
+        return tokens
+
+
     def series(self, token):
 
         """
