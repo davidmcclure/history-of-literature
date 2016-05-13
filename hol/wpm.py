@@ -1,5 +1,7 @@
 
 
+from scipy.signal import savgol_filter
+
 from collections import OrderedDict
 
 
@@ -27,3 +29,23 @@ class WPM:
                 series[year] = val
 
         return series
+
+
+    def series_smooth(self, token, width=21, order=2):
+
+        """
+        Smooth the series for a word.
+
+        Args:
+            token (str)
+            width (int)
+            order (int)
+
+        Returns: OrderedDict{year: wpm}
+        """
+
+        series = self.series(token)
+
+        smooth = savgol_filter(list(series.values()), width, order)
+
+        return OrderedDict(zip(series.keys(), smooth))
