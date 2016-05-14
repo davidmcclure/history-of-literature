@@ -54,7 +54,7 @@ class WPM:
         return series
 
 
-    def series_smooth(self, token, width=21, order=2):
+    def series_smooth(self, token, width=41, order=2):
 
         """
         Smooth the series for a word.
