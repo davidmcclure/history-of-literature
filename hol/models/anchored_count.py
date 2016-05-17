@@ -90,31 +90,6 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def token_year_count(cls, token, year):
-
-        """
-        How many times did token X appear in year Y on all pages that contain
-        the anchor token?
-
-        Args:
-            token (str)
-            year (int)
-
-        Returns: int
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.token==token, cls.year==year)
-            )
-
-            return res.scalar() or 0
-
-
-    @classmethod
     def token_year_level_count(cls, token, year, level):
 
         """
@@ -142,59 +117,6 @@ class AnchoredCount(BaseModel):
             )
 
             return res.scalar() or 0
-
-
-    @classmethod
-    def year_count(cls, year):
-
-        """
-        How many tokens appeared on pages with the anchor token in year X?
-
-        Returns: int
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(func.sum(cls.count))
-                .filter(cls.year==year)
-            )
-
-            return res.scalar() or 0
-
-
-    @classmethod
-    def token_counts_by_year(cls, year, min_count=0):
-
-        """
-        Get the counts for all tokens that appear on pages with the anchor
-        token in year X.
-
-        Args:
-            year (int)
-            min_count (int)
-
-        Returns: OrderedDict {token: count, ...}
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.token, func.sum(cls.count))
-                .filter(
-                    cls.anchor_count > min_count,
-                    cls.year==year,
-                )
-                .group_by(cls.token)
-                .order_by(cls.token.asc())
-            )
-
-            return OrderedDict(res.all())
-
-
-    # ---
 
 
     @classmethod
