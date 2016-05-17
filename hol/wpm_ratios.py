@@ -2,8 +2,9 @@
 
 import numpy as np
 
-from scipy.signal import savgol_filter
 from collections import OrderedDict
+from scipy.signal import savgol_filter
+from scipy.stats import linregress
 
 from hol.count_wpm import CountWPM
 from hol.anchored_count_wpm import AnchoredCountWPM
@@ -64,3 +65,22 @@ class WPMRatios:
         smooth = savgol_filter(list(series.values()), width, order)
 
         return OrderedDict(zip(series.keys(), smooth))
+
+
+    def lin_reg(self, token):
+
+        """
+        For a token, regress the ratio onto year.
+
+        Args:
+            token (str)
+
+        Returns: LinearRegression
+        """
+
+        series = self.ratios[token]
+
+        x = list(series.keys())
+        y = list(series.values())
+
+        return linregress(x, y)
