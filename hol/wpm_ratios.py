@@ -8,7 +8,6 @@ from scipy.stats import linregress
 
 from hol.count_wpm import CountWPM
 from hol.anchored_count_wpm import AnchoredCountWPM
-from hol.models import AnchoredCount
 
 
 class WPMRatios:
@@ -29,7 +28,7 @@ class WPMRatios:
 
         self.ratios = {}
 
-        for token in AnchoredCount.tokens():
+        for token in wpm1.tokens():
 
             s0 = wpm0.series(token)
             s1 = wpm1.series(token)

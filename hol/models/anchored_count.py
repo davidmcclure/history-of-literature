@@ -90,27 +90,6 @@ class AnchoredCount(BaseModel):
 
 
     @classmethod
-    def tokens(cls):
-
-        """
-        Get the set of unique tokens that appear on anchored pages.
-
-        Returns: list
-        """
-
-        with config.get_session() as session:
-
-            res = (
-                session
-                .query(cls.token)
-                .distinct()
-                .order_by(cls.token.asc())
-            )
-
-            return [r[0] for r in res]
-
-
-    @classmethod
     def token_year_level_count(cls, token, year, level):
 
         """
