@@ -89,7 +89,7 @@ class WPMRatios:
         return linregress(x, y)
 
 
-    def query(self, _lambda):
+    def query_series(self, _lambda):
 
         """
         Pass all ratio series through a scoring callback, sort descending.
