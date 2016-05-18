@@ -5,6 +5,7 @@ import numpy as np
 from collections import OrderedDict
 from scipy.signal import savgol_filter
 from scipy.stats import linregress
+from statsmodels.nonparametric.kde import KDEUnivariate
 
 from hol.count_wpm import CountWPM
 from hol.anchored_count_wpm import AnchoredCountWPM
@@ -34,6 +35,7 @@ class WPMRatios:
             s0 = wpm0.series(token)
             s1 = wpm1.series(token)
 
+            # Prune out years missing in the anchored series.
             s0_trimmed = OrderedDict([
                 (year, s0[year])
                 for year in s1.keys()
@@ -42,6 +44,7 @@ class WPMRatios:
             vals0 = list(s0_trimmed.values())
             vals1 = list(s1.values())
 
+            # Get ratio between anchored series and baseline.
             r = np.array(vals1) / np.array(vals0)
 
             self.ratios[token] = OrderedDict(zip(s1.keys(), r))
@@ -107,3 +110,29 @@ class WPMRatios:
                 result[token] = score
 
         return sort_dict(result)
+
+
+    def pdf(self, token, bw=5):
+
+        """
+        Estimate a density function from a token's ratio series.
+
+        Args:
+            token (str)
+
+        Returns: OrderedDict {year: density}
+        """
+
+        series = self.ratios[token]
+
+        weights = np.array(list(series.values()))
+
+        density = KDEUnivariate(list(series.keys()))
+        density.fit(fft=False, weights=weights, bw=bw)
+
+        samples = OrderedDict()
+
+        for year in series.keys():
+            samples[year] = density.evaluate(year)[0]
+
+        return samples
