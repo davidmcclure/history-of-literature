@@ -8,6 +8,7 @@ from scipy.stats import linregress
 
 from hol.count_wpm import CountWPM
 from hol.anchored_count_wpm import AnchoredCountWPM
+from hol.utils import sort_dict
 
 
 class WPMRatios:
@@ -83,3 +84,26 @@ class WPMRatios:
         y = list(series.values())
 
         return linregress(x, y)
+
+
+    def query(self, _lambda):
+
+        """
+        Pass all ratio series through a scoring callback, sort descending.
+
+        Args:
+            _lambda (func)
+
+        Returns: OrderedDict{token: score}
+        """
+
+        result = OrderedDict()
+
+        for token, series in self.ratios.items():
+
+            score = _lambda(series)
+
+            if score is not None:
+                result[token] = score
+
+        return sort_dict(result)
