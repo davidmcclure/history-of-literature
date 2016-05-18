@@ -70,25 +70,6 @@ class WPMRatios:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def lin_reg(self, token):
-
-        """
-        For a token, regress the ratio onto year.
-
-        Args:
-            token (str)
-
-        Returns: LinearRegression
-        """
-
-        series = self.ratios[token]
-
-        x = list(series.keys())
-        y = list(series.values())
-
-        return linregress(x, y)
-
-
     def query_series(self, _lambda):
 
         """
