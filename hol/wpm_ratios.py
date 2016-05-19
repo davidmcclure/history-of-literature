@@ -4,8 +4,9 @@ import numpy as np
 
 from collections import OrderedDict
 from scipy.signal import savgol_filter
-from scipy.stats import linregress
 from statsmodels.nonparametric.kde import KDEUnivariate
+from sklearn.covariance import EllipticEnvelope
+from scipy import stats
 
 from hol.count_wpm import CountWPM
 from hol.anchored_count_wpm import AnchoredCountWPM
@@ -50,7 +51,38 @@ class WPMRatios:
             self.ratios[token] = OrderedDict(zip(s1.keys(), r))
 
 
-    def series_smooth(self, token, width=41, order=2):
+    def clean_series(self, token, discard=0.05):
+
+        """
+        Remove outliers from the ratio series for a token.
+
+        Args:
+            discard (int): Drop the most outlying X% of the data.
+
+        Returns: OrderedDict{year: wpm}
+        """
+
+        series = self.ratios[token]
+
+        X = np.array(list(series.values()))[:, np.newaxis]
+
+        env = EllipticEnvelope()
+        env.fit(X)
+
+        # Score each data point.
+        y_pred = env.decision_function(X).ravel()
+
+        # Get the discard threshold.
+        threshold = stats.scoreatpercentile(y_pred, len(series) * discard)
+
+        return OrderedDict([
+            (token, ratio)
+            for (token, ratio), pred in zip(series.items(), y_pred)
+            if pred > threshold
+        ])
+
+
+    def smooth_series(self, token, width=41, order=2):
 
         """
         Smooth the ratio series for a word.
