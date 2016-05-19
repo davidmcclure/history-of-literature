@@ -70,13 +70,14 @@ class WPMRatios:
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def query_series(self, _lambda):
+    def query_series(self, _lambda, min_count=2):
 
         """
         Pass all ratio series through a scoring callback, sort descending.
 
         Args:
             _lambda (func)
+            min_count (int)
 
         Returns: OrderedDict{token: score}
         """
@@ -84,6 +85,9 @@ class WPMRatios:
         result = OrderedDict()
 
         for token, series in self.ratios.items():
+
+            if len(series) < min_count:
+                continue
 
             score = _lambda(series)
 

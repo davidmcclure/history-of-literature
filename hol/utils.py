@@ -3,6 +3,7 @@
 import os
 import numpy as np
 import psutil
+import statsmodels.api as sm
 
 from itertools import islice, chain
 from sklearn import preprocessing
@@ -160,3 +161,22 @@ def mem_pct():
     mem = psutil.virtual_memory()
 
     return mem.percent
+
+
+def lin_reg(series):
+
+    """
+    Fit a OLS linear regression on an ordered dict.
+
+    Args:
+        series (OrderedDict)
+
+    Returns: RegressionResultsWrapper
+    """
+
+    x = np.array(list(series.keys()))
+    y = np.array(list(series.values()))
+
+    x = sm.add_constant(x)
+
+    return sm.OLS(y, x).fit()
