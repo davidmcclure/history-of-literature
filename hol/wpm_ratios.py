@@ -48,10 +48,13 @@ class WPMRatios:
             # Get ratio between anchored series and baseline.
             r = np.array(vals1) / np.array(vals0)
 
-            self.ratios[token] = OrderedDict(zip(s1.keys(), r))
+            series = OrderedDict(zip(s1.keys(), r))
+
+            if len(series) > 1:
+                self.ratios[token] = series
 
 
-    def clean_series(self, token, discard=0.05):
+    def clean_series(self, token, discard=5):
 
         """
         Remove outliers from the ratio series for a token.
@@ -73,16 +76,16 @@ class WPMRatios:
         y_pred = env.decision_function(X).ravel()
 
         # Get the discard threshold.
-        threshold = stats.scoreatpercentile(y_pred, len(series) * discard)
+        threshold = stats.scoreatpercentile(y_pred, discard)
 
         return OrderedDict([
-            (token, ratio)
-            for (token, ratio), pred in zip(series.items(), y_pred)
+            (year, ratio)
+            for (year, ratio), pred in zip(series.items(), y_pred)
             if pred > threshold
         ])
 
 
-    def smooth_series(self, token, width=41, order=2):
+    def smooth_series(self, token, width=41, order=2, *args, **kwargs):
 
         """
         Smooth the ratio series for a word.
@@ -95,14 +98,14 @@ class WPMRatios:
         Returns: OrderedDict{year: wpm}
         """
 
-        series = self.ratios[token]
+        series = self.clean_series(token, *args, **kwargs)
 
         smooth = savgol_filter(list(series.values()), width, order)
 
         return OrderedDict(zip(series.keys(), smooth))
 
 
-    def query_series(self, _lambda):
+    def query_series(self, _lambda, *args, **kwargs):
 
         """
         Pass all ratio series through a scoring callback, sort descending.
@@ -125,7 +128,7 @@ class WPMRatios:
         return sort_dict(result)
 
 
-    def pdf(self, token, years, bw=5):
+    def pdf(self, token, years, bw=5, *args, **kwargs):
 
         """
         Estimate a density function from a token's ratio series.
@@ -138,7 +141,7 @@ class WPMRatios:
         Returns: OrderedDict {year: density}
         """
 
-        series = self.ratios[token]
+        series = self.clean_series(token, *args, **kwargs)
 
         # Use the ratio values as weights.
         weights = np.array(list(series.values()))
