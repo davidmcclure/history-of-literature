@@ -93,13 +93,15 @@ class WPMRatios:
         return sort_dict(result)
 
 
-    def pdf(self, token, bw=5):
+    def pdf(self, token, years, bw=5):
 
         """
         Estimate a density function from a token's ratio series.
 
         Args:
             token (str)
+            years (iter)
+            bw (int)
 
         Returns: OrderedDict {year: density}
         """
@@ -115,7 +117,7 @@ class WPMRatios:
 
         samples = OrderedDict()
 
-        for year in series.keys():
+        for year in years:
             samples[year] = density.evaluate(year)[0]
 
         return samples
