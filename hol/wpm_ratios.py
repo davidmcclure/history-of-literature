@@ -110,8 +110,10 @@ class WPMRatios:
 
         series = self.ratios[token]
 
+        # Use the ratio values as weights.
         weights = np.array(list(series.values()))
 
+        # Fit the density estimate.
         density = KDEUnivariate(list(series.keys()))
         density.fit(fft=False, weights=weights, bw=bw)
 
