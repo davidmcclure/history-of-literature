@@ -21,4 +21,3 @@ distance
 joblib
 statsmodels
 tabulate
-fastcluster
